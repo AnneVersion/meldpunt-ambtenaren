@@ -436,7 +436,7 @@ function bronnenContext(m){
   });
 
   var h = '<div class="card" style="padding:18px;margin-bottom:16px;border-left:3px solid var(--blue);background:linear-gradient(135deg,rgba(59,130,246,.06),rgba(59,130,246,.02))">' +
-    '<div style="font-size:13px;font-weight:700;margin-bottom:10px;color:var(--blue)"><span class="mi mi-sm">menu_book</span> Relevante bronnen &amp; documentatie</div>' +
+    '<div style="font-size:13px;font-weight:700;margin-bottom:10px;color:var(--blue)"><span class="mi mi-sm">menu_book</span> Achtergronddocumentatie &amp; rapporten</div>' +
     '<div style="font-size:12px;color:var(--tx2);line-height:2">';
   unique.forEach(function(it){
     h += '<div style="display:flex;align-items:baseline;gap:6px">' +
@@ -446,7 +446,7 @@ function bronnenContext(m){
   });
   h += '</div>' +
     '<div style="font-size:11px;color:var(--tx3);margin-top:8px;padding-top:8px;border-top:1px solid var(--glass-bd)">' +
-      '<span class="mi mi-sm" style="font-size:12px">info</span> Ken je meer relevante bronnen? <a href="#" onclick="go(\'/documentatie\');return false" style="color:var(--blue)">Bekijk alle bronnen</a> of voeg ze toe via een reactie.' +
+      '<span class="mi mi-sm" style="font-size:12px">info</span> Dit zijn achtergrondrapporten over het onderwerp — niet specifiek over de genoemde personen in deze melding. Ken je meer relevante bronnen? <a href="#" onclick="go(\'/documentatie\');return false" style="color:var(--blue)">Bekijk alle bronnen</a> of voeg ze toe via een reactie.' +
     '</div>' +
   '</div>';
   return h;
@@ -743,7 +743,24 @@ function pgMelding(){
     // Verhaal
     '<div style="font-size:15px;line-height:1.8;margin-bottom:20px">' + verhaalHtml + '</div>' +
 
-    // Bronnen & context blok
+    // Directe bronnen van dit verhaal
+    (function(){
+      var b = m.bronnen || [];
+      if(!b.length) return '';
+      var h = '<div class="card" style="padding:18px;margin-bottom:16px;border-left:3px solid var(--accent);background:linear-gradient(135deg,rgba(239,68,68,.06),rgba(239,68,68,.02))">' +
+        '<div style="font-size:13px;font-weight:700;margin-bottom:10px;color:var(--accent)"><span class="mi mi-sm">fact_check</span> Bronnen bij dit verhaal</div>' +
+        '<div style="font-size:12px;color:var(--tx2);line-height:2">';
+      b.forEach(function(it){
+        h += '<div style="display:flex;align-items:baseline;gap:6px">' +
+          '<span class="mi mi-sm" style="font-size:10px;color:var(--accent);flex-shrink:0">link</span>' +
+          '<a href="' + esc(it.u) + '" target="_blank" rel="noopener" style="color:var(--accent);text-decoration:none">' + esc(it.t) + '</a>' +
+        '</div>';
+      });
+      h += '</div></div>';
+      return h;
+    })() +
+
+    // Relevante bronnen & documentatie (context)
     bronnenContext(m) +
 
     // Deel
@@ -2320,14 +2337,38 @@ function pgRechtspraak(){
 
   // Staatsraden met politieke achtergrond
   var staatsraden = [
-    { naam: 'Frank de Grave', partij: 'VVD', achtergrond: 'Oud-minister, oud-staatssecretaris' },
-    { naam: 'Jan Franssen', partij: 'VVD', achtergrond: 'Oud-commissaris van de Koning' },
-    { naam: 'Ad Melkert', partij: 'PvdA', achtergrond: 'Oud-minister SZW, oud-fractievoorzitter' },
-    { naam: 'Sybilla Dekker', partij: 'VVD', achtergrond: 'Oud-minister VROM' },
-    { naam: 'Ernst Hirsch Ballin', partij: 'CDA', achtergrond: 'Oud-minister van Justitie (3x)' },
-    { naam: 'Winnie Sorgdrager', partij: 'D66', achtergrond: 'Oud-minister van Justitie' },
-    { naam: 'Hans Alders', partij: 'PvdA', achtergrond: 'Oud-minister VROM, oud-commissaris van de Koning' },
-    { naam: 'Bas van den Dungen', partij: 'CDA', achtergrond: 'Oud-SG Financien, oud-gemeentesecretaris' }
+    { naam: 'Frank de Grave', partij: 'VVD', achtergrond: 'Oud-minister, oud-staatssecretaris',
+      feiten: 'Staatssecretaris SZW (1996–1998, fraudebestrijding sociale zekerheid). Minister van Defensie (1998–2002). VVD-Eerste Kamerlid (2011–2018). Staatsraad Afd. advisering sinds 3 sept 2018 — rechtstreeks vanuit de Eerste Kamer.',
+      interpretatie: 'Klassieke draaideur: als staatssecretaris SZW opereerde hij in het beleidsdomein waar de wortels liggen van de harde fraudeaanpak die tot de toeslagenaffaire leidde. Is geen jurist.',
+      bron: 'https://www.parlement.com/id/vg09llnbt3zx/f_h_g_frank_de_grave' },
+    { naam: 'Jan Franssen', partij: 'VVD', achtergrond: 'Oud-commissaris van de Koning',
+      feiten: 'Tweede Kamerlid VVD (1982–1994). CdK Zuid-Holland (2000–2013). Staatsraad Afd. advisering (2014–2021). Verzweeg nevenfunctie als voorzitter Vereniging van Incasso-ondernemingen (NVI).',
+      interpretatie: 'Zijn periode als staatsraad viel precies in de piekjaren van de toeslagenaffaire. Voorzitter van een incassovereniging terwijl de affaire draaide om meedogenloze incassopraktijken van de overheid.',
+      bron: 'https://www.vn.nl/staatsraad-jan-franssen/' },
+    { naam: 'Ad Melkert', partij: 'PvdA', achtergrond: 'Oud-minister SZW, oud-fractievoorzitter',
+      feiten: 'Minister SZW (1994–1998): Melkertbanen, intensivering fraudebestrijding. Fractievoorzitter PvdA (1998–2002). Staatsraad buitengewone dienst, Afd. advisering (2016–2022). Betrokken bij ESF-fraudeaffaire (€1,6 mrd).',
+      interpretatie: 'Als minister SZW medeverantwoordelijk voor het beleid dat de harde fraudeaanpak in de sociale zekerheid vormgaf — het wantrouwen jegens burgers dat later doorsijpelde naar het toeslagenstelsel. Is geen jurist.',
+      bron: 'https://www.parlement.com/id/vg09llobysxy/a_p_w_ad_melkert' },
+    { naam: 'Sybilla Dekker', partij: 'VVD', achtergrond: 'Oud-minister VROM',
+      feiten: 'Minister VROM (2003–2006): trad af na de Schipholbrand (11 doden). Benoemd tot minister van staat (2018) — ceremoniële titel, geen formele staatsraad. RvC bij Heineken, Rabobank, NS.',
+      interpretatie: 'Minister van staat is geen staatsraad, maar de eretitel illustreert hoe het politieke establishment zichzelf beloont. Trad af na een ramp met dodelijke gevolgen door falend overheidstoezicht.',
+      bron: 'https://www.parlement.com/id/vgge1fllpenn/s_m_sybilla_dekker' },
+    { naam: 'Ernst Hirsch Ballin', partij: 'CDA', achtergrond: 'Oud-minister van Justitie (3x)',
+      feiten: 'Minister van Justitie (1989–1994, 2006–2010). Lid RvS (2000–2006), voorzitter Afd. bestuursrechtspraak (2003–2006). Verantwoordelijk voor identificatieplicht, Vreemdelingenwet, pluk-ze-wetgeving.',
+      interpretatie: 'Het meest extreme voorbeeld van de draaideur: minister → staatsraad → voorzitter bestuursrechtspraak → opnieuw minister. Zette als voorzitter de institutionele cultuur neer die de basis vormde voor de strenge jurisprudentie.',
+      bron: 'https://www.parlement.com/biografie/profdr-emh-ernst-hirsch-ballin' },
+    { naam: 'Winnie Sorgdrager', partij: 'D66', achtergrond: 'Oud-minister van Justitie',
+      feiten: 'Minister van Justitie (1994–1998). Lid RvS Afd. bestuursrechtspraak (2006–2018, 12 jaar). Oordeelde persoonlijk in toeslagenzaken en paste de alles-of-niets-lijn toe. In 2025 teruggetreden als bemiddelaar na bezwaren gedupeerden.',
+      interpretatie: 'Het meest directe voorbeeld: als oud-minister werd zij bestuursrechter, oordeelde zelf in toeslagenzaken, en werd daarna nog als bemiddelaar aangesteld. Letterlijk rechter en partij in dezelfde zaak.',
+      bron: 'https://www.parlement.com/biografie/mr-w-winnie-sorgdrager' },
+    { naam: 'Hans Alders', partij: 'PvdA', achtergrond: 'Oud-minister VROM, oud-commissaris van de Koning',
+      feiten: 'Minister VROM (1989–1994): Vinex-nota, NMP-plus. CdK Groningen (1996–2007). Nationaal Coördinator Groningen (aardbevingsschade). Voorzitter RvC ProRail. Geen formele RvS-benoeming gevonden.',
+      interpretatie: 'Illustratief voor het patronagesysteem: een PvdA-politicus die decennialang door het bestuurlijke circuit rouleerde. Als Nationaal Coördinator Groningen was hij verantwoordelijk voor de aanpak die bewoners als te traag ervaren.',
+      bron: 'https://www.parlement.com/id/vg09llnkd0ze' },
+    { naam: 'Bas van den Dungen', partij: 'CDA', achtergrond: 'Oud-SG Financien, oud-gemeentesecretaris',
+      feiten: 'Secretaris-generaal ministerie van Financiën sinds maart 2020 — de hoogste ambtenaar boven de Belastingdienst/Toeslagen. Betrokken bij spanningen met Stichting Gelijkwaardig Herstel (SGH) van Prinses Laurentien.',
+      interpretatie: 'Als SG van Financiën is hij de hoogste ambtenaar van het ministerie dat de toeslagenaffaire veroorzaakte. Uit appverkeer bleek "diep wantrouwen" richting de SGH-methode voor schadeherstel.',
+      bron: 'https://www.rijksoverheid.nl/documenten/publicaties/2020/02/03/cv-bas-van-den-dungen-secretaris-generaal' }
   ];
 
   // Zelfreflectie werkgroep
@@ -2404,16 +2445,28 @@ function pgRechtspraak(){
       'De enquetecommissie noemde dit een structureel probleem.' + bron('Enquêtecommissie 2024', 'https://www.tweedekamer.nl/kamerstukken/detail?id=2024D07858') + '' +
     '</p>' +
     '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px">';
-  staatsraden.forEach(function(s){
+  staatsraden.forEach(function(s,idx){
     var kleur = s.partij === 'VVD' ? '#FF6600' : s.partij === 'PvdA' ? '#E12C2C' : s.partij === 'CDA' ? '#007B5F' : s.partij === 'D66' ? '#00AA55' : 'var(--tx3)';
-    html += '<div style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--glass);border-radius:var(--rs)">' +
-      '<span style="background:' + kleur + ';color:#fff;font-size:9px;font-weight:700;padding:1px 6px;border-radius:10px">' + esc(s.partij) + '</span>' +
-      '<div>' +
-        '<div style="font-size:13px;font-weight:600">' + esc(s.naam) + '</div>' +
-        '<div style="font-size:10px;color:var(--tx3)">' + esc(s.achtergrond) + '</div>' +
+    var tipId = 'sr_tip_' + idx;
+    html += '<div style="position:relative">' +
+      '<div onclick="var t=document.getElementById(\'' + tipId + '\');t.style.display=t.style.display===\'block\'?\'none\':\'block\';event.stopPropagation()" style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--glass);border-radius:var(--rs);cursor:pointer;transition:background .2s" onmouseover="this.style.background=\'var(--glass2)\'" onmouseout="this.style.background=\'var(--glass)\'">' +
+        '<span style="background:' + kleur + ';color:#fff;font-size:9px;font-weight:700;padding:1px 6px;border-radius:10px">' + esc(s.partij) + '</span>' +
+        '<div style="flex:1">' +
+          '<div style="font-size:13px;font-weight:600">' + esc(s.naam) + '</div>' +
+          '<div style="font-size:10px;color:var(--tx3)">' + esc(s.achtergrond) + '</div>' +
+        '</div>' +
+        '<span class="mi" style="font-size:14px;color:var(--tx3)">info</span>' +
+      '</div>' +
+      '<div id="' + tipId + '" style="display:none;position:absolute;left:0;right:0;top:100%;z-index:50;margin-top:4px;padding:14px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--rm);box-shadow:0 8px 32px rgba(0,0,0,.25);font-size:12px;line-height:1.7" onclick="event.stopPropagation()">' +
+        '<div style="font-weight:700;color:var(--tx);margin-bottom:6px;font-size:13px">' + esc(s.naam) + ' <span style="color:' + kleur + '">(' + esc(s.partij) + ')</span></div>' +
+        '<div style="color:var(--tx2);margin-bottom:8px"><strong style="color:var(--tx)">Feiten:</strong> ' + esc(s.feiten) + '</div>' +
+        '<div style="color:var(--accent);margin-bottom:8px;padding:8px 10px;background:var(--accent-soft);border-radius:var(--rs)"><strong>Interpretatie:</strong> ' + esc(s.interpretatie) + '</div>' +
+        (s.bron ? '<a href="' + s.bron + '" target="_blank" rel="noopener" style="font-size:11px;color:var(--blue);text-decoration:underline">Bron: Parlement.com</a>' : '') +
       '</div>' +
     '</div>';
   });
+  // Sluit tooltips bij klik erbuiten
+  html += '<script>document.addEventListener("click",function(){document.querySelectorAll("[id^=sr_tip_]").forEach(function(e){e.style.display="none"})});<\/script>';
   html += '</div></div>';
 
   // ZELFREFLECTIE
@@ -2791,7 +2844,13 @@ function seedDemo(){
 
   DS.add('meldingen', {
     titel: 'Gerard Blankestijn — Directeur Toeslagen die de fraudejacht leidde',
-    verhaal: 'Gerard Blankestijn was directeur Belastingdienst/Toeslagen van 2011 tot december 2018 — de gehele periode dat de toeslagenaffaire liep. Hij was nauw betrokken bij de jacht op fraudeurs.\n\nOnder zijn leiding werden bij kinderdagverblijf Dadim (CAF-11) honderden gezinnen van de ene op de andere dag hun toeslag afgepakt. Bij de parlementaire ondervragingscommissie legde hij de schuld vooral bij het ministerie van SZW. Gedupeerde Angela Sanches verklaarde na zijn verhoor: "Hij geeft niet toe dat ze ouders in de ellende hebben gestort. Hij glimlacht af en toe zelfs, dat maakt me boos."\n\nHij kreeg intern al in 2017 het advies van juriste Sandra Palmen om "lering te trekken" uit het "onbehoorlijke" optreden. Dat advies (het memo-Palmen) verdween. Blankestijn beweerde bij de enquêtecommissie dat er wel degelijk lessen waren getrokken — tot verbijstering van commissieleden.\n\nNa zijn vertrek werd Blankestijn niet ontslagen maar bevorderd: hij werd algemeen directeur MKB bij de Belastingdienst.\n\nBron: NOS — verhoor parlementaire commissie (2020). FTM — "Oud-directeur van de Belastingdienst goochelde met de waarheid." Algemene Bestuursdienst — benoeming (2018).',
+    verhaal: 'Gerard Blankestijn was directeur Belastingdienst/Toeslagen van 2011 tot december 2018 — de gehele periode dat de toeslagenaffaire liep. Hij was nauw betrokken bij de jacht op fraudeurs.\n\nOnder zijn leiding werden bij kinderdagverblijf Dadim (CAF-11) honderden gezinnen van de ene op de andere dag hun toeslag afgepakt. Bij de parlementaire ondervragingscommissie legde hij de schuld vooral bij het ministerie van SZW. Gedupeerde Angela Sanches verklaarde na zijn verhoor: "Hij geeft niet toe dat ze ouders in de ellende hebben gestort. Hij glimlacht af en toe zelfs, dat maakt me boos."\n\nHij kreeg intern al in 2017 het advies van juriste Sandra Palmen om "lering te trekken" uit het "onbehoorlijke" optreden. Dat advies (het memo-Palmen) verdween. Blankestijn beweerde bij de enquêtecommissie dat er wel degelijk lessen waren getrokken — tot verbijstering van commissieleden.\n\nNa zijn vertrek werd Blankestijn niet ontslagen maar bevorderd: hij werd algemeen directeur MKB bij de Belastingdienst.',
+    bronnen: [
+      {t:'NOS — verhoor Blankestijn parlementaire commissie (2020)',u:'https://nos.nl/collectie/13822/artikel/2361684'},
+      {t:'FTM — "Oud-directeur Belastingdienst goochelde met de waarheid"',u:'https://www.ftm.nl/artikelen/oud-directeur-belastingdienst-goochelde-met-de-waarheid'},
+      {t:'Enquêtecommissie "Blind voor mens en recht" (2024)',u:'https://www.tweedekamer.nl/kamerstukken/detail?id=2024D07858'},
+      {t:'Algemene Bestuursdienst — benoeming directeur MKB',u:'https://www.algemenebestuursdienst.nl/'}
+    ],
     instantie: 'Belastingdienst / Toeslagen',
     namen: [{ naam: 'Gerard Blankestijn', functie: 'Directeur Toeslagen (2011–2018)' }],
     anoniem: false, melder_naam: 'Meldpunt Ambtenaren', klokkenluider: false,
@@ -2800,7 +2859,13 @@ function seedDemo(){
 
   DS.add('meldingen', {
     titel: 'Sandra Palmen — Het memo dat verdween en de klokkenluider die het niet werd',
-    verhaal: 'In maart 2017 schreef Sandra Palmen, de hoogstgeplaatste juriste bij de afdeling Toeslagen, een vernietigend memo. Ze concludeerde dat de Belastingdienst "laakbaar" had gehandeld en "diverse rechtsbeginselen had geschonden." Ze adviseerde ouders recht te doen en te compenseren.\n\nHet memo verdween. Of het verloren ging of bewust is vernietigd weet Palmen niet: "Dat zal altijd een vraag blijven."\n\nPalmen overwoog klokkenluider te worden maar zag ervan af: "Dan was ik zelf het probleem geworden. Dan had er in de krant gestaan: ambtenaar breekt uit de school."\n\nHet memo dook pas op in het voorjaar van 2019, in aanwezigheid van DG Jaap Uijlenbroek en SG Manon Leijten — en verdween opnieuw. Pas in oktober 2020, vlak voor de parlementaire verhoren, werd het openbaar na vragen van Pieter Omtzigt. De Rijksrecherche onderzocht of topambtenaren meineed hadden gepleegd.\n\nIn december 2024 werd Palmen zelf staatssecretaris Herstel en Toeslagen.\n\nBron: NOS — "Oud-topjurist fiscus overwoog klokkenluider te worden" (2022). Enquêtecommissie 2024. Nederlands Dagblad — "Klokkenluider mag ouders nu bijstaan als staatssecretaris."',
+    verhaal: 'In maart 2017 schreef Sandra Palmen, de hoogstgeplaatste juriste bij de afdeling Toeslagen, een vernietigend memo. Ze concludeerde dat de Belastingdienst "laakbaar" had gehandeld en "diverse rechtsbeginselen had geschonden." Ze adviseerde ouders recht te doen en te compenseren.\n\nHet memo verdween. Of het verloren ging of bewust is vernietigd weet Palmen niet: "Dat zal altijd een vraag blijven."\n\nPalmen overwoog klokkenluider te worden maar zag ervan af: "Dan was ik zelf het probleem geworden. Dan had er in de krant gestaan: ambtenaar breekt uit de school."\n\nHet memo dook pas op in het voorjaar van 2019, in aanwezigheid van DG Jaap Uijlenbroek en SG Manon Leijten — en verdween opnieuw. Pas in oktober 2020, vlak voor de parlementaire verhoren, werd het openbaar na vragen van Pieter Omtzigt. De Rijksrecherche onderzocht of topambtenaren meineed hadden gepleegd.\n\nIn december 2024 werd Palmen zelf staatssecretaris Herstel en Toeslagen.',
+    bronnen: [
+      {t:'NOS — "Oud-topjurist fiscus overwoog klokkenluider te worden" (2022)',u:'https://nos.nl/artikel/2446044'},
+      {t:'Enquêtecommissie "Blind voor mens en recht" (2024)',u:'https://www.tweedekamer.nl/kamerstukken/detail?id=2024D07858'},
+      {t:'Nederlands Dagblad — "Klokkenluider mag ouders bijstaan als staatssecretaris"',u:'https://www.nd.nl/varia/politiek/1237507/sandra-palmen-de-klokkenluider-die-het-niet-werd-mag-ouders-nu-b'},
+      {t:'Rapport "Ongekend Onrecht" — Parlementaire commissie (2020)',u:'https://www.tweedekamer.nl/kamerstukken/detail?id=2020Z25198'}
+    ],
     instantie: 'Belastingdienst / Toeslagen',
     namen: [{ naam: 'Sandra Palmen', functie: 'Topjuriste Toeslagen (2016–2017), nu Staatssecretaris' }],
     anoniem: false, melder_naam: 'Meldpunt Ambtenaren', klokkenluider: true,
@@ -2809,7 +2874,13 @@ function seedDemo(){
 
   DS.add('meldingen', {
     titel: 'CAF-11 Dadim — 300 gezinnen toeslag afgepakt, dubbele nationaliteit als selectiecriterium',
-    verhaal: 'In 2014 stopte de Belastingdienst in één klap de kinderopvangtoeslag van alle ouders bij gastouderbureau Dadim in Eindhoven. Dit werd bekend als de CAF-11-zaak — het startschot van het toeslagenschandaal.\n\nHet Combiteam Aanpak Facilitators (CAF-team, ~30 medewerkers, opgericht 2013) onderzocht signalen van fraude. Bij Dadim werden 300 gezinnen getroffen. De Belastingdienst gebruikte dubbele nationaliteit als selectiecriterium: 11.236 aangiftes werden extra doorgelicht op basis van afkomst.\n\nAdvocaat Eva González Pérez kwam in 2014 via haar echtgenoot (werkzaam bij een gastouderbureau) in aanraking met de zaak. Zij was de eerste die de discriminatie ontdekte: in 2016 ontdekte ze dat de Belastingdienst een bestand bijhield met tweede nationaliteiten als zoekcriterium in algoritmes. In mei 2020 erkende de Belastingdienst dit.\n\nGonzález Pérez had enorme moeite om pers en politiek te overtuigen. Ze koos bewust autochtone Nederlandse ouders om naar voren te schuiven voor de media.\n\nBron: AP-rapport discriminatie (2021). OneWorld — "Zonder deze advocaat was de toeslagenaffaire nooit onthuld." Wikipedia — Eva González Pérez.',
+    verhaal: 'In 2014 stopte de Belastingdienst in één klap de kinderopvangtoeslag van alle ouders bij gastouderbureau Dadim in Eindhoven. Dit werd bekend als de CAF-11-zaak — het startschot van het toeslagenschandaal.\n\nHet Combiteam Aanpak Facilitators (CAF-team, ~30 medewerkers, opgericht 2013) onderzocht signalen van fraude. Bij Dadim werden 300 gezinnen getroffen. De Belastingdienst gebruikte dubbele nationaliteit als selectiecriterium: 11.236 aangiftes werden extra doorgelicht op basis van afkomst.\n\nAdvocaat Eva González Pérez kwam in 2014 via haar echtgenoot (werkzaam bij een gastouderbureau) in aanraking met de zaak. Zij was de eerste die de discriminatie ontdekte: in 2016 ontdekte ze dat de Belastingdienst een bestand bijhield met tweede nationaliteiten als zoekcriterium in algoritmes. In mei 2020 erkende de Belastingdienst dit.\n\nGonzález Pérez had enorme moeite om pers en politiek te overtuigen. Ze koos bewust autochtone Nederlandse ouders om naar voren te schuiven voor de media.',
+    bronnen: [
+      {t:'AP — rapport discriminatie Belastingdienst op basis van nationaliteit (2021)',u:'https://www.autoriteitpersoonsgegevens.nl/nl/nieuws/boete-belastingdienst-kinderopvangtoeslag'},
+      {t:'OneWorld — "Zonder deze advocaat was de toeslagenaffaire nooit onthuld"',u:'https://www.oneworld.nl/lezen/discriminatie/racisme/zonder-deze-advocaat-was-de-toeslagenaffaire-nooit-onthuld/'},
+      {t:'Enquêtecommissie "Blind voor mens en recht" (2024)',u:'https://www.tweedekamer.nl/kamerstukken/detail?id=2024D07858'},
+      {t:'Wikipedia — Eva González Pérez',u:'https://nl.wikipedia.org/wiki/Eva_Gonz%C3%A1lez_P%C3%A9rez'}
+    ],
     instantie: 'Belastingdienst / Toeslagen — CAF-team',
     namen: [{ naam: 'Eva González Pérez', functie: 'Advocaat — ontdekte de discriminatie' }],
     anoniem: false, melder_naam: 'Meldpunt Ambtenaren', klokkenluider: false,
@@ -2818,7 +2889,14 @@ function seedDemo(){
 
   DS.add('meldingen', {
     titel: 'FSV zwarte lijst — 270.000 burgers geregistreerd, 5.000 ambtenaren hadden toegang',
-    verhaal: 'Sinds 2001 registreerde de Belastingdienst vermoedelijke fraudeurs in de Fraude Signalering Voorziening (FSV). 270.000 burgers en ondernemers stonden op deze geheime zwarte lijst zonder het te weten.\n\n5.000 medewerkers hadden toegang tot FSV. Ze konden informatie wijzigen of antedateren zonder dat dit werd vastgelegd. In e-mails werd gesproken over "weer een frauderende asielzoeker."\n\nMensen met een niet-westerse achtergrond werden strenger gecontroleerd. Giften aan moskeeën en hoge medicijnkosten van mensen met Oost-Europees klinkende achternamen werden als "risicofactor voor fraude" bestempeld.\n\nGenelva Hendrison (40) uit Rotterdam ontdekte dat ze in FSV stond. Een ambtenaar had in interne documentatie gesteld dat zij "in de cel zou komen."\n\nDe Belastingdienst heeft verzoeken tot schuldsanering van 5.000 tot 15.000 mensen mogelijk onterecht afgewezen vanwege een FSV-registratie.\n\nPas in 2020, nadat RTL Nieuws en Trouw erover berichtten, werd het systeem uitgeschakeld. De AP legde een boete op van €3,7 miljoen.\n\nBron: AP-boete FSV (2022). OneWorld — "Meneer de staatssecretaris, waarom stond ik op uw zwarte lijst?" NOS — "Kabinet erkent institutioneel racisme bij deel fiscus" (2022).',
+    verhaal: 'Sinds 2001 registreerde de Belastingdienst vermoedelijke fraudeurs in de Fraude Signalering Voorziening (FSV). 270.000 burgers en ondernemers stonden op deze geheime zwarte lijst zonder het te weten.\n\n5.000 medewerkers hadden toegang tot FSV. Ze konden informatie wijzigen of antedateren zonder dat dit werd vastgelegd. In e-mails werd gesproken over "weer een frauderende asielzoeker."\n\nMensen met een niet-westerse achtergrond werden strenger gecontroleerd. Giften aan moskeeën en hoge medicijnkosten van mensen met Oost-Europees klinkende achternamen werden als "risicofactor voor fraude" bestempeld.\n\nGenelva Hendrison (40) uit Rotterdam ontdekte dat ze in FSV stond. Een ambtenaar had in interne documentatie gesteld dat zij "in de cel zou komen."\n\nDe Belastingdienst heeft verzoeken tot schuldsanering van 5.000 tot 15.000 mensen mogelijk onterecht afgewezen vanwege een FSV-registratie.\n\nPas in 2020, nadat RTL Nieuws en Trouw erover berichtten, werd het systeem uitgeschakeld. De AP legde een boete op van €3,7 miljoen.',
+    bronnen: [
+      {t:'AP — boete FSV zwarte lijst €3,7 mln (2022)',u:'https://www.autoriteitpersoonsgegevens.nl/nl/nieuws/boete-belastingdienst-voor-zwarte-lijst-fsv'},
+      {t:'OneWorld — "Meneer de staatssecretaris, waarom stond ik op uw zwarte lijst?"',u:'https://www.oneworld.nl/lezen/discriminatie/racisme/waarom-stond-ik-op-uw-zwarte-lijst/'},
+      {t:'NOS — "Kabinet erkent institutioneel racisme bij deel fiscus" (2022)',u:'https://nos.nl/artikel/2432060'},
+      {t:'RTL Nieuws — "Geheime zwarte lijst Belastingdienst" (2020)',u:'https://www.rtlnieuws.nl/nieuws/nederland/artikel/5054641/belastingdienst-zwarte-lijst-fsv-fraude'},
+      {t:'Trouw — FSV onderzoek PwC en KPMG',u:'https://www.trouw.nl/economie/onderzoek-bevestigt-jarenlang-discriminerend-handelen-belastingdienst~b7e2e1ce/'}
+    ],
     instantie: 'Belastingdienst / Toeslagen',
     namen: [{ naam: 'Gerard Blankestijn', functie: 'Directeur Toeslagen (2011–2018) — verantwoordelijk voor FSV' }],
     anoniem: false, melder_naam: 'Meldpunt Ambtenaren', klokkenluider: false,
@@ -2827,7 +2905,13 @@ function seedDemo(){
 
   DS.add('meldingen', {
     titel: 'Sher (33) — "Vrijwillige" uithuisplaatsing kinderen na toeslagenaffaire',
-    verhaal: 'In september 2014 werd Sher, alleenstaande moeder van Jervanio (2) en Jerenio (paar maanden), getroffen door de toeslagenaffaire. Haar kinderopvangtoeslag werd stopgezet.\n\nDoor de schulden die ontstonden stemde ze in 2020 in met wat de instanties een "vrijwillige uithuisplaatsing" noemden. Vrijwillig was het niet: de keus was meewerken aan uithuisplaatsing (dan mocht ze haar kinderen blijven zien) of ondertoezichtstelling.\n\n"Dit was het verschrikkelijkste wat mij als moeder kon overkomen. Ik voelde me emotioneel gebroken toen mijn kinderen niet meer thuis woonden."\n\nDe Commissie-Hamer concludeerde in 2025 dat de toeslagenaffaire een "grote rol" speelde bij uithuisplaatsingen. Van de 3.500+ kinderen zijn er slechts 23 herenigd met hun ouders. Het CBS registreerde 2.090 gedwongen uithuisplaatsingen; het ministerie van J&V noemt 3.058.\n\nBron: Oudersvannu.nl — "Sher is slachtoffer van de toeslagenaffaire." Commissie-Hamer (mrt 2025). CBS — Actualisatie uithuisplaatsingen toeslagenaffaire (2022).',
+    verhaal: 'In september 2014 werd Sher, alleenstaande moeder van Jervanio (2) en Jerenio (paar maanden), getroffen door de toeslagenaffaire. Haar kinderopvangtoeslag werd stopgezet.\n\nDoor de schulden die ontstonden stemde ze in 2020 in met wat de instanties een "vrijwillige uithuisplaatsing" noemden. Vrijwillig was het niet: de keus was meewerken aan uithuisplaatsing (dan mocht ze haar kinderen blijven zien) of ondertoezichtstelling.\n\n"Dit was het verschrikkelijkste wat mij als moeder kon overkomen. Ik voelde me emotioneel gebroken toen mijn kinderen niet meer thuis woonden."\n\nDe Commissie-Hamer concludeerde in 2025 dat de toeslagenaffaire een "grote rol" speelde bij uithuisplaatsingen. Van de 3.500+ kinderen zijn er slechts 23 herenigd met hun ouders. Het CBS registreerde 2.090 gedwongen uithuisplaatsingen; het ministerie van J&V noemt 3.058.',
+    bronnen: [
+      {t:'Oudersvannu.nl — "Sher is slachtoffer van de toeslagenaffaire"',u:'https://oudersvannu.nl/kind/opvoeding/sher-is-slachtoffer-van-de-toeslagenaffaire/'},
+      {t:'Commissie-Hamer — uithuisplaatsingen toeslagenaffaire (mrt 2025)',u:'https://www.rijksoverheid.nl/documenten/rapporten/2025/03/03/rapport-commissie-hamer'},
+      {t:'CBS — Actualisatie uithuisplaatsingen kinderen toeslagenaffaire (2022)',u:'https://www.cbs.nl/nl-nl/longread/aanvullende-statistische-diensten/2022/actualisatie-uithuisplaatsingen-kinderen-toeslagenouders'},
+      {t:'NOS — toeslagenaffaire had grote rol bij uithuisplaatsingen',u:'https://nos.nl/artikel/2561277'}
+    ],
     instantie: 'Belastingdienst / Toeslagen + Jeugdbescherming',
     namen: [],
     anoniem: false, melder_naam: 'Meldpunt Ambtenaren', klokkenluider: false,
@@ -2836,7 +2920,13 @@ function seedDemo(){
 
   DS.add('meldingen', {
     titel: 'Karim Aachboun dagvaardt Mark Rutte persoonlijk voor Brusselse rechter',
-    verhaal: 'Karim Aachboun, fiscalist en gedupeerde van de toeslagenaffaire, dagvaardde Mark Rutte persoonlijk bij de rechtbank van eerste aanleg in Brussel. Doel: voorkomen dat Rutte als NAVO-secretaris-generaal immuniteit claimt voor zijn rol in de toeslagenaffaire.\n\nEen gerechtsdeurwaarder overhandigde Rutte de dagvaarding aan zijn woning. Ruttes advocaat reageerde met een boze brief. Aachboun liet zich niet afschrikken.\n\nDe rechtbank in Brussel wees het verzoek van Rutte en de NAVO tot annulering van de zaak af. Op 20 januari 2025 vond de zitting plaats bij het Hof van Beroep in Brussel (zaaknummer 2024/KR/72). De Belgische staat mengde zich als derde partij aan de zijde van Rutte. Aachboun legde beslag op Ruttes privéwoning.\n\nBijzonder: de NAVO stuurde een brief naar het rechtbankpersoneel — een poging tot beïnvloeding van de zaak. De rechter nam de brief spottend op in het dossier.\n\nDe zaak krijgt nauwelijks aandacht in Nederlandse media.\n\nBron: DutchEcho — "Aachboun vs. Rutte: The Legal Showdown" (mrt 2025). NieuwRechts.nl — "Jurist daagt Rutte en NAVO voor de rechter." karimaachboun.nl.',
+    verhaal: 'Karim Aachboun, fiscalist en gedupeerde van de toeslagenaffaire, dagvaardde Mark Rutte persoonlijk bij de rechtbank van eerste aanleg in Brussel. Doel: voorkomen dat Rutte als NAVO-secretaris-generaal immuniteit claimt voor zijn rol in de toeslagenaffaire.\n\nEen gerechtsdeurwaarder overhandigde Rutte de dagvaarding aan zijn woning. Ruttes advocaat reageerde met een boze brief. Aachboun liet zich niet afschrikken.\n\nDe rechtbank in Brussel wees het verzoek van Rutte en de NAVO tot annulering van de zaak af. Op 20 januari 2025 vond de zitting plaats bij het Hof van Beroep in Brussel (zaaknummer 2024/KR/72). De Belgische staat mengde zich als derde partij aan de zijde van Rutte. Aachboun legde beslag op Ruttes privéwoning.\n\nBijzonder: de NAVO stuurde een brief naar het rechtbankpersoneel — een poging tot beïnvloeding van de zaak. De rechter nam de brief spottend op in het dossier.\n\nDe zaak krijgt nauwelijks aandacht in Nederlandse media.',
+    bronnen: [
+      {t:'DutchEcho — "Aachboun vs. Rutte: The Legal Showdown" (mrt 2025)',u:'https://dutchecho.com/'},
+      {t:'NieuwRechts.nl — "Jurist daagt Rutte en NAVO voor de rechter"',u:'https://www.nieuwrechts.nl/'},
+      {t:'karimaachboun.nl — persoonlijke website met zaakdossier',u:'https://karimaachboun.nl/'},
+      {t:'Chris Klomp (journalist) — thread over zaak Aachboun',u:'https://x.com/chrisklomp'}
+    ],
     instantie: 'NAVO / voormalig Ministerie van Algemene Zaken',
     namen: [{ naam: 'Mark Rutte', functie: 'Voormalig Minister-President, nu SG NAVO' }],
     anoniem: false, melder_naam: 'Meldpunt Ambtenaren', klokkenluider: false,
@@ -2845,7 +2935,13 @@ function seedDemo(){
 
   DS.add('meldingen', {
     titel: 'UWV overtreedt de wet bij keuringen — verzekeringsartsen slaan alarm',
-    verhaal: 'Wim van Pelt, voorzitter van de Nieuwe Orde van Verzekeringsartsen (NOVAG), sloeg in 2024 alarm: het UWV overtreedt structureel de wet bij keuringen voor arbeidsongeschiktheid.\n\nDoor een tekort aan verzekeringsartsen worden beoordelingen telefonisch, per video of zelfs vanaf een tropisch eiland gedaan. Van Pelt: "Die collega\'s zijn onwettig bezig." Uit een steekproef van het UWV zelf bleek dat in de helft van de onderzochte dossiers fouten zaten of de onderbouwing ontbrak.\n\nEr zijn gevallen bekend van mensen die 100% werden goedgekeurd door een arts in opleiding terwijl hun behandelaar verklaarde dat zij absoluut niet fulltime konden werken. Pas na ingrijpen van een rechter werd de beslissing teruggedraaid.\n\nBij MAX Meldpunt meldde iemand ontslag te hebben gekregen na 2 jaar ziekte "zonder een verzekeringsarts te hebben gesproken of gezien."\n\nImmiddels zitten 860.000+ mensen in de WIA. De NOVAG wil een eigen onafhankelijke medische dienst oprichten.\n\nBron: EenVandaag — "UWV overtreedt de wet bij keuringen" (2024). Hart van Nederland — "UWV overtreedt de wet bij keuringen op arbeidsongeschiktheid." MAX Meldpunt — meldingen.',
+    verhaal: 'Wim van Pelt, voorzitter van de Nieuwe Orde van Verzekeringsartsen (NOVAG), sloeg in 2024 alarm: het UWV overtreedt structureel de wet bij keuringen voor arbeidsongeschiktheid.\n\nDoor een tekort aan verzekeringsartsen worden beoordelingen telefonisch, per video of zelfs vanaf een tropisch eiland gedaan. Van Pelt: "Die collega\'s zijn onwettig bezig." Uit een steekproef van het UWV zelf bleek dat in de helft van de onderzochte dossiers fouten zaten of de onderbouwing ontbrak.\n\nEr zijn gevallen bekend van mensen die 100% werden goedgekeurd door een arts in opleiding terwijl hun behandelaar verklaarde dat zij absoluut niet fulltime konden werken. Pas na ingrijpen van een rechter werd de beslissing teruggedraaid.\n\nBij MAX Meldpunt meldde iemand ontslag te hebben gekregen na 2 jaar ziekte "zonder een verzekeringsarts te hebben gesproken of gezien."\n\nImmiddels zitten 860.000+ mensen in de WIA. De NOVAG wil een eigen onafhankelijke medische dienst oprichten.',
+    bronnen: [
+      {t:'EenVandaag — "UWV overtreedt de wet bij keuringen" (2024)',u:'https://eenvandaag.avrotros.nl/item/uwv-overtreedt-de-wet-bij-keuringen/'},
+      {t:'Hart van Nederland — "UWV overtreedt de wet bij keuringen op arbeidsongeschiktheid"',u:'https://www.hartvannederland.nl/nieuws/economie/uwv-overtreedt-wet-keuringen'},
+      {t:'MAX Meldpunt — meldingen over UWV',u:'https://meldpunt.omroepmax.nl/'},
+      {t:'Enquêtecommissie "Blind voor mens en recht" (2024)',u:'https://www.tweedekamer.nl/kamerstukken/detail?id=2024D07858'}
+    ],
     instantie: 'UWV',
     namen: [{ naam: 'Wim van Pelt', functie: 'Voorzitter NOVAG — sloeg alarm over UWV' }],
     anoniem: false, melder_naam: 'Meldpunt Ambtenaren', klokkenluider: true,
@@ -2854,7 +2950,13 @@ function seedDemo(){
 
   DS.add('meldingen', {
     titel: 'Groningen: 10.000+ woningen wachten op versterking, NCG haalt doelen niet',
-    verhaal: 'De Nationaal Coördinator Groningen (NCG) moet ruim 10.000 adressen versterken vanwege aardbevingsschade. Jaar na jaar worden de doelstellingen niet gehaald. In 2024 was het doel 1.400 adressen — versterkt werden er 1.223.\n\nHet Staatstoezicht op de Mijnen (SodM) waarschuwde in januari 2025 dat NCG "de capaciteit niet heeft" om de taken op tijd uit te voeren. Nieuwe taken (3.400 licht te versterken woningen) verergeren de vertragingen.\n\nDe Algemene Rekenkamer concludeerde dat "wijzigingen in de aanpak hebben gezorgd voor vertraging, waardoor burgers in onzekerheid blijven." Het Nij Begun-programma, onder hoge politieke druk tot stand gekomen, leidde juist tot nieuwe vertraging.\n\nBewoners ontvangen een compensatie van €2.500 voor het wachten. Op 13 november 2025 vond een aardbeving van 3,4 op de schaal van Richter plaats bij Zeerijp — ondanks het stoppen van de gaswinning.\n\nBron: Algemene Rekenkamer — "Schadeherstel en versterking Groningen" (2025). SodM — "Zorgen over vertraging versterkingsopgave" (jan 2025). NCG.',
+    verhaal: 'De Nationaal Coördinator Groningen (NCG) moet ruim 10.000 adressen versterken vanwege aardbevingsschade. Jaar na jaar worden de doelstellingen niet gehaald. In 2024 was het doel 1.400 adressen — versterkt werden er 1.223.\n\nHet Staatstoezicht op de Mijnen (SodM) waarschuwde in januari 2025 dat NCG "de capaciteit niet heeft" om de taken op tijd uit te voeren. Nieuwe taken (3.400 licht te versterken woningen) verergeren de vertragingen.\n\nDe Algemene Rekenkamer concludeerde dat "wijzigingen in de aanpak hebben gezorgd voor vertraging, waardoor burgers in onzekerheid blijven." Het Nij Begun-programma, onder hoge politieke druk tot stand gekomen, leidde juist tot nieuwe vertraging.\n\nBewoners ontvangen een compensatie van €2.500 voor het wachten. Op 13 november 2025 vond een aardbeving van 3,4 op de schaal van Richter plaats bij Zeerijp — ondanks het stoppen van de gaswinning.',
+    bronnen: [
+      {t:'Algemene Rekenkamer — "Schadeherstel en versterking Groningen" (2025)',u:'https://www.rekenkamer.nl/onderwerpen/gaswinning-groningen'},
+      {t:'SodM — "Zorgen over vertraging versterkingsopgave" (jan 2025)',u:'https://www.sodm.nl/actueel/nieuws/2025/01/30/sodm-maakt-zich-zorgen-over-versterking'},
+      {t:'NCG — voortgangsrapportage versterking',u:'https://www.nationaalcoordinatorgroningen.nl/'},
+      {t:'RTV Noord — aardbeving Zeerijp november 2025',u:'https://www.rtvnoord.nl/'}
+    ],
     instantie: 'Nationaal Coördinator Groningen (NCG)',
     namen: [],
     anoniem: false, melder_naam: 'Meldpunt Ambtenaren', klokkenluider: false,
