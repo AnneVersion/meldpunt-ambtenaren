@@ -210,9 +210,9 @@ a:hover { text-decoration: underline; }
 
 .org-tooltip {
   display: none; position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
-  width: 420px; max-width: 90vw; max-height: 70vh; overflow-y: auto;
+  width: 620px; max-width: 92vw; max-height: 75vh; overflow-y: auto;
   background: var(--bg2); border: 1px solid var(--glass-bd); border-radius: var(--r);
-  padding: 20px; z-index: 999; box-shadow: 0 16px 48px rgba(0,0,0,.5);
+  padding: 24px; z-index: 999; box-shadow: 0 16px 48px rgba(0,0,0,.6);
   backdrop-filter: blur(16px); margin-top: 8px;
 }
 .org-tooltip::before {
@@ -220,12 +220,19 @@ a:hover { text-decoration: underline; }
   width: 12px; height: 12px; background: var(--bg2); border-left: 1px solid var(--glass-bd);
   border-top: 1px solid var(--glass-bd);
 }
-.org-tooltip h3 { font-size: 16px; margin-bottom: 2px; }
-.org-tooltip .sub { font-size: 12px; color: var(--tx2); margin-bottom: 10px; }
+.org-tooltip .tt-header { display: flex; gap: 14px; align-items: flex-start; margin-bottom: 14px; }
+.org-tooltip .tt-foto { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; border: 3px solid var(--accent); flex-shrink: 0; }
+.org-tooltip h3 { font-size: 18px; font-weight: 800; margin-bottom: 2px; }
+.org-tooltip .sub { font-size: 12px; color: var(--tx2); margin-bottom: 0; }
+.org-tooltip .tt-nu { font-size: 11px; color: var(--yellow); font-weight: 600; margin-top: 3px; }
 .org-tooltip .dossier { font-size: 13px; line-height: 1.8; color: var(--tx); }
 .org-tooltip .dossier strong { color: var(--accent); }
-.org-tooltip .wet { background: var(--accent-soft); padding: 10px 12px; border-radius: var(--rs); margin-top: 10px; font-size: 12px; line-height: 1.7; }
-.org-tooltip .wet-title { font-size: 11px; font-weight: 700; color: var(--accent); text-transform: uppercase; margin-bottom: 4px; }
+.org-tooltip .wet { background: var(--accent-soft); padding: 14px 16px; border-radius: var(--rs); margin-top: 14px; font-size: 12px; line-height: 1.8; }
+.org-tooltip .wet-title { font-size: 11px; font-weight: 700; color: var(--accent); text-transform: uppercase; margin-bottom: 8px; letter-spacing: .5px; }
+.org-tooltip .wet-item { padding: 6px 0; border-bottom: 1px solid rgba(239,68,68,.1); }
+.org-tooltip .wet-item:last-child { border-bottom: none; }
+.org-tooltip .wet-item .wet-art { font-weight: 700; color: var(--accent); }
+.org-tooltip .wet-item .wet-desc { color: var(--tx2); margin-top: 2px; }
 
 @media(max-width:600px){
   .org-tooltip { position: fixed; top: auto; bottom: 0; left: 0; right: 0; transform: none; width: 100%; max-width: 100%; border-radius: var(--r) var(--r) 0 0; max-height: 60vh; }
@@ -1250,8 +1257,14 @@ function pgOrganigram(){
       '<div class="org-func">' + esc(d.korte_functie || d.functie) + '</div>' +
       '<span class="org-partij" style="background:' + d.partij_kleur + ';color:#fff">' + esc(d.partij) + '</span>' +
       '<div class="org-tooltip">' +
-        '<h3>' + esc(d.naam) + '</h3>' +
-        '<div class="sub">' + esc(d.functie) + ' — ' + esc(d.partij) + '</div>' +
+        '<div class="tt-header">' +
+          '<img class="tt-foto" src="' + d.foto + '" alt="' + esc(d.naam) + '" onerror="this.style.display=\'none\'">' +
+          '<div>' +
+            '<h3>' + esc(d.naam) + '</h3>' +
+            '<div class="sub">' + esc(d.functie) + ' — ' + esc(d.partij) + '</div>' +
+            (d.nu ? '<div class="tt-nu"><span class="mi mi-sm" style="font-size:13px">trending_up</span> Nu: ' + d.nu + '</div>' : '') +
+          '</div>' +
+        '</div>' +
         '<div class="dossier">' + d.dossier + '</div>' +
         '<div class="wet"><div class="wet-title"><span class="mi mi-sm">gavel</span> Overtreden wetsartikelen</div>' + d.wetten + '</div>' +
       '</div>' +
@@ -1262,93 +1275,99 @@ function pgOrganigram(){
     rutte: {
       naam: 'Mark Rutte', functie: 'Minister-president (2010–2024)', korte_functie: 'Premier', partij: 'VVD', partij_kleur: '#FF6600',
       foto: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/Portret_Mark_Rutte.jpg/220px-Portret_Mark_Rutte.jpg',
+      nu: 'Secretaris-generaal NAVO',
       dossier: '<strong>2003 — Somaliërs-affaire:</strong> Als staatssecretaris SZW schreef Rutte een brief aan alle gemeenten om Somalische Nederlanders te traceren via geboorteplaats Mogadishu voor extra fraudecontroles. De rechtbank Haarlem oordeelde (2007) dat dit rassendiscriminatie was.<br><br>' +
         '<strong>2013 — Ministeriële Commissie Fraude:</strong> Richtte als premier persoonlijk de commissie op die de keiharde fraudeaanpak lanceerde. Zat erbij, leidde het, wist ervan. De toon werd gezet: burgers zijn verdacht.<br><br>' +
         '<strong>2014–2019 — Wegkijken:</strong> Terwijl 26.000 gezinnen werden geruïneerd, 2.090 kinderen uit huis werden geplaatst en de Belastingdienst discrimineerde op nationaliteit, greep Rutte niet in.<br><br>' +
         '<strong>2020 — "Geen actieve herinnering":</strong> Verklaarde voor de parlementaire commissie zich niets te herinneren. De Rutte Doctrine — geen notulen, geen sms\'jes, alles informeel — werd officieel vastgelegd als systematische informatieweigering.<br><br>' +
         '<strong>Jan 2021 — Kabinet valt:</strong> Trad af maar bleef demissionair premier. 80 ouders deden aangifte — OM vervolgde niet.<br><br>' +
-        '<strong>Okt 2024 — NAVO:</strong> Werd secretaris-generaal van de NAVO. Van rassendiscriminatie in 2003 tot het grootste discriminatieschandaal in 2021 — beloond met de hoogste functie in het westerse bondgenootschap.<br><br>' +
-        '<strong style="color:var(--yellow)">Consequenties:</strong> Nul. 80 ouders deden aangifte — OM vervolgde niet. Bleef 3,5 jaar demissionair premier na de val. Geen strafrechtelijke vervolging, geen tuchtzaak, geen persoonlijke aansprakelijkheid.<br>' +
-        '<strong style="color:var(--yellow)">Nu:</strong> Secretaris-generaal NAVO (sinds okt 2024). Jaarsalaris ~€270.000 belastingvrij. De best betaalde baan in de internationale politiek.',
-      wetten: '<strong>Art. 1 Grondwet</strong> — discriminatieverbod: selectie op afkomst (Somaliërs 2003, dubbele nationaliteit toeslagen)<br>' +
-        '<strong>Art. 68 Grondwet</strong> — inlichtingenplicht aan de Kamer: Rutte Doctrine = systematische schending<br>' +
-        '<strong>Art. 137g Sr</strong> — discriminatie in de uitoefening van ambt of beroep<br>' +
-        '<strong>Art. 44 Wet BRP</strong> — oneigenlijk gebruik bevolkingsgegevens (Somaliërs traceren via geboorteplaats)<br>' +
-        '<strong>Art. 6 AVG</strong> — geen rechtmatige grondslag voor verwerking persoonsgegevens op basis van etniciteit'
+        '<strong>Okt 2024 — NAVO:</strong> Werd secretaris-generaal van de NAVO. Jaarsalaris ~€270.000 belastingvrij.<br><br>' +
+        '<strong style="color:var(--yellow)">Consequenties:</strong> Nul. Geen strafrechtelijke vervolging, geen tuchtzaak, geen persoonlijke aansprakelijkheid. Weggepromoveerd naar de hoogste internationale functie.',
+      wetten: '<div class="wet-item"><div class="wet-art">Art. 1 Grondwet — Discriminatieverbod</div><div class="wet-desc">Allen die zich in Nederland bevinden, worden in gelijke gevallen gelijk behandeld. Discriminatie op welke grond dan ook is niet toegestaan. Rutte zette gemeenten aan tot selectie op afkomst (Somaliërs 2003) en leidde de commissie die beleid lanceerde dat leidde tot etnisch profileren via dubbele nationaliteit.</div></div>' +
+        '<div class="wet-item"><div class="wet-art">Art. 68 Grondwet — Inlichtingenplicht</div><div class="wet-desc">Ministers en staatssecretarissen geven de Kamers de inlichtingen die zij vragen. De "Rutte Doctrine" — geen notulen, geen sms\'jes, alles informeel — was een systematische schending van deze grondwettelijke plicht. De parlementaire commissie legde dit officieel vast.</div></div>' +
+        '<div class="wet-item"><div class="wet-art">Art. 137g Wetboek van Strafrecht — Ambtelijke discriminatie</div><div class="wet-desc">Wie in de uitoefening van een ambt, beroep of bedrijf personen discrimineert, wordt gestraft. Rutte discrimineerde als staatssecretaris (Somaliërs) en faciliteerde als premier de discriminerende fraudeaanpak van de Belastingdienst.</div></div>' +
+        '<div class="wet-item"><div class="wet-art">Art. 44 Wet BRP — Oneigenlijk gebruik persoonsgegevens</div><div class="wet-desc">Gegevens uit de basisregistratie personen mogen alleen voor het doel waarvoor ze zijn verzameld worden gebruikt. Rutte adviseerde gemeenten om geboorteplaats (Mogadishu) te gebruiken als etnisch selectiecriterium — een doelbinding die de wet niet toestaat.</div></div>' +
+        '<div class="wet-item"><div class="wet-art">Art. 6 AVG — Rechtmatigheid verwerking</div><div class="wet-desc">Persoonsgegevens mogen alleen verwerkt worden als daar een rechtmatige grondslag voor is. Selectie op etniciteit of nationaliteit is geen rechtmatige grondslag. De Autoriteit Persoonsgegevens bevestigde dit met een boete van €2,75 miljoen.</div></div>'
     },
     wiebes: {
       naam: 'Eric Wiebes', functie: 'Staatssecretaris Financiën (2014–2017)', korte_functie: 'Stss. Financiën', partij: 'VVD', partij_kleur: '#FF6600',
       foto: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Eric_Wiebes.jpg/220px-Eric_Wiebes.jpg',
+      nu: 'McKinsey partner + Staatsraad Raad van State',
       dossier: '<strong>2014–2017 — Direct verantwoordelijk:</strong> Als staatssecretaris van Financiën had Wiebes directe verantwoordelijkheid over de Belastingdienst/Toeslagen. Onder zijn bewind bereikten de CAF-teams hun hoogtepunt en werden duizenden ouders als fraudeur bestempeld zonder bewijs.<br><br>' +
         '<strong>Bagatellisering:</strong> Deed de toeslagenaffaire af als "een emotionele discussie." Weigerde de ernst te erkennen ondanks signalen van advocaten en ouders.<br><br>' +
         '<strong>Informatieweigering:</strong> Hield informatie achter voor de Tweede Kamer. Documenten die voor de Kamer relevant waren werden niet of te laat gedeeld.<br><br>' +
         '<strong>Jan 2021 — Enige die écht opstapte:</strong> Na de val van het kabinet stapte Wiebes als enige per direct op als minister. Maar het kwaad was al jaren geschied.<br><br>' +
         '<strong style="color:var(--yellow)">Consequenties:</strong> Geen. Opstappen was vrijwillig, niet afgedwongen. Geen strafrechtelijke vervolging.<br>' +
         '<strong style="color:var(--yellow)">Nu:</strong> Partner bij McKinsey & Company (sinds 2022). Benoemd als <strong>staatsraad bij de Raad van State</strong> (februari 2026) — dezelfde Raad van State die jarenlang de alles-of-niets benadering handhaafde. De slager keurt zijn eigen vlees.',
-      wetten: '<strong>Art. 68 Grondwet</strong> — inlichtingenplicht: informatie achtergehouden voor de Kamer<br>' +
-        '<strong>Art. 3:2 Awb</strong> — zorgvuldigheidsbeginsel: onzorgvuldige besluitvorming Belastingdienst onder zijn bewind<br>' +
-        '<strong>Art. 3:4 Awb</strong> — evenredigheidsbeginsel: disproportionele terugvorderingen<br>' +
-        '<strong>Art. 1 Grondwet</strong> — discriminatieverbod: FSV-lijsten en selectie op nationaliteit'
+      wetten: '<div class="wet-item"><div class="wet-art">Art. 68 Grondwet — Inlichtingenplicht</div><div class="wet-desc">Wiebes hield als staatssecretaris informatie achter voor de Tweede Kamer. Documenten over de discriminerende werkwijze van de Belastingdienst werden niet of vertraagd gedeeld.</div></div>' +
+        '<div class="wet-item"><div class="wet-art">Art. 3:2 Awb — Zorgvuldigheidsbeginsel</div><div class="wet-desc">Een bestuursorgaan vergaart de nodige kennis omtrent relevante feiten. Onder Wiebes\' bewind nam de Belastingdienst besluiten zonder individueel onderzoek — hele kinderopvanglocaties werden als frauduleus bestempeld.</div></div>' +
+        '<div class="wet-item"><div class="wet-art">Art. 3:4 Awb — Evenredigheidsbeginsel</div><div class="wet-desc">De gevolgen van een besluit mogen niet onevenredig zijn. Volledige terugvordering van tienduizenden euro\'s bij kleine administratieve fouten is disproportioneel. Gezinnen werden geruïneerd voor fouten die de overheid zelf maakte.</div></div>' +
+        '<div class="wet-item"><div class="wet-art">Art. 1 Grondwet — Discriminatieverbod</div><div class="wet-desc">De FSV-lijsten (Fraude Signalerings Voorziening) met 180.000 namen selecteerden disproportioneel op nationaliteit en afkomst. Dit systeem draaide onder Wiebes\' verantwoordelijkheid.</div></div>'
     },
     weekers: {
       naam: 'Frans Weekers', functie: 'Staatssecretaris Financiën (2010–2014)', korte_functie: 'Stss. Financiën', partij: 'VVD', partij_kleur: '#FF6600',
       foto: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/Persfoto_Frans_Weekers_2013.jpg/220px-Persfoto_Frans_Weekers_2013.jpg',
+      nu: 'Secretaris-generaal Benelux Unie',
       dossier: '<strong>2013 — Architect fraudeaanpak:</strong> Na de "Bulgarenfraude" voerde Weekers de Fraudewet Toeslagen in. De bewijslast werd omgedraaid: niet de overheid moest fraude bewijzen, maar de burger moest zijn onschuld aantonen.<br><br>' +
         '<strong>CAF-teams opgericht:</strong> Onder Weekers werden de Combiteams Aanpak Facilitators (CAF) opgericht die massaal toeslagen stopzetten bij hele kinderdagverblijven — alle ouders gestraft voor verdenking bij één instelling.<br><br>' +
         '<strong>2014 — Afgetreden:</strong> Trad af wegens een ander schandaal, maar het beleid dat hij startte — de CAF-teams, de keiharde terugvorderingen, de alles-of-niets benadering — verwoestte 26.000 gezinnen.<br><br>' +
         '<strong style="color:var(--yellow)">Consequenties:</strong> Geen. Was al weg voordat het schandaal openbaar werd.<br>' +
         '<strong style="color:var(--yellow)">Nu:</strong> <strong>Secretaris-generaal van de Benelux Unie</strong> (sinds 2023). Daarvoor Executive Director bij de Europese Bank voor Wederopbouw en Ontwikkeling in Londen. Van fraudejacht op burgers naar internationale topposities.',
-      wetten: '<strong>Art. 3:4 Awb</strong> — evenredigheidsbeginsel: alles-of-niets terugvorderingen<br>' +
-        '<strong>Art. 6 EVRM</strong> — recht op eerlijk proces: bewijslastomkering bij burgers<br>' +
-        '<strong>Art. 1 Protocol 12 EVRM</strong> — algemeen discriminatieverbod<br>' +
-        '<strong>Art. 26 Awb</strong> — bezwaar en beroep: bezwaarprocedures ontoegankelijk gemaakt'
+      wetten: '<div class="wet-item"><div class="wet-art">Art. 3:4 Awb — Evenredigheidsbeginsel</div><div class="wet-desc">De gevolgen van een besluit mogen niet onevenredig zijn. Weekers\' Fraudewet introduceerde de alles-of-niets benadering: één kleine fout = volledige terugvordering van soms tienduizenden euro\'s. Gezinnen werden financieel vernietigd voor administratieve vergissingen.</div></div>' +
+        '<div class="wet-item"><div class="wet-art">Art. 6 EVRM — Recht op eerlijk proces</div><div class="wet-desc">Eenieder heeft recht op een eerlijke behandeling. Weekers draaide de bewijslast om: niet de overheid moest fraude bewijzen, maar de burger moest zijn onschuld aantonen. Een fundamentele schending van het rechtsbeginsel "onschuldig tot het tegendeel is bewezen."</div></div>' +
+        '<div class="wet-item"><div class="wet-art">Art. 1 Protocol 12 EVRM — Algemeen discriminatieverbod</div><div class="wet-desc">Het genot van elk in de wet neergelegd recht wordt verzekerd zonder discriminatie. De CAF-teams die Weekers oprichtte troffen disproportioneel ouders met een migratieachtergrond — structurele discriminatie ingebakken in het systeem.</div></div>' +
+        '<div class="wet-item"><div class="wet-art">Art. 7:2 Awb — Hoorplicht bij bezwaar</div><div class="wet-desc">Voordat een bestuursorgaan beslist, stelt het de belanghebbende in de gelegenheid te worden gehoord. Ouders werden niet gehoord. Bezwaarprocedures werden ontoegankelijk gemaakt, standaard afgewezen, of eindeloos vertraagd.</div></div>'
     },
     snel: {
       naam: 'Menno Snel', functie: 'Staatssecretaris Financiën (2017–2019)', korte_functie: 'Stss. Financiën', partij: 'D66', partij_kleur: '#01AF36',
       foto: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/Menno_Snel_2018_%281%29.jpg/220px-Menno_Snel_2018_%281%29.jpg',
+      nu: 'Voorzitter RvC Alliander (april 2026)',
       dossier: '<strong>2017–2019 — Nalatigheid:</strong> Volgde Wiebes op en kreeg de toeslagenaffaire op zijn bord. Noemde het handelen "beschamend" maar greep maandenlang niet in terwijl gezinnen bleven lijden.<br><br>' +
         '<strong>Gebroken beloftes:</strong> Beloofde de Kamer transparantie en informatie, maar leverde die niet of onvolledig. Stukken werden niet gedeeld, vragen werden ontwijkend beantwoord.<br><br>' +
         '<strong>Dec 2019 — Eerste politieke val:</strong> Trad af als eerste politicus vanwege de affaire. Maar tegen die tijd hadden duizenden gezinnen al alles verloren.<br><br>' +
         '<strong style="color:var(--yellow)">Consequenties:</strong> Geen. Vrijwillig afgetreden, geen vervolging.<br>' +
         '<strong style="color:var(--yellow)">Nu:</strong> Partner bij FGS Global (strategisch communicatiebureau). Lid Raad van Commissarissen Alliander — wordt <strong>voorzitter in april 2026</strong>. Diverse toezichthoudende functies bij CBS, Nationaal Groenfonds, NHG. Van "beschamend" naar commissariaten.',
-      wetten: '<strong>Art. 68 Grondwet</strong> — inlichtingenplicht aan de Kamer: informatie niet of laat verstrekt<br>' +
-        '<strong>Art. 3:2 Awb</strong> — zorgvuldigheidsbeginsel: nalaten in te grijpen ondanks kennis<br>' +
-        '<strong>Art. 8 EVRM</strong> — recht op privé- en familieleven: niet ingegrepen bij uithuisplaatsingen'
+      wetten: '<div class="wet-item"><div class="wet-art">Art. 68 Grondwet — Inlichtingenplicht</div><div class="wet-desc">Snel beloofde de Kamer transparantie en volledige informatie over de toeslagenaffaire. In de praktijk werden stukken niet of vertraagd verstrekt. De Kamer kon haar controlerende taak niet uitvoeren.</div></div>' +
+        '<div class="wet-item"><div class="wet-art">Art. 3:2 Awb — Zorgvuldigheidsbeginsel</div><div class="wet-desc">Een bestuursorgaan vergaart de nodige kennis en handelt zorgvuldig. Snel wist van de misstanden, noemde ze "beschamend", maar liet de Belastingdienst maandenlang doorgaan met dezelfde werkwijze. Nalaten terwijl je kennis hebt is nalatigheid.</div></div>' +
+        '<div class="wet-item"><div class="wet-art">Art. 8 EVRM — Recht op privé- en familieleven</div><div class="wet-desc">Eenieder heeft recht op respect voor zijn familie- en gezinsleven. Onder Snels bewind werden kinderen uit huis geplaatst als indirect gevolg van de financiële verwoesting door de Belastingdienst. Hij greep niet in.</div></div>'
     },
     asscher: {
       naam: 'Lodewijk Asscher', functie: 'Vicepremier, Minister SZW (2012–2017)', korte_functie: 'Vicepremier', partij: 'PvdA', partij_kleur: '#E12B1A',
       foto: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/Lodewijk_Asscher_2013-1.jpg/220px-Lodewijk_Asscher_2013-1.jpg',
+      nu: 'Voorzitter RvT FNV + diverse voorzitterschappen',
       dossier: '<strong>2012–2017 — Medeverantwoordelijk:</strong> Vicepremier in het kabinet dat de Ministeriële Commissie Fraude oprichtte. Zat aan tafel toen de besluiten werden genomen. Als minister van Sociale Zaken medeverantwoordelijk voor het klimaat van fraudejacht.<br><br>' +
         '<strong>2020 — Ondervragingscommissie:</strong> Verscheen voor de parlementaire commissie. Erkende fouten maar wees ook naar anderen.<br><br>' +
         '<strong>Jan 2021 — Teruggetrokken:</strong> Trok zich terug als PvdA-lijsttrekker — maar pas nadat de publieke druk onhoudbaar werd. Het schandaal was toen al 7 jaar gaande.<br><br>' +
         '<strong style="color:var(--yellow)">Consequenties:</strong> Geen. Verliet de politiek vrijwillig, geen vervolging.<br>' +
         '<strong style="color:var(--yellow)">Nu:</strong> Consultant/partner bij Van de Bunt advies. <strong>Voorzitter Raad van Toezicht FNV</strong> (sinds 2025). Voorzitter Npuls. Voorzitter Duurzame Luchtvaarttafel. Voorzitter Commissie Joodse roofkunst. Meer voorzitterschappen dan consequenties.',
-      wetten: '<strong>Art. 1 Grondwet</strong> — discriminatieverbod: medeverantwoordelijk voor klimaat dat leidde tot etnisch profileren<br>' +
-        '<strong>Art. 3:4 Awb</strong> — evenredigheidsbeginsel: disproportioneel beleid goedgekeurd<br>' +
-        '<strong>Art. 42 lid 2 Grondwet</strong> — ministeriële verantwoordelijkheid'
+      wetten: '<div class="wet-item"><div class="wet-art">Art. 1 Grondwet — Discriminatieverbod</div><div class="wet-desc">Als vicepremier en minister SZW was Asscher medeverantwoordelijk voor het beleid dat leidde tot etnisch profileren. De Ministeriële Commissie Fraude waaraan hij deelnam creëerde het klimaat waarin de Belastingdienst discrimineerde op nationaliteit.</div></div>' +
+        '<div class="wet-item"><div class="wet-art">Art. 3:4 Awb — Evenredigheidsbeginsel</div><div class="wet-desc">Asscher keurde als vicepremier het disproportionele fraudebeleid goed. Kleine fouten leidden tot totale terugvorderingen. De gevolgen — armoede, scheidingen, uithuisplaatsingen — stonden in geen verhouding tot de vermeende overtredingen.</div></div>' +
+        '<div class="wet-item"><div class="wet-art">Art. 42 lid 2 Grondwet — Ministeriële verantwoordelijkheid</div><div class="wet-desc">De ministers zijn verantwoordelijk voor het regeringsbeleid. Asscher droeg als vicepremier mede-verantwoordelijkheid voor alle besluiten van het kabinet, inclusief de harde fraudeaanpak die levens verwoestte.</div></div>'
     },
     vanark: {
       naam: 'Tamara van Ark', functie: 'Staatssecretaris SZW (2017–2020)', korte_functie: 'Stss. SZW', partij: 'VVD', partij_kleur: '#FF6600',
       foto: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/Tamara_van_ark-1536921456.jpg/220px-Tamara_van_ark-1536921456.jpg',
+      nu: 'Bestuurskamers: Oranje Fonds, Reclassering NL',
       dossier: '<strong>2017–2020 — In stand houden:</strong> Als staatssecretaris SZW betrokken bij het in stand houden van het harde toeslagenbeleid. Onder haar bewind bleef de Belastingdienst doorgaan met discriminerende werkwijzen.<br><br>' +
         '<strong>Periode van uithuisplaatsingen:</strong> Haar ambtsperiode viel samen met de jaren waarin de meeste kinderen uit huis werden geplaatst (2.090 kinderen).<br><br>' +
         '<strong style="color:var(--yellow)">Consequenties:</strong> Geen. Verscheen voor de ondervragingscommissie. Werd direct daarna gepromoveerd tot minister.<br>' +
         '<strong style="color:var(--yellow)">Nu:</strong> Voorzitter Schoonmakend Nederland. Lid Raad van Toezicht Reclassering Nederland. Bestuurslid Oranje Fonds. Diverse adviesrollen. Van uithuisplaatsingen naar bestuurskamers.',
-      wetten: '<strong>Art. 42 lid 2 Grondwet</strong> — ministeriële verantwoordelijkheid<br>' +
-        '<strong>Art. 8 EVRM</strong> — recht op privé- en familieleven: niet ingegrepen bij massale uithuisplaatsingen<br>' +
-        '<strong>Art. 3 IVRK</strong> — belang van het kind: kinderen uit huis geplaatst door overheidsbeleid'
+      wetten: '<div class="wet-item"><div class="wet-art">Art. 42 lid 2 Grondwet — Ministeriële verantwoordelijkheid</div><div class="wet-desc">Als staatssecretaris SZW droeg Van Ark verantwoordelijkheid voor het beleid dat bijdroeg aan de toeslagenaffaire. Ze hield het harde beleid in stand terwijl de signalen van misstanden zich opstapelden.</div></div>' +
+        '<div class="wet-item"><div class="wet-art">Art. 8 EVRM — Recht op privé- en familieleven</div><div class="wet-desc">Eenieder heeft recht op respect voor zijn familie- en gezinsleven. Tijdens Van Arks ambtsperiode (2017–2020) werden de meeste van de 2.090 kinderen uit huis geplaatst. De financiële verwoesting door de Belastingdienst leidde tot instabiliteit waardoor gezinnen uiteen werden gerukt.</div></div>' +
+        '<div class="wet-item"><div class="wet-art">Art. 3 IVRK — Belang van het kind</div><div class="wet-desc">Bij alle maatregelen betreffende kinderen vormt het belang van het kind de eerste overweging. De toeslagenaffaire plaatste 2.090 kinderen uit huis — niet omdat ouders slechte ouders waren, maar omdat de overheid hen financieel had vernietigd. Het belang van het kind werd nooit vooropgesteld.</div></div>'
     },
     vanhuffelen: {
       naam: 'Alexandra van Huffelen', functie: 'Staatssecretaris Toeslagen (2020–2022)', korte_functie: 'Stss. Toeslagen', partij: 'D66', partij_kleur: '#01AF36',
       foto: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/43/Alexandra_van_Huffelen%2C_wethouder_in_Rotterdam_%28D66%29_bij_de_nieuwjaarsborrel_van_D66_Utrecht_%2812036482523%29.jpg/220px-Alexandra_van_Huffelen%2C_wethouder_in_Rotterdam_%28D66%29_bij_de_nieuwjaarsborrel_van_D66_Utrecht_%2812036482523%29.jpg',
+      nu: 'Collegevoorzitter Radboud Uni + voorzitter D66',
       dossier: '<strong>2020–2022 — Mislukt herstel:</strong> Aangesteld om de schade te herstellen. Beloofde iedere gedupeerde €30.000. Maar de hersteloperatie werd een tweede schandaal: tergend langzaam, bureaucratisch, opnieuw traumatiserend.<br><br>' +
         '<strong>Nieuw BSN geweigerd:</strong> Weigerde een nieuw BSN voor slachtoffers. Argument: "het lost niks op" en "het geeft regeldruk." De juridische basis bestaat — ze koos ervoor het niet te doen.<br><br>' +
         '<strong style="color:var(--yellow)">Consequenties:</strong> Geen. Terwijl de hersteloperatie faalde, werd ze gepromoveerd.<br>' +
         '<strong style="color:var(--yellow)">Nu:</strong> <strong>Collegevoorzitter Radboud Universiteit</strong> (sinds feb 2025). <strong>Partijvoorzitter D66</strong> (sinds nov 2024). Voorzitter Economic Board Regio Arnhem-Nijmegen. Van mislukt slachtofferherstel naar de top van een universiteit en een politieke partij.',
-      wetten: '<strong>Art. 16 AVG</strong> — recht op rectificatie: weigerde besmette BSN-nummers te corrigeren<br>' +
-        '<strong>Art. 17 AVG</strong> — recht op vergetelheid: FSV-data niet gewist<br>' +
-        '<strong>Art. 3:2 Awb</strong> — zorgvuldigheidsbeginsel: hersteloperatie onzorgvuldig uitgevoerd<br>' +
-        '<strong>Art. 13 EVRM</strong> — recht op effectief rechtsmiddel: herstelproces ontoegankelijk'
+      wetten: '<div class="wet-item"><div class="wet-art">Art. 16 AVG — Recht op rectificatie</div><div class="wet-desc">De betrokkene heeft het recht om onjuiste persoonsgegevens te laten corrigeren. Van Huffelen weigerde een nieuw BSN voor slachtoffers, ondanks dat hun nummers gekoppeld zijn aan onterechte fraudemarkering. Die markering is feitelijk onjuist — de ouders waren geen fraudeurs.</div></div>' +
+        '<div class="wet-item"><div class="wet-art">Art. 17 AVG — Recht op vergetelheid</div><div class="wet-desc">Persoonsgegevens die onrechtmatig verwerkt zijn moeten worden gewist. Het FSV-systeem (Fraude Signalerings Voorziening) bevatte 180.000 namen van burgers. Hoewel het systeem werd stilgelegd, werden de gegevens en hun effecten niet volledig gewist uit alle gekoppelde systemen.</div></div>' +
+        '<div class="wet-item"><div class="wet-art">Art. 3:2 Awb — Zorgvuldigheidsbeginsel</div><div class="wet-desc">De hersteloperatie die Van Huffelen leidde werd zelf een tweede schandaal. Tergend langzaam, bureaucratisch, voor veel ouders opnieuw traumatiserend. In 2024 wachtten nog steeds duizenden ouders. Onzorgvuldig herstel van onzorgvuldig beleid.</div></div>' +
+        '<div class="wet-item"><div class="wet-art">Art. 13 EVRM — Recht op effectief rechtsmiddel</div><div class="wet-desc">Eenieder wiens rechten zijn geschonden heeft recht op een daadwerkelijk rechtsmiddel. De hersteloperatie was voor veel ouders ontoegankelijk: complexe procedures, lange wachttijden, en een systeem dat opnieuw het gevoel gaf dat de overheid tegen hen werkte in plaats van voor hen.</div></div>'
     }
   };
 
