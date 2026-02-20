@@ -2787,67 +2787,78 @@ function pgDocumentatie(){
 function seedDemo(){
   if(DS.count('meldingen') > 0) return;
 
+  // === ECHTE ZAKEN — alle namen en feiten zijn publiek gedocumenteerd ===
+
   DS.add('meldingen', {
-    titel: 'Vijf jaar later nog steeds op zwarte lijst',
-    verhaal: 'In 2014 werd mijn kinderopvangtoeslag stopgezet en moest ik meer dan 40.000 euro terugbetalen. Geld dat ik niet had. Ik verloor mijn huis, mijn huwelijk liep stuk, en mijn kinderen groeiden op in armoede.\n\nIn 2021 werd ik erkend als slachtoffer. Ik kreeg 30.000 euro compensatie. Maar mijn BSN-nummer staat nog steeds gemarkeerd in systemen. Elke keer als ik een hypotheek aanvraag, een verzekering afsluit of een uitkering aanvraag, gaat er een vlaggetje omhoog.\n\nIk ben geen fraudeur. Dat ben ik nooit geweest. Maar mijn BSN vertelt een ander verhaal.',
+    titel: 'Gerard Blankestijn — Directeur Toeslagen die de fraudejacht leidde',
+    verhaal: 'Gerard Blankestijn was directeur Belastingdienst/Toeslagen van 2011 tot december 2018 — de gehele periode dat de toeslagenaffaire liep. Hij was nauw betrokken bij de jacht op fraudeurs.\n\nOnder zijn leiding werden bij kinderdagverblijf Dadim (CAF-11) honderden gezinnen van de ene op de andere dag hun toeslag afgepakt. Bij de parlementaire ondervragingscommissie legde hij de schuld vooral bij het ministerie van SZW. Gedupeerde Angela Sanches verklaarde na zijn verhoor: "Hij geeft niet toe dat ze ouders in de ellende hebben gestort. Hij glimlacht af en toe zelfs, dat maakt me boos."\n\nHij kreeg intern al in 2017 het advies van juriste Sandra Palmen om "lering te trekken" uit het "onbehoorlijke" optreden. Dat advies (het memo-Palmen) verdween. Blankestijn beweerde bij de enquêtecommissie dat er wel degelijk lessen waren getrokken — tot verbijstering van commissieleden.\n\nNa zijn vertrek werd Blankestijn niet ontslagen maar bevorderd: hij werd algemeen directeur MKB bij de Belastingdienst.\n\nBron: NOS — verhoor parlementaire commissie (2020). FTM — "Oud-directeur van de Belastingdienst goochelde met de waarheid." Algemene Bestuursdienst — benoeming (2018).',
     instantie: 'Belastingdienst / Toeslagen',
+    namen: [{ naam: 'Gerard Blankestijn', functie: 'Directeur Toeslagen (2011–2018)' }],
+    anoniem: false, melder_naam: 'Meldpunt Ambtenaren', klokkenluider: false,
+    ts: Date.now() - 1*86400000, views: 1243
+  });
+
+  DS.add('meldingen', {
+    titel: 'Sandra Palmen — Het memo dat verdween en de klokkenluider die het niet werd',
+    verhaal: 'In maart 2017 schreef Sandra Palmen, de hoogstgeplaatste juriste bij de afdeling Toeslagen, een vernietigend memo. Ze concludeerde dat de Belastingdienst "laakbaar" had gehandeld en "diverse rechtsbeginselen had geschonden." Ze adviseerde ouders recht te doen en te compenseren.\n\nHet memo verdween. Of het verloren ging of bewust is vernietigd weet Palmen niet: "Dat zal altijd een vraag blijven."\n\nPalmen overwoog klokkenluider te worden maar zag ervan af: "Dan was ik zelf het probleem geworden. Dan had er in de krant gestaan: ambtenaar breekt uit de school."\n\nHet memo dook pas op in het voorjaar van 2019, in aanwezigheid van DG Jaap Uijlenbroek en SG Manon Leijten — en verdween opnieuw. Pas in oktober 2020, vlak voor de parlementaire verhoren, werd het openbaar na vragen van Pieter Omtzigt. De Rijksrecherche onderzocht of topambtenaren meineed hadden gepleegd.\n\nIn december 2024 werd Palmen zelf staatssecretaris Herstel en Toeslagen.\n\nBron: NOS — "Oud-topjurist fiscus overwoog klokkenluider te worden" (2022). Enquêtecommissie 2024. Nederlands Dagblad — "Klokkenluider mag ouders nu bijstaan als staatssecretaris."',
+    instantie: 'Belastingdienst / Toeslagen',
+    namen: [{ naam: 'Sandra Palmen', functie: 'Topjuriste Toeslagen (2016–2017), nu Staatssecretaris' }],
+    anoniem: false, melder_naam: 'Meldpunt Ambtenaren', klokkenluider: true,
+    ts: Date.now() - 2*86400000, views: 2891
+  });
+
+  DS.add('meldingen', {
+    titel: 'CAF-11 Dadim — 300 gezinnen toeslag afgepakt, dubbele nationaliteit als selectiecriterium',
+    verhaal: 'In 2014 stopte de Belastingdienst in één klap de kinderopvangtoeslag van alle ouders bij gastouderbureau Dadim in Eindhoven. Dit werd bekend als de CAF-11-zaak — het startschot van het toeslagenschandaal.\n\nHet Combiteam Aanpak Facilitators (CAF-team, ~30 medewerkers, opgericht 2013) onderzocht signalen van fraude. Bij Dadim werden 300 gezinnen getroffen. De Belastingdienst gebruikte dubbele nationaliteit als selectiecriterium: 11.236 aangiftes werden extra doorgelicht op basis van afkomst.\n\nAdvocaat Eva González Pérez kwam in 2014 via haar echtgenoot (werkzaam bij een gastouderbureau) in aanraking met de zaak. Zij was de eerste die de discriminatie ontdekte: in 2016 ontdekte ze dat de Belastingdienst een bestand bijhield met tweede nationaliteiten als zoekcriterium in algoritmes. In mei 2020 erkende de Belastingdienst dit.\n\nGonzález Pérez had enorme moeite om pers en politiek te overtuigen. Ze koos bewust autochtone Nederlandse ouders om naar voren te schuiven voor de media.\n\nBron: AP-rapport discriminatie (2021). OneWorld — "Zonder deze advocaat was de toeslagenaffaire nooit onthuld." Wikipedia — Eva González Pérez.',
+    instantie: 'Belastingdienst / Toeslagen — CAF-team',
+    namen: [{ naam: 'Eva González Pérez', functie: 'Advocaat — ontdekte de discriminatie' }],
+    anoniem: false, melder_naam: 'Meldpunt Ambtenaren', klokkenluider: false,
+    ts: Date.now() - 3*86400000, views: 3456
+  });
+
+  DS.add('meldingen', {
+    titel: 'FSV zwarte lijst — 270.000 burgers geregistreerd, 5.000 ambtenaren hadden toegang',
+    verhaal: 'Sinds 2001 registreerde de Belastingdienst vermoedelijke fraudeurs in de Fraude Signalering Voorziening (FSV). 270.000 burgers en ondernemers stonden op deze geheime zwarte lijst zonder het te weten.\n\n5.000 medewerkers hadden toegang tot FSV. Ze konden informatie wijzigen of antedateren zonder dat dit werd vastgelegd. In e-mails werd gesproken over "weer een frauderende asielzoeker."\n\nMensen met een niet-westerse achtergrond werden strenger gecontroleerd. Giften aan moskeeën en hoge medicijnkosten van mensen met Oost-Europees klinkende achternamen werden als "risicofactor voor fraude" bestempeld.\n\nGenelva Hendrison (40) uit Rotterdam ontdekte dat ze in FSV stond. Een ambtenaar had in interne documentatie gesteld dat zij "in de cel zou komen."\n\nDe Belastingdienst heeft verzoeken tot schuldsanering van 5.000 tot 15.000 mensen mogelijk onterecht afgewezen vanwege een FSV-registratie.\n\nPas in 2020, nadat RTL Nieuws en Trouw erover berichtten, werd het systeem uitgeschakeld. De AP legde een boete op van €3,7 miljoen.\n\nBron: AP-boete FSV (2022). OneWorld — "Meneer de staatssecretaris, waarom stond ik op uw zwarte lijst?" NOS — "Kabinet erkent institutioneel racisme bij deel fiscus" (2022).',
+    instantie: 'Belastingdienst / Toeslagen',
+    namen: [{ naam: 'Gerard Blankestijn', functie: 'Directeur Toeslagen (2011–2018) — verantwoordelijk voor FSV' }],
+    anoniem: false, melder_naam: 'Meldpunt Ambtenaren', klokkenluider: false,
+    ts: Date.now() - 4*86400000, views: 1876
+  });
+
+  DS.add('meldingen', {
+    titel: 'Sher (33) — "Vrijwillige" uithuisplaatsing kinderen na toeslagenaffaire',
+    verhaal: 'In september 2014 werd Sher, alleenstaande moeder van Jervanio (2) en Jerenio (paar maanden), getroffen door de toeslagenaffaire. Haar kinderopvangtoeslag werd stopgezet.\n\nDoor de schulden die ontstonden stemde ze in 2020 in met wat de instanties een "vrijwillige uithuisplaatsing" noemden. Vrijwillig was het niet: de keus was meewerken aan uithuisplaatsing (dan mocht ze haar kinderen blijven zien) of ondertoezichtstelling.\n\n"Dit was het verschrikkelijkste wat mij als moeder kon overkomen. Ik voelde me emotioneel gebroken toen mijn kinderen niet meer thuis woonden."\n\nDe Commissie-Hamer concludeerde in 2025 dat de toeslagenaffaire een "grote rol" speelde bij uithuisplaatsingen. Van de 3.500+ kinderen zijn er slechts 23 herenigd met hun ouders. Het CBS registreerde 2.090 gedwongen uithuisplaatsingen; het ministerie van J&V noemt 3.058.\n\nBron: Oudersvannu.nl — "Sher is slachtoffer van de toeslagenaffaire." Commissie-Hamer (mrt 2025). CBS — Actualisatie uithuisplaatsingen toeslagenaffaire (2022).',
+    instantie: 'Belastingdienst / Toeslagen + Jeugdbescherming',
     namen: [],
-    anoniem: false, melder_naam: 'Fatima E.', klokkenluider: false,
-    ts: Date.now() - 3*86400000, views: 456
+    anoniem: false, melder_naam: 'Meldpunt Ambtenaren', klokkenluider: false,
+    ts: Date.now() - 5*86400000, views: 2134
   });
 
   DS.add('meldingen', {
-    titel: 'Deurwaarder kwam voor schuld die al vergeven was',
-    verhaal: 'Twee weken geleden stond er een deurwaarder voor mijn deur. Voor een schuld bij de Belastingdienst van 12.000 euro. Deze schuld zou kwijtgescholden zijn als onderdeel van de toeslagenaffaire-compensatie.\n\nNa 6 uur bellen bleek dat het systeem de kwijtschelding niet had verwerkt. Zes uur bellen. Voor een fout van de overheid. Terwijl mijn kinderen angstig in de gang stonden.',
-    instantie: 'Belastingdienst',
-    namen: [{ naam: 'K. Hendriksen', functie: 'Invorderingsambtenaar' }],
-    anoniem: true, klokkenluider: false,
-    ts: Date.now() - 1*86400000, views: 234
+    titel: 'Karim Aachboun dagvaardt Mark Rutte persoonlijk voor Brusselse rechter',
+    verhaal: 'Karim Aachboun, fiscalist en gedupeerde van de toeslagenaffaire, dagvaardde Mark Rutte persoonlijk bij de rechtbank van eerste aanleg in Brussel. Doel: voorkomen dat Rutte als NAVO-secretaris-generaal immuniteit claimt voor zijn rol in de toeslagenaffaire.\n\nEen gerechtsdeurwaarder overhandigde Rutte de dagvaarding aan zijn woning. Ruttes advocaat reageerde met een boze brief. Aachboun liet zich niet afschrikken.\n\nDe rechtbank in Brussel wees het verzoek van Rutte en de NAVO tot annulering van de zaak af. Op 20 januari 2025 vond de zitting plaats bij het Hof van Beroep in Brussel (zaaknummer 2024/KR/72). De Belgische staat mengde zich als derde partij aan de zijde van Rutte. Aachboun legde beslag op Ruttes privéwoning.\n\nBijzonder: de NAVO stuurde een brief naar het rechtbankpersoneel — een poging tot beïnvloeding van de zaak. De rechter nam de brief spottend op in het dossier.\n\nDe zaak krijgt nauwelijks aandacht in Nederlandse media.\n\nBron: DutchEcho — "Aachboun vs. Rutte: The Legal Showdown" (mrt 2025). NieuwRechts.nl — "Jurist daagt Rutte en NAVO voor de rechter." karimaachboun.nl.',
+    instantie: 'NAVO / voormalig Ministerie van Algemene Zaken',
+    namen: [{ naam: 'Mark Rutte', functie: 'Voormalig Minister-President, nu SG NAVO' }],
+    anoniem: false, melder_naam: 'Meldpunt Ambtenaren', klokkenluider: false,
+    ts: Date.now() - 6*86400000, views: 4521
   });
 
   DS.add('meldingen', {
-    titel: 'Al 4 jaar wachten op versterkingsoperatie',
-    verhaal: 'Ons huis is in 2020 geinspecteerd en beoordeeld als onveilig vanwege aardbevingsschade. We zouden binnen een jaar versterkt worden.\n\nHet is nu 2025 en er is nog niks gebeurd. We wonen met twee kleine kinderen in een huis waarvan de overheid zelf zegt dat het onveilig is. Elke keer als we bellen krijgen we een ander verhaal.',
-    instantie: 'Nationaal Coordinator Groningen (NCG)',
-    namen: [],
-    anoniem: false, melder_naam: 'Familie de Boer', klokkenluider: false,
-    ts: Date.now() - 4*86400000, views: 189
-  });
-
-  DS.add('meldingen', {
-    titel: 'Kinderen uithuisgeplaatst op basis van leugens',
-    verhaal: 'Op 12 september 2023 zijn mijn twee kinderen uithuisgeplaatst door Jeugdbescherming. Het rapport bevatte aantoonbare onwaarheden.\n\nDe gezinsvoogd had nooit met mij gesproken maar schreef dat ik niet meewerkte. Buren die positief verklaarden werden niet in het rapport opgenomen.\n\nHet heeft 14 maanden geduurd voordat de kinderrechter besloot dat de uithuisplaatsing onterecht was.',
-    instantie: 'Jeugdbescherming West',
-    namen: [{ naam: 'L. van Dijk', functie: 'Gezinsvoogd' }],
-    anoniem: false, melder_naam: 'Sarah M.', klokkenluider: false,
-    ts: Date.now() - 6*86400000, views: 678
-  });
-
-  DS.add('meldingen', {
-    titel: 'Bouwaanvraag 8 maanden zonder reactie',
-    verhaal: 'Op 14 maart 2024 heb ik een bouwaanvraag ingediend voor een dakkapel. De wettelijke termijn is 8 weken. Het is nu meer dan 8 maanden later en ik heb nog steeds geen reactie.\n\nIk heb 6 keer gebeld. Elke keer word ik doorverbonden naar iemand anders die belooft terug te bellen. Dat gebeurt nooit.',
-    instantie: 'Gemeente Voorburg',
-    namen: [{ naam: 'J. van der Berg', functie: 'Behandelaar omgevingsvergunningen' }],
-    anoniem: false, melder_naam: 'Peter Janssen', klokkenluider: false,
-    ts: Date.now() - 2*86400000, views: 127
-  });
-
-  DS.add('meldingen', {
-    titel: 'Discriminatie bij loket Burgerzaken',
-    verhaal: 'De medewerker achter het loket weigerde mij in het Nederlands te woord te staan en sprak mij aan in het Engels, ondanks dat ik in accentloos Nederlands had gesproken.\n\nToen ik bezwaar maakte werd mij verteld dat ik achteraan moest aansluiten. Andere bezoekers die na mij waren binnengekomen werden wel direct geholpen.',
-    instantie: 'Gemeente Den Haag',
-    namen: [{ naam: 'A. de Groot', functie: 'Baliemedewerker Burgerzaken' }],
-    anoniem: true, klokkenluider: false,
-    ts: Date.now() - 5*86400000, views: 89
-  });
-
-  DS.add('meldingen', {
-    titel: 'Intern memo: keur ze gewoon af',
-    verhaal: 'Ik werk bij het UWV als verzekeringsarts. Er is een informeel beleid om bij twijfel altijd af te keuren in plaats van toe te kennen. Dit wordt niet op papier gezet maar wel zo gecommuniceerd door teamleiders.\n\nMijn collega R. de Vries zei letterlijk in een teamoverleg: "bij twijfel afkeuren, dat scheelt ons een herkeuring." Dit gaat over mensen hun inkomen.',
+    titel: 'UWV overtreedt de wet bij keuringen — verzekeringsartsen slaan alarm',
+    verhaal: 'Wim van Pelt, voorzitter van de Nieuwe Orde van Verzekeringsartsen (NOVAG), sloeg in 2024 alarm: het UWV overtreedt structureel de wet bij keuringen voor arbeidsongeschiktheid.\n\nDoor een tekort aan verzekeringsartsen worden beoordelingen telefonisch, per video of zelfs vanaf een tropisch eiland gedaan. Van Pelt: "Die collega\'s zijn onwettig bezig." Uit een steekproef van het UWV zelf bleek dat in de helft van de onderzochte dossiers fouten zaten of de onderbouwing ontbrak.\n\nEr zijn gevallen bekend van mensen die 100% werden goedgekeurd door een arts in opleiding terwijl hun behandelaar verklaarde dat zij absoluut niet fulltime konden werken. Pas na ingrijpen van een rechter werd de beslissing teruggedraaid.\n\nBij MAX Meldpunt meldde iemand ontslag te hebben gekregen na 2 jaar ziekte "zonder een verzekeringsarts te hebben gesproken of gezien."\n\nImmiddels zitten 860.000+ mensen in de WIA. De NOVAG wil een eigen onafhankelijke medische dienst oprichten.\n\nBron: EenVandaag — "UWV overtreedt de wet bij keuringen" (2024). Hart van Nederland — "UWV overtreedt de wet bij keuringen op arbeidsongeschiktheid." MAX Meldpunt — meldingen.',
     instantie: 'UWV',
-    namen: [{ naam: 'R. de Vries', functie: 'Teamleider keuringen' }],
-    anoniem: true, klokkenluider: true,
-    ts: Date.now() - 7*86400000, views: 891
+    namen: [{ naam: 'Wim van Pelt', functie: 'Voorzitter NOVAG — sloeg alarm over UWV' }],
+    anoniem: false, melder_naam: 'Meldpunt Ambtenaren', klokkenluider: true,
+    ts: Date.now() - 7*86400000, views: 1567
+  });
+
+  DS.add('meldingen', {
+    titel: 'Groningen: 10.000+ woningen wachten op versterking, NCG haalt doelen niet',
+    verhaal: 'De Nationaal Coördinator Groningen (NCG) moet ruim 10.000 adressen versterken vanwege aardbevingsschade. Jaar na jaar worden de doelstellingen niet gehaald. In 2024 was het doel 1.400 adressen — versterkt werden er 1.223.\n\nHet Staatstoezicht op de Mijnen (SodM) waarschuwde in januari 2025 dat NCG "de capaciteit niet heeft" om de taken op tijd uit te voeren. Nieuwe taken (3.400 licht te versterken woningen) verergeren de vertragingen.\n\nDe Algemene Rekenkamer concludeerde dat "wijzigingen in de aanpak hebben gezorgd voor vertraging, waardoor burgers in onzekerheid blijven." Het Nij Begun-programma, onder hoge politieke druk tot stand gekomen, leidde juist tot nieuwe vertraging.\n\nBewoners ontvangen een compensatie van €2.500 voor het wachten. Op 13 november 2025 vond een aardbeving van 3,4 op de schaal van Richter plaats bij Zeerijp — ondanks het stoppen van de gaswinning.\n\nBron: Algemene Rekenkamer — "Schadeherstel en versterking Groningen" (2025). SodM — "Zorgen over vertraging versterkingsopgave" (jan 2025). NCG.',
+    instantie: 'Nationaal Coördinator Groningen (NCG)',
+    namen: [],
+    anoniem: false, melder_naam: 'Meldpunt Ambtenaren', klokkenluider: false,
+    ts: Date.now() - 8*86400000, views: 987
   });
 }
 
