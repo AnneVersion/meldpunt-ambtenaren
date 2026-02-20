@@ -380,6 +380,78 @@ function bron(tekst, url){
   return ' <sup style="font-size:9px"><a href="' + url + '" target="_blank" rel="noopener" style="color:var(--blue);text-decoration:none" title="' + esc(tekst) + '">[bron]</a></sup>';
 }
 
+function bronnenContext(m){
+  var inst = ((m.instantie||'')+(m.verhaal||'')).toLowerCase();
+  var items = [];
+  // Belastingdienst / Toeslagen
+  if(inst.indexOf('belasting')>-1 || inst.indexOf('toeslag')>-1 || inst.indexOf('fsv')>-1){
+    items.push({t:'Rapport "Ongekend Onrecht" — Parlementaire commissie, 2020',u:'https://www.tweedekamer.nl/kamerstukken/detail?id=2020Z25198'});
+    items.push({t:'Enquêtecommissie "Blind voor mens en recht", 2024',u:'https://www.tweedekamer.nl/kamerstukken/detail?id=2024D07858'});
+    items.push({t:'AP-boete discriminatie dubbele nationaliteit (€2,75 mln)',u:'https://www.autoriteitpersoonsgegevens.nl/nl/nieuws/boete-belastingdienst-kinderopvangtoeslag'});
+    items.push({t:'AP-boete FSV zwarte lijst (€3,7 mln)',u:'https://www.autoriteitpersoonsgegevens.nl/nl/nieuws/boete-belastingdienst-voor-zwarte-lijst-fsv'});
+    items.push({t:'College Rechten van de Mens — discriminatie-oordelen',u:'https://oordelen.mensenrechten.nl/oordeel/2023-103'});
+    items.push({t:'Amnesty International "Xenofobe machines"',u:'https://www.amnesty.nl/content/uploads/2021/10/Amnesty-International-rapport-Xenofobe-machines.pdf'});
+    items.push({t:'Follow the Money — 50+ illegale algoritmes',u:'https://www.ftm.nl/artikelen/meer-dan-50-algoritmes-van-de-belasting-dienst-zijn-onrechtmatig'});
+    items.push({t:'Commissie-Van Dam — hersteloperatie, 2025',u:'https://www.rijksoverheid.nl/documenten/rapporten/2025/02/13/rapport-commissie-van-dam'});
+    items.push({t:'NOS — Dienst Toeslagen geeft bewust geen informatie',u:'https://nos.nl/artikel/2599959'});
+  }
+  // Jeugdbescherming / uithuisplaatsing
+  if(inst.indexOf('jeugd')>-1 || inst.indexOf('uithuis')>-1 || inst.indexOf('gezinsvoogd')>-1 || inst.indexOf('veilig thuis')>-1){
+    items.push({t:'Commissie-Hamer — uithuisplaatsingen, mrt 2025',u:'https://www.rijksoverheid.nl/documenten/rapporten/2025/03/03/rapport-commissie-hamer'});
+    items.push({t:'NOS — toeslagenaffaire had grote rol bij uithuisplaatsingen',u:'https://nos.nl/artikel/2561277'});
+    items.push({t:'Enquêtecommissie "Blind voor mens en recht", 2024',u:'https://www.tweedekamer.nl/kamerstukken/detail?id=2024D07858'});
+  }
+  // UWV
+  if(inst.indexOf('uwv')>-1){
+    items.push({t:'Enquêtecommissie "Blind voor mens en recht", 2024',u:'https://www.tweedekamer.nl/kamerstukken/detail?id=2024D07858'});
+    items.push({t:'EenVandaag — medewerkers toeslagenaffaire werken nu aan compensatie',u:'https://eenvandaag.avrotros.nl/item/belastingmedewerkers-toeslagenaffaire-werken-nu-aan-compensatie-ouders-dit-kan-en-mag-helemaal-nie/'});
+  }
+  // Gemeente
+  if(inst.indexOf('gemeente')>-1){
+    items.push({t:'Commissie-Van Dam 2025 — gemeentelijke hulp',u:'https://www.rijksoverheid.nl/documenten/rapporten/2025/02/13/rapport-commissie-van-dam'});
+  }
+  // Groningen
+  if(inst.indexOf('groningen')>-1 || inst.indexOf('ncg')>-1 || inst.indexOf('aardbev')>-1){
+    items.push({t:'Enquêtecommissie "Blind voor mens en recht", 2024',u:'https://www.tweedekamer.nl/kamerstukken/detail?id=2024D07858'});
+    items.push({t:'Algemene Rekenkamer — Groningen',u:'https://www.rekenkamer.nl/'});
+  }
+  // Discriminatie
+  if(inst.indexOf('discriminat')>-1 || inst.indexOf('racis')>-1){
+    items.push({t:'College voor de Rechten van de Mens — oordelen',u:'https://oordelen.mensenrechten.nl/oordeel/2023-103'});
+    items.push({t:'Amnesty International "Xenofobe machines"',u:'https://www.amnesty.nl/content/uploads/2021/10/Amnesty-International-rapport-Xenofobe-machines.pdf'});
+    items.push({t:'CERD — VN-comité rassendiscriminatie, 2021',u:'https://www.ohchr.org/en/documents/concluding-observations/cerdcnldco22-24'});
+  }
+  // Algemene juridische routes — altijd tonen
+  items.push({t:'BijzonderStrafrecht.nl — knevelarij toeslagenaffaire',u:'https://www.bijzonderstrafrecht.nl/home/artikel-knevelarij-in-de-toeslagenaffaire'});
+  items.push({t:'Rechtspraak.nl — griffierecht & procedures',u:'https://www.rechtspraak.nl/Naar-de-rechter/Kosten-rechtszaak/Griffierecht'});
+  items.push({t:'Raad voor Rechtsbijstand — gesubsidieerde rechtshulp',u:'https://www.rvr.org/'});
+
+  if(!items.length) return '';
+
+  // Deduplicate
+  var seen = {};
+  var unique = [];
+  items.forEach(function(it){
+    if(!seen[it.u]){ seen[it.u]=1; unique.push(it); }
+  });
+
+  var h = '<div class="card" style="padding:18px;margin-bottom:16px;border-left:3px solid var(--blue);background:linear-gradient(135deg,rgba(59,130,246,.06),rgba(59,130,246,.02))">' +
+    '<div style="font-size:13px;font-weight:700;margin-bottom:10px;color:var(--blue)"><span class="mi mi-sm">menu_book</span> Relevante bronnen &amp; documentatie</div>' +
+    '<div style="font-size:12px;color:var(--tx2);line-height:2">';
+  unique.forEach(function(it){
+    h += '<div style="display:flex;align-items:baseline;gap:6px">' +
+      '<span class="mi mi-sm" style="font-size:10px;color:var(--blue);flex-shrink:0">link</span>' +
+      '<a href="' + esc(it.u) + '" target="_blank" rel="noopener" style="color:var(--blue);text-decoration:none">' + esc(it.t) + '</a>' +
+    '</div>';
+  });
+  h += '</div>' +
+    '<div style="font-size:11px;color:var(--tx3);margin-top:8px;padding-top:8px;border-top:1px solid var(--glass-bd)">' +
+      '<span class="mi mi-sm" style="font-size:12px">info</span> Ken je meer relevante bronnen? <a href="#" onclick="go(\'/documentatie\');return false" style="color:var(--blue)">Bekijk alle bronnen</a> of voeg ze toe via een reactie.' +
+    '</div>' +
+  '</div>';
+  return h;
+}
+
 function timeAgo(ts){
   if(!ts) return '';
   var d = Math.floor((Date.now()-ts)/86400000);
@@ -670,6 +742,9 @@ function pgMelding(){
 
     // Verhaal
     '<div style="font-size:15px;line-height:1.8;margin-bottom:20px">' + verhaalHtml + '</div>' +
+
+    // Bronnen & context blok
+    bronnenContext(m) +
 
     // Deel
     '<div class="card" style="padding:14px;margin-bottom:16px;border-left:3px solid var(--green)">' +
