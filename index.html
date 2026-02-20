@@ -183,6 +183,58 @@ a:hover { text-decoration: underline; }
   font-size: 14px; color: var(--tx); line-height: 1.6; margin-bottom: 10px;
   margin-left: 40px;
 }
+
+/* ORGANIGRAM */
+.org-grid { display: flex; flex-direction: column; align-items: center; gap: 0; }
+.org-row { display: flex; justify-content: center; gap: 24px; flex-wrap: wrap; position: relative; }
+.org-line-down { width: 2px; height: 28px; background: var(--glass-bd); margin: 0 auto; }
+.org-line-branch { height: 2px; background: var(--glass-bd); position: absolute; top: 0; }
+
+.org-node {
+  position: relative; display: flex; flex-direction: column; align-items: center;
+  cursor: pointer; transition: var(--tr); padding: 8px;
+}
+.org-node:hover { transform: translateY(-4px); }
+.org-node:hover .org-tooltip { display: block; }
+
+.org-foto {
+  width: 80px; height: 80px; border-radius: 50%; object-fit: cover;
+  border: 3px solid var(--glass-bd); transition: var(--tr);
+}
+.org-node:hover .org-foto { border-color: var(--accent); box-shadow: 0 0 24px rgba(239,68,68,.3); }
+.org-node.top .org-foto { width: 100px; height: 100px; border-color: var(--accent); }
+
+.org-naam { font-size: 12px; font-weight: 700; margin-top: 6px; text-align: center; max-width: 100px; line-height: 1.3; }
+.org-func { font-size: 10px; color: var(--tx3); text-align: center; max-width: 100px; }
+.org-partij { font-size: 9px; font-weight: 700; padding: 1px 6px; border-radius: 10px; margin-top: 3px; }
+
+.org-tooltip {
+  display: none; position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
+  width: 420px; max-width: 90vw; max-height: 70vh; overflow-y: auto;
+  background: var(--bg2); border: 1px solid var(--glass-bd); border-radius: var(--r);
+  padding: 20px; z-index: 999; box-shadow: 0 16px 48px rgba(0,0,0,.5);
+  backdrop-filter: blur(16px); margin-top: 8px;
+}
+.org-tooltip::before {
+  content: ''; position: absolute; top: -6px; left: 50%; transform: translateX(-50%) rotate(45deg);
+  width: 12px; height: 12px; background: var(--bg2); border-left: 1px solid var(--glass-bd);
+  border-top: 1px solid var(--glass-bd);
+}
+.org-tooltip h3 { font-size: 16px; margin-bottom: 2px; }
+.org-tooltip .sub { font-size: 12px; color: var(--tx2); margin-bottom: 10px; }
+.org-tooltip .dossier { font-size: 13px; line-height: 1.8; color: var(--tx); }
+.org-tooltip .dossier strong { color: var(--accent); }
+.org-tooltip .wet { background: var(--accent-soft); padding: 10px 12px; border-radius: var(--rs); margin-top: 10px; font-size: 12px; line-height: 1.7; }
+.org-tooltip .wet-title { font-size: 11px; font-weight: 700; color: var(--accent); text-transform: uppercase; margin-bottom: 4px; }
+
+@media(max-width:600px){
+  .org-tooltip { position: fixed; top: auto; bottom: 0; left: 0; right: 0; transform: none; width: 100%; max-width: 100%; border-radius: var(--r) var(--r) 0 0; max-height: 60vh; }
+  .org-tooltip::before { display: none; }
+  .org-foto { width: 56px; height: 56px; }
+  .org-node.top .org-foto { width: 72px; height: 72px; }
+  .org-naam { font-size: 10px; max-width: 70px; }
+  .org-row { gap: 8px; }
+}
 </style>
 </head>
 <body>
@@ -1189,145 +1241,184 @@ function pgMissie(){
 
 // ============ PAGE: ORGANIGRAM ============
 function pgOrganigram(){
-  var daders = [
-    {
-      naam: 'Mark Rutte', functie: 'Minister-president (2010–2024)', partij: 'VVD',
-      foto: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/Portret_Mark_Rutte.jpg/220px-Portret_Mark_Rutte.jpg',
-      rol: '<strong>Het begon al in 2003.</strong> Als staatssecretaris van Sociale Zaken schreef Rutte een brief aan alle gemeenten om Somalische Nederlanders te traceren via hun geboorteplaats (Mogadishu) voor extra controles op uitkeringsfraude. De rechtbank Haarlem oordeelde in 2007 dat dit <strong>rassendiscriminatie</strong> was. Rutte had gemeenten aangezet tot discriminatie op basis van afkomst.<br><br>' +
-        'In 2013 richtte hij als premier de <strong>Ministeriële Commissie Fraude</strong> op — hijzelf voorzitter — die de keiharde fraudeaanpak lanceerde die uiteindelijk 26.000 gezinnen zou verwoesten. Hij wist ervan. Hij zat erbij. Hij leidde het.<br><br>' +
-        'In 2020 verklaarde hij voor de parlementaire commissie "geen actieve herinnering" te hebben. De <strong>Rutte Doctrine</strong> — geen notulen, geen sms\'jes bewaren, alles informeel — werd officieel vastgelegd in het rapport Ongekend Onrecht als de systematische weigering om de Kamer te informeren.<br><br>' +
-        'In januari 2021 trad zijn kabinet af. Rutte bleef demissionair premier. 80 ouders deden aangifte — het OM vervolgde niet. In oktober 2024 werd hij <strong>secretaris-generaal van de NAVO</strong>. Van rassendiscriminatie in 2003 tot discriminatieschandaal in 2021 — en de beloning is de hoogste functie in het westerse militaire bondgenootschap.',
-      rang: 1, kleur: 'var(--accent)'
-    },
-    {
-      naam: 'Eric Wiebes', functie: 'Staatssecretaris Financiën (2014–2017), Minister EZK (2017–2021)', partij: 'VVD',
-      foto: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Eric_Wiebes.jpg/220px-Eric_Wiebes.jpg',
-      rol: 'Als staatssecretaris van Financiën was Wiebes <strong>direct verantwoordelijk</strong> voor de Belastingdienst/Toeslagen in de jaren dat de CAF-teams het hardst toesloegen. Onder zijn bewind werden duizenden ouders als fraudeur bestempeld zonder bewijs.<br><br>' +
-        'Deed de toeslagenaffaire af als "een emotionele discussie." Weigerde de ernst te erkennen. Hield informatie achter voor de Tweede Kamer. Was de enige die na de val van het kabinet in januari 2021 daadwerkelijk <strong>per direct opstapte</strong> als minister — maar dat was nadat het kwaad al lang geschied was.',
-      rang: 2, kleur: 'var(--accent)'
-    },
-    {
-      naam: 'Frans Weekers', functie: 'Staatssecretaris Financiën (2010–2014)', partij: 'VVD',
-      foto: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/Persfoto_Frans_Weekers_2013.jpg/220px-Persfoto_Frans_Weekers_2013.jpg',
-      rol: 'De <strong>architect van de harde fraudeaanpak</strong>. Na de "Bulgarenfraude" in 2013 voerde Weekers de Fraudewet Toeslagen in die de basis legde voor alles wat volgde. Burgers werden behandeld als verdachten. De bewijslast werd omgedraaid: niet de overheid moest fraude bewijzen, maar de burger moest zijn onschuld aantonen.<br><br>' +
-        'Trad af in 2014 wegens een ander schandaal, maar het beleid dat hij in gang zette — de CAF-teams, de keiharde terugvorderingen, de alles-of-niets benadering — dat bleef. Dat beleid verwoestte <strong>26.000 gezinnen</strong>.',
-      rang: 2, kleur: 'var(--accent)'
-    },
-    {
-      naam: 'Menno Snel', functie: 'Staatssecretaris Financiën (2017–2019)', partij: 'D66',
-      foto: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/Menno_Snel_2018_%281%29.jpg/220px-Menno_Snel_2018_%281%29.jpg',
-      rol: 'Volgde Wiebes op als staatssecretaris van Financiën. Kreeg de toeslagenaffaire op zijn bord en noemde het handelen van de Belastingdienst "beschamend" — maar <strong>greep maandenlang niet in</strong>. Beloofde de Kamer transparantie maar leverde die niet.<br><br>' +
-        'Trad af in <strong>december 2019</strong> — de eerste politieke consequentie van de affaire. Maar tegen die tijd hadden al duizenden gezinnen alles verloren.',
-      rang: 2, kleur: 'var(--yellow)'
-    },
-    {
-      naam: 'Lodewijk Asscher', functie: 'Vicepremier, Minister SZW (2012–2017)', partij: 'PvdA',
-      foto: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/Lodewijk_Asscher_2013-1.jpg/220px-Lodewijk_Asscher_2013-1.jpg',
-      rol: '<strong>Vicepremier</strong> in het kabinet dat de Ministeriële Commissie Fraude oprichtte. Als minister van Sociale Zaken medeverantwoordelijk voor het klimaat waarin fraude harder werd aangepakt dan de rechten van burgers werden beschermd.<br><br>' +
-        'Zat aan tafel toen de besluiten werden genomen. Verscheen voor de ondervragingscommissie in 2020. Trok zich in <strong>januari 2021</strong> terug als PvdA-lijsttrekker — maar alleen nadat de publieke druk onhoudbaar werd. Het schandaal was toen al 7 jaar gaande.',
-      rang: 2, kleur: 'var(--yellow)'
-    },
-    {
-      naam: 'Tamara van Ark', functie: 'Staatssecretaris SZW (2017–2020)', partij: 'VVD',
-      foto: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/Tamara_van_ark-1536921456.jpg/220px-Tamara_van_ark-1536921456.jpg',
-      rol: 'Als staatssecretaris van Sociale Zaken betrokken bij het <strong>in stand houden</strong> van het harde toeslagenbeleid. Onder haar bewind bleef de Belastingdienst onverminderd doorgaan met de discriminerende werkwijzen.<br><br>' +
-        'Verscheen voor de ondervragingscommissie in 2020. Werd daarna minister voor Medische Zorg — geen consequenties. Haar periode als staatssecretaris viel samen met de jaren waarin de meeste kinderen uit huis werden geplaatst.',
-      rang: 3, kleur: 'var(--tx3)'
-    },
-    {
-      naam: 'Alexandra van Huffelen', functie: 'Staatssecretaris Toeslagen (2020–2022)', partij: 'D66',
-      foto: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/43/Alexandra_van_Huffelen%2C_wethouder_in_Rotterdam_%28D66%29_bij_de_nieuwjaarsborrel_van_D66_Utrecht_%2812036482523%29.jpg/220px-Alexandra_van_Huffelen%2C_wethouder_in_Rotterdam_%28D66%29_bij_de_nieuwjaarsborrel_van_D66_Utrecht_%2812036482523%29.jpg',
-      rol: 'Aangesteld om de schade te herstellen na het aftreden van Menno Snel. Beloofde iedere gedupeerde €30.000 compensatie. Maar de <strong>hersteloperatie werd een tweede schandaal</strong>: tergend langzaam, bureaucratisch, en voor veel ouders opnieuw traumatiserend.<br><br>' +
-        'Weigerde een nieuw BSN voor slachtoffers. Haar argument: "het lost niks op" en "het geeft regeldruk." In 2024 wachtten nog steeds duizenden ouders op compensatie. Werd daarna <strong>staatssecretaris Digitalisering</strong> — promotie in plaats van consequentie.',
-      rang: 3, kleur: 'var(--tx3)'
-    }
-  ];
+  // Node helper: visueel organigram met hover tooltip
+  function node(d, isTop){
+    var cls = isTop ? 'org-node top' : 'org-node';
+    return '<div class="' + cls + '">' +
+      '<img class="org-foto" src="' + d.foto + '" alt="' + esc(d.naam) + '" onerror="this.src=\'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 80 80%22><rect fill=%22%231e293b%22 width=%2280%22 height=%2280%22/><text x=%2240%22 y=%2248%22 text-anchor=%22middle%22 fill=%22%2394a3b8%22 font-size=%2228%22>?</text></svg>\'">' +
+      '<div class="org-naam">' + esc(d.naam) + '</div>' +
+      '<div class="org-func">' + esc(d.korte_functie || d.functie) + '</div>' +
+      '<span class="org-partij" style="background:' + d.partij_kleur + ';color:#fff">' + esc(d.partij) + '</span>' +
+      '<div class="org-tooltip">' +
+        '<h3>' + esc(d.naam) + '</h3>' +
+        '<div class="sub">' + esc(d.functie) + ' — ' + esc(d.partij) + '</div>' +
+        '<div class="dossier">' + d.dossier + '</div>' +
+        '<div class="wet"><div class="wet-title"><span class="mi mi-sm">gavel</span> Overtreden wetsartikelen</div>' + d.wetten + '</div>' +
+      '</div>' +
+    '</div>';
+  }
 
-  var institutioneel = [
-    { naam: 'Belastingdienst / Toeslagen', rol: 'Gebruikte discriminerende algoritmes (FSV-lijsten). Dubbele nationaliteit als selectiecriterium. CAF-teams die massaal toeslagen stopzetten zonder bewijs.', icon: 'business', kleur: 'var(--accent)' },
-    { naam: 'Raad van State', rol: 'Handhaafde jarenlang de alles-of-niets benadering waardoor ouders alles moesten terugbetalen. Bood pas in 2024 excuses aan.', icon: 'balance', kleur: 'var(--yellow)' },
-    { naam: 'Tweede Kamer', rol: 'Keurde de harde fraudewetgeving goed. Keek jarenlang weg ondanks signalen. Pas na Omtzigt en Leijten kwam het op de agenda.', icon: 'groups', kleur: 'var(--yellow)' },
-    { naam: 'Ministerie van Financiën', rol: 'Hield informatie achter voor de Kamer. Interne cultuur van wegkijken en afdekken. De Rutte Doctrine in de praktijk.', icon: 'domain', kleur: 'var(--accent)' }
-  ];
+  var personen = {
+    rutte: {
+      naam: 'Mark Rutte', functie: 'Minister-president (2010–2024)', korte_functie: 'Premier', partij: 'VVD', partij_kleur: '#FF6600',
+      foto: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/Portret_Mark_Rutte.jpg/220px-Portret_Mark_Rutte.jpg',
+      dossier: '<strong>2003 — Somaliërs-affaire:</strong> Als staatssecretaris SZW schreef Rutte een brief aan alle gemeenten om Somalische Nederlanders te traceren via geboorteplaats Mogadishu voor extra fraudecontroles. De rechtbank Haarlem oordeelde (2007) dat dit rassendiscriminatie was.<br><br>' +
+        '<strong>2013 — Ministeriële Commissie Fraude:</strong> Richtte als premier persoonlijk de commissie op die de keiharde fraudeaanpak lanceerde. Zat erbij, leidde het, wist ervan. De toon werd gezet: burgers zijn verdacht.<br><br>' +
+        '<strong>2014–2019 — Wegkijken:</strong> Terwijl 26.000 gezinnen werden geruïneerd, 2.090 kinderen uit huis werden geplaatst en de Belastingdienst discrimineerde op nationaliteit, greep Rutte niet in.<br><br>' +
+        '<strong>2020 — "Geen actieve herinnering":</strong> Verklaarde voor de parlementaire commissie zich niets te herinneren. De Rutte Doctrine — geen notulen, geen sms\'jes, alles informeel — werd officieel vastgelegd als systematische informatieweigering.<br><br>' +
+        '<strong>Jan 2021 — Kabinet valt:</strong> Trad af maar bleef demissionair premier. 80 ouders deden aangifte — OM vervolgde niet.<br><br>' +
+        '<strong>Okt 2024 — NAVO:</strong> Werd secretaris-generaal van de NAVO. Van rassendiscriminatie in 2003 tot het grootste discriminatieschandaal in 2021 — beloond met de hoogste functie in het westerse bondgenootschap.',
+      wetten: '<strong>Art. 1 Grondwet</strong> — discriminatieverbod: selectie op afkomst (Somaliërs 2003, dubbele nationaliteit toeslagen)<br>' +
+        '<strong>Art. 68 Grondwet</strong> — inlichtingenplicht aan de Kamer: Rutte Doctrine = systematische schending<br>' +
+        '<strong>Art. 137g Sr</strong> — discriminatie in de uitoefening van ambt of beroep<br>' +
+        '<strong>Art. 44 Wet BRP</strong> — oneigenlijk gebruik bevolkingsgegevens (Somaliërs traceren via geboorteplaats)<br>' +
+        '<strong>Art. 6 AVG</strong> — geen rechtmatige grondslag voor verwerking persoonsgegevens op basis van etniciteit'
+    },
+    wiebes: {
+      naam: 'Eric Wiebes', functie: 'Staatssecretaris Financiën (2014–2017)', korte_functie: 'Stss. Financiën', partij: 'VVD', partij_kleur: '#FF6600',
+      foto: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Eric_Wiebes.jpg/220px-Eric_Wiebes.jpg',
+      dossier: '<strong>2014–2017 — Direct verantwoordelijk:</strong> Als staatssecretaris van Financiën had Wiebes directe verantwoordelijkheid over de Belastingdienst/Toeslagen. Onder zijn bewind bereikten de CAF-teams hun hoogtepunt en werden duizenden ouders als fraudeur bestempeld zonder bewijs.<br><br>' +
+        '<strong>Bagatellisering:</strong> Deed de toeslagenaffaire af als "een emotionele discussie." Weigerde de ernst te erkennen ondanks signalen van advocaten en ouders.<br><br>' +
+        '<strong>Informatieweigering:</strong> Hield informatie achter voor de Tweede Kamer. Documenten die voor de Kamer relevant waren werden niet of te laat gedeeld.<br><br>' +
+        '<strong>Jan 2021 — Enige die écht opstapte:</strong> Na de val van het kabinet stapte Wiebes als enige per direct op als minister. Maar het kwaad was al jaren geschied.',
+      wetten: '<strong>Art. 68 Grondwet</strong> — inlichtingenplicht: informatie achtergehouden voor de Kamer<br>' +
+        '<strong>Art. 3:2 Awb</strong> — zorgvuldigheidsbeginsel: onzorgvuldige besluitvorming Belastingdienst onder zijn bewind<br>' +
+        '<strong>Art. 3:4 Awb</strong> — evenredigheidsbeginsel: disproportionele terugvorderingen<br>' +
+        '<strong>Art. 1 Grondwet</strong> — discriminatieverbod: FSV-lijsten en selectie op nationaliteit'
+    },
+    weekers: {
+      naam: 'Frans Weekers', functie: 'Staatssecretaris Financiën (2010–2014)', korte_functie: 'Stss. Financiën', partij: 'VVD', partij_kleur: '#FF6600',
+      foto: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/Persfoto_Frans_Weekers_2013.jpg/220px-Persfoto_Frans_Weekers_2013.jpg',
+      dossier: '<strong>2013 — Architect fraudeaanpak:</strong> Na de "Bulgarenfraude" voerde Weekers de Fraudewet Toeslagen in. De bewijslast werd omgedraaid: niet de overheid moest fraude bewijzen, maar de burger moest zijn onschuld aantonen.<br><br>' +
+        '<strong>CAF-teams opgericht:</strong> Onder Weekers werden de Combiteams Aanpak Facilitators (CAF) opgericht die massaal toeslagen stopzetten bij hele kinderdagverblijven — alle ouders gestraft voor verdenking bij één instelling.<br><br>' +
+        '<strong>2014 — Afgetreden:</strong> Trad af wegens een ander schandaal, maar het beleid dat hij startte — de CAF-teams, de keiharde terugvorderingen, de alles-of-niets benadering — verwoestte 26.000 gezinnen.',
+      wetten: '<strong>Art. 3:4 Awb</strong> — evenredigheidsbeginsel: alles-of-niets terugvorderingen<br>' +
+        '<strong>Art. 6 EVRM</strong> — recht op eerlijk proces: bewijslastomkering bij burgers<br>' +
+        '<strong>Art. 1 Protocol 12 EVRM</strong> — algemeen discriminatieverbod<br>' +
+        '<strong>Art. 26 Awb</strong> — bezwaar en beroep: bezwaarprocedures ontoegankelijk gemaakt'
+    },
+    snel: {
+      naam: 'Menno Snel', functie: 'Staatssecretaris Financiën (2017–2019)', korte_functie: 'Stss. Financiën', partij: 'D66', partij_kleur: '#01AF36',
+      foto: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/Menno_Snel_2018_%281%29.jpg/220px-Menno_Snel_2018_%281%29.jpg',
+      dossier: '<strong>2017–2019 — Nalatigheid:</strong> Volgde Wiebes op en kreeg de toeslagenaffaire op zijn bord. Noemde het handelen "beschamend" maar greep maandenlang niet in terwijl gezinnen bleven lijden.<br><br>' +
+        '<strong>Gebroken beloftes:</strong> Beloofde de Kamer transparantie en informatie, maar leverde die niet of onvolledig. Stukken werden niet gedeeld, vragen werden ontwijkend beantwoord.<br><br>' +
+        '<strong>Dec 2019 — Eerste politieke val:</strong> Trad af als eerste politicus vanwege de affaire. Maar tegen die tijd hadden duizenden gezinnen al alles verloren.',
+      wetten: '<strong>Art. 68 Grondwet</strong> — inlichtingenplicht aan de Kamer: informatie niet of laat verstrekt<br>' +
+        '<strong>Art. 3:2 Awb</strong> — zorgvuldigheidsbeginsel: nalaten in te grijpen ondanks kennis<br>' +
+        '<strong>Art. 8 EVRM</strong> — recht op privé- en familieleven: niet ingegrepen bij uithuisplaatsingen'
+    },
+    asscher: {
+      naam: 'Lodewijk Asscher', functie: 'Vicepremier, Minister SZW (2012–2017)', korte_functie: 'Vicepremier', partij: 'PvdA', partij_kleur: '#E12B1A',
+      foto: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/Lodewijk_Asscher_2013-1.jpg/220px-Lodewijk_Asscher_2013-1.jpg',
+      dossier: '<strong>2012–2017 — Medeverantwoordelijk:</strong> Vicepremier in het kabinet dat de Ministeriële Commissie Fraude oprichtte. Zat aan tafel toen de besluiten werden genomen. Als minister van Sociale Zaken medeverantwoordelijk voor het klimaat van fraudejacht.<br><br>' +
+        '<strong>2020 — Ondervragingscommissie:</strong> Verscheen voor de parlementaire commissie. Erkende fouten maar wees ook naar anderen.<br><br>' +
+        '<strong>Jan 2021 — Teruggetrokken:</strong> Trok zich terug als PvdA-lijsttrekker — maar pas nadat de publieke druk onhoudbaar werd. Het schandaal was toen al 7 jaar gaande.',
+      wetten: '<strong>Art. 1 Grondwet</strong> — discriminatieverbod: medeverantwoordelijk voor klimaat dat leidde tot etnisch profileren<br>' +
+        '<strong>Art. 3:4 Awb</strong> — evenredigheidsbeginsel: disproportioneel beleid goedgekeurd<br>' +
+        '<strong>Art. 42 lid 2 Grondwet</strong> — ministeriële verantwoordelijkheid'
+    },
+    vanark: {
+      naam: 'Tamara van Ark', functie: 'Staatssecretaris SZW (2017–2020)', korte_functie: 'Stss. SZW', partij: 'VVD', partij_kleur: '#FF6600',
+      foto: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/Tamara_van_ark-1536921456.jpg/220px-Tamara_van_ark-1536921456.jpg',
+      dossier: '<strong>2017–2020 — In stand houden:</strong> Als staatssecretaris SZW betrokken bij het in stand houden van het harde toeslagenbeleid. Onder haar bewind bleef de Belastingdienst doorgaan met discriminerende werkwijzen.<br><br>' +
+        '<strong>Periode van uithuisplaatsingen:</strong> Haar ambtsperiode viel samen met de jaren waarin de meeste kinderen uit huis werden geplaatst (2.090 kinderen).<br><br>' +
+        '<strong>Geen consequenties:</strong> Verscheen voor de ondervragingscommissie. Werd daarna minister voor Medische Zorg — promotie.',
+      wetten: '<strong>Art. 42 lid 2 Grondwet</strong> — ministeriële verantwoordelijkheid<br>' +
+        '<strong>Art. 8 EVRM</strong> — recht op privé- en familieleven: niet ingegrepen bij massale uithuisplaatsingen<br>' +
+        '<strong>Art. 3 IVRK</strong> — belang van het kind: kinderen uit huis geplaatst door overheidsbeleid'
+    },
+    vanhuffelen: {
+      naam: 'Alexandra van Huffelen', functie: 'Staatssecretaris Toeslagen (2020–2022)', korte_functie: 'Stss. Toeslagen', partij: 'D66', partij_kleur: '#01AF36',
+      foto: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/43/Alexandra_van_Huffelen%2C_wethouder_in_Rotterdam_%28D66%29_bij_de_nieuwjaarsborrel_van_D66_Utrecht_%2812036482523%29.jpg/220px-Alexandra_van_Huffelen%2C_wethouder_in_Rotterdam_%28D66%29_bij_de_nieuwjaarsborrel_van_D66_Utrecht_%2812036482523%29.jpg',
+      dossier: '<strong>2020–2022 — Mislukt herstel:</strong> Aangesteld om de schade te herstellen. Beloofde iedere gedupeerde €30.000. Maar de hersteloperatie werd een tweede schandaal: tergend langzaam, bureaucratisch, opnieuw traumatiserend.<br><br>' +
+        '<strong>Nieuw BSN geweigerd:</strong> Weigerde een nieuw BSN voor slachtoffers. Argument: "het lost niks op" en "het geeft regeldruk." De juridische basis bestaat — ze koos ervoor het niet te doen.<br><br>' +
+        '<strong>Promotie:</strong> Werd daarna staatssecretaris Digitalisering. In 2024 wachtten nog steeds duizenden ouders op compensatie.',
+      wetten: '<strong>Art. 16 AVG</strong> — recht op rectificatie: weigerde besmette BSN-nummers te corrigeren<br>' +
+        '<strong>Art. 17 AVG</strong> — recht op vergetelheid: FSV-data niet gewist<br>' +
+        '<strong>Art. 3:2 Awb</strong> — zorgvuldigheidsbeginsel: hersteloperatie onzorgvuldig uitgevoerd<br>' +
+        '<strong>Art. 13 EVRM</strong> — recht op effectief rechtsmiddel: herstelproces ontoegankelijk'
+    }
+  };
+
+  var p = personen;
 
   var html = '<div class="page">' +
     '<div style="text-align:center;padding:24px 0 16px">' +
       '<span class="mi" style="font-size:44px;color:var(--accent);display:block;margin-bottom:8px">account_tree</span>' +
-      '<h1 style="font-size:clamp(22px,4vw,30px);font-weight:800;margin-bottom:6px">De verantwoordelijken</h1>' +
-      '<p style="font-size:14px;color:var(--tx2);max-width:560px;margin:0 auto">Toeslagenaffaire — wie deed wat, en wat was de consequentie? Dit zijn de politici die verantwoordelijk waren voor het grootste discriminatieschandaal in de naoorlogse Nederlandse geschiedenis.</p>' +
+      '<h1 style="font-size:clamp(22px,4vw,30px);font-weight:800;margin-bottom:6px">Organigram — De daders</h1>' +
+      '<p style="font-size:14px;color:var(--tx2);max-width:560px;margin:0 auto">Toeslagenaffaire — wie deed wat? Klik of hover op een foto voor het volledige dossier inclusief overtreden wetsartikelen.</p>' +
     '</div>' +
 
-    // DISCLAIMER
-    '<div class="card" style="padding:14px;margin-bottom:16px;border-left:3px solid var(--blue);font-size:12px;color:var(--tx2)">' +
+    '<div class="card" style="padding:14px;margin-bottom:20px;border-left:3px solid var(--blue);font-size:12px;color:var(--tx2)">' +
       '<span class="mi mi-sm" style="color:var(--blue)">info</span> Het meldpunt is voor alle wangedrag van ambtenaren. De toeslagenaffaire is het eerste schandaal dat we in kaart brengen. Andere schandalen volgen.' +
-    '</div>';
+    '</div>' +
 
-  // POLITIEK VERANTWOORDELIJKEN
-  html += '<h2 style="font-size:16px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:6px"><span class="mi mi-sm" style="color:var(--accent)">person</span> Politiek verantwoordelijken</h2>';
+    // ORGANIGRAM
+    '<div class="org-grid">' +
 
-  daders.forEach(function(d){
-    html += '<div class="card" style="padding:20px;margin-bottom:12px;border-left:4px solid ' + d.kleur + '">' +
-      '<div style="display:flex;gap:16px;align-items:flex-start">' +
-        '<img src="' + d.foto + '" alt="' + esc(d.naam) + '" style="width:72px;height:72px;border-radius:50%;object-fit:cover;border:3px solid ' + d.kleur + ';flex-shrink:0" onerror="this.style.display=\'none\'">' +
-        '<div style="flex:1">' +
-          '<div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:6px;margin-bottom:4px">' +
-            '<div>' +
-              '<div style="font-size:16px;font-weight:800">' + esc(d.naam) + '</div>' +
-              '<div style="font-size:12px;color:var(--tx2)">' + esc(d.functie) + '</div>' +
-            '</div>' +
-            '<span class="badge badge-' + (d.rang===1?'red':d.rang===2?'yellow':'blue') + '">' + esc(d.partij) + '</span>' +
-          '</div>' +
-          '<p style="font-size:13px;line-height:1.7;color:var(--tx);margin-top:6px">' + d.rol + '</p>' +
+      // LAAG 1: RUTTE (top)
+      '<div class="org-row">' + node(p.rutte, true) + '</div>' +
+      '<div class="org-line-down"></div>' +
+
+      // LAAG 2: Directe verantwoordelijken
+      '<div style="font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;text-align:center">Directe verantwoordelijken</div>' +
+      '<div class="org-row">' +
+        node(p.weekers, false) +
+        node(p.wiebes, false) +
+        node(p.snel, false) +
+        node(p.asscher, false) +
+      '</div>' +
+      '<div class="org-line-down"></div>' +
+
+      // LAAG 3: Uitvoerend / Herstel
+      '<div style="font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;text-align:center">Uitvoerend &amp; Herstel</div>' +
+      '<div class="org-row">' +
+        node(p.vanark, false) +
+        node(p.vanhuffelen, false) +
+      '</div>' +
+
+    '</div>' +
+
+    // INSTITUTIONEEL
+    '<div style="margin-top:28px">' +
+      '<h2 style="font-size:16px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:6px"><span class="mi mi-sm" style="color:var(--yellow)">domain</span> Institutioneel verantwoordelijk</h2>' +
+      '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px">' +
+        '<div class="card" style="padding:16px;border-left:4px solid var(--accent)">' +
+          '<div style="font-size:15px;font-weight:700"><span class="mi mi-sm" style="color:var(--accent)">business</span> Belastingdienst / Toeslagen</div>' +
+          '<div style="font-size:12px;color:var(--tx2);line-height:1.7;margin-top:4px">Discriminerende algoritmes (FSV-lijsten met 180.000 namen). Dubbele nationaliteit als selectiecriterium. CAF-teams die massaal toeslagen stopzetten zonder individueel bewijs. Beboet door AP: €2,75 miljoen.</div>' +
+        '</div>' +
+        '<div class="card" style="padding:16px;border-left:4px solid var(--yellow)">' +
+          '<div style="font-size:15px;font-weight:700"><span class="mi mi-sm" style="color:var(--yellow)">balance</span> Raad van State</div>' +
+          '<div style="font-size:12px;color:var(--tx2);line-height:1.7;margin-top:4px">Handhaafde jarenlang de alles-of-niets benadering. Ouders moesten alles terugbetalen, ook bij kleine fouten. Draaide pas in 2019 om. Bood in 2024 excuses aan — 10 jaar te laat.</div>' +
+        '</div>' +
+        '<div class="card" style="padding:16px;border-left:4px solid var(--yellow)">' +
+          '<div style="font-size:15px;font-weight:700"><span class="mi mi-sm" style="color:var(--yellow)">groups</span> Tweede Kamer</div>' +
+          '<div style="font-size:12px;color:var(--tx2);line-height:1.7;margin-top:4px">Keurde de harde fraudewetgeving goed. Keek jarenlang weg ondanks signalen. Pas na Omtzigt en Leijten kwam het op de agenda. De meerderheid beschermde het kabinet in plaats van de burgers.</div>' +
+        '</div>' +
+        '<div class="card" style="padding:16px;border-left:4px solid var(--accent)">' +
+          '<div style="font-size:15px;font-weight:700"><span class="mi mi-sm" style="color:var(--accent)">domain</span> Ministerie van Financiën</div>' +
+          '<div style="font-size:12px;color:var(--tx2);line-height:1.7;margin-top:4px">Hield informatie achter voor de Kamer. Interne cultuur van wegkijken en afdekken. Ambtenaren die wisten van de discriminatie maar zwegen. De Rutte Doctrine in de praktijk.</div>' +
         '</div>' +
       '</div>' +
-    '</div>';
-  });
+    '</div>' +
 
-  // INSTITUTIONEEL
-  html += '<h2 style="font-size:16px;font-weight:700;margin:20px 0 12px;display:flex;align-items:center;gap:6px"><span class="mi mi-sm" style="color:var(--yellow)">domain</span> Institutioneel verantwoordelijk</h2>';
+    // HELDEN
+    '<div style="margin-top:24px">' +
+      '<h2 style="font-size:16px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:6px"><span class="mi mi-sm" style="color:var(--green)">star</span> Degenen die wél vochten</h2>' +
+      '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px">' +
+        '<div class="card" style="padding:14px;border-left:3px solid var(--green)"><div style="font-size:14px;font-weight:700">Pieter Omtzigt</div><div style="font-size:11px;color:var(--tx3)">CDA/NSC — Bracht de affaire naar de Kamer. Weggewerkt door eigen partij.</div></div>' +
+        '<div class="card" style="padding:14px;border-left:3px solid var(--green)"><div style="font-size:14px;font-weight:700">Renske Leijten</div><div style="font-size:11px;color:var(--tx3)">SP — Samen met Omtzigt dé drijvende kracht achter het blootleggen.</div></div>' +
+        '<div class="card" style="padding:14px;border-left:3px solid var(--green)"><div style="font-size:14px;font-weight:700">Eva González Pérez</div><div style="font-size:11px;color:var(--tx3)">Advocaat — Als eerste toeslagenouders bijgestaan. Ontdekte de discriminatie.</div></div>' +
+        '<div class="card" style="padding:14px;border-left:3px solid var(--green)"><div style="font-size:14px;font-weight:700">Farid Azarkan</div><div style="font-size:11px;color:var(--tx3)">DENK — Bracht etnisch profileren en discriminatie naar voren.</div></div>' +
+      '</div>' +
+    '</div>' +
 
-  institutioneel.forEach(function(inst){
-    html += '<div class="card" style="padding:16px;margin-bottom:10px;border-left:4px solid ' + inst.kleur + '">' +
-      '<div style="display:flex;gap:12px;align-items:flex-start">' +
-        '<span class="mi" style="font-size:28px;color:' + inst.kleur + '">' + inst.icon + '</span>' +
-        '<div>' +
-          '<div style="font-size:15px;font-weight:700">' + esc(inst.naam) + '</div>' +
-          '<div style="font-size:13px;color:var(--tx2);line-height:1.7;margin-top:2px">' + inst.rol + '</div>' +
-        '</div>' +
-      '</div>' +
-    '</div>';
-  });
-
-  // HELDEN
-  html += '<h2 style="font-size:16px;font-weight:700;margin:20px 0 12px;display:flex;align-items:center;gap:6px"><span class="mi mi-sm" style="color:var(--green)">star</span> Degenen die wél vochten</h2>' +
-    '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px;margin-bottom:16px">' +
-      '<div class="card" style="padding:16px;border-left:3px solid var(--green)">' +
-        '<div style="font-size:15px;font-weight:700">Pieter Omtzigt</div>' +
-        '<div style="font-size:12px;color:var(--tx2)">Tweede Kamerlid — CDA / NSC</div>' +
-        '<div style="font-size:12px;color:var(--tx3);margin-top:4px">Bracht de affaire naar de Tweede Kamer. Werd door zijn eigen partij weggewerkt.</div>' +
-      '</div>' +
-      '<div class="card" style="padding:16px;border-left:3px solid var(--green)">' +
-        '<div style="font-size:15px;font-weight:700">Renske Leijten</div>' +
-        '<div style="font-size:12px;color:var(--tx2)">Tweede Kamerlid — SP</div>' +
-        '<div style="font-size:12px;color:var(--tx3);margin-top:4px">Samen met Omtzigt dé drijvende kracht achter het blootleggen van de affaire.</div>' +
-      '</div>' +
-      '<div class="card" style="padding:16px;border-left:3px solid var(--green)">' +
-        '<div style="font-size:15px;font-weight:700">Eva González Pérez</div>' +
-        '<div style="font-size:12px;color:var(--tx2)">Advocaat</div>' +
-        '<div style="font-size:12px;color:var(--tx3);margin-top:4px">Stond als eerste advocaat toeslagenouders bij. Ontdekte de discriminatie op nationaliteit.</div>' +
-      '</div>' +
-      '<div class="card" style="padding:16px;border-left:3px solid var(--green)">' +
-        '<div style="font-size:15px;font-weight:700">Farid Azarkan</div>' +
-        '<div style="font-size:12px;color:var(--tx2)">Tweede Kamerlid — DENK</div>' +
-        '<div style="font-size:12px;color:var(--tx3);margin-top:4px">Bracht het etnisch profileren en de discriminatie naar voren in Kamerdebatten.</div>' +
-      '</div>' +
-    '</div>';
-
-  // LINK NAAR TIJDLIJN
-  html += '<div style="text-align:center;padding:16px 0">' +
-    '<button class="btn btn-red" onclick="go(\'/tijdlijn\')"><span class="mi mi-sm">timeline</span> Bekijk de volledige tijdlijn</button> ' +
-    '<button class="btn btn-ghost" onclick="go(\'/melden\')"><span class="mi mi-sm">add_circle</span> Doe een melding</button>' +
-  '</div></div>';
+    // CTA
+    '<div style="text-align:center;padding:20px 0">' +
+      '<button class="btn btn-red" onclick="go(\'/tijdlijn\')"><span class="mi mi-sm">timeline</span> Volledige tijdlijn</button> ' +
+      '<button class="btn btn-ghost" onclick="go(\'/melden\')"><span class="mi mi-sm">add_circle</span> Doe een melding</button>' +
+    '</div>' +
+  '</div>';
 
   return html;
 }
