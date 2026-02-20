@@ -528,6 +528,8 @@ a:hover { text-decoration: underline; }
       <nav class="nav-links" id="navLinks">
         <button class="nav-link" data-route="/" onclick="navigate('/')"><span class="mi mi-sm">home</span> Home</button>
         <button class="nav-link" data-route="/meldingen" onclick="navigate('/meldingen')"><span class="mi mi-sm">list</span> Meldingen</button>
+        <button class="nav-link" data-route="/ambtenaren" onclick="navigate('/ambtenaren')"><span class="mi mi-sm">people</span> Ambtenaren</button>
+        <button class="nav-link" data-route="/petities" onclick="navigate('/petities')"><span class="mi mi-sm">draw</span> Petities</button>
         <button class="nav-link" data-route="/rechtszaak" onclick="navigate('/rechtszaak')"><span class="mi mi-sm">balance</span> Rechtszaak</button>
         <button class="nav-link cta" data-route="/melden" onclick="navigate('/melden')"><span class="mi mi-sm">add_circle</span> Doe een melding</button>
       </nav>
@@ -539,7 +541,7 @@ a:hover { text-decoration: underline; }
 
   <!-- ============ FOOTER ============ -->
   <footer class="app-footer">
-    Meldpunt Ambtenaren v1.0 &mdash; Een burgerplatform voor transparantie en recht.
+    Meldpunt Ambtenaren v1.1 &mdash; Een burgerplatform voor transparantie en recht.
     Dit platform is geen juridisch advies. Raadpleeg een jurist voor complexe zaken.
   </footer>
 </div>
@@ -606,16 +608,30 @@ var DataStore = {
 };
 
 // ============ CATEGORIES ============
+// Schandalen = speciale categorieen met eigen landing pages
 var CATEGORIES = {
-  corruptie: { label: 'Corruptie', icon: 'paid', color: 'red' },
-  machtsmisbruik: { label: 'Machtsmisbruik', icon: 'security', color: 'red' },
-  discriminatie: { label: 'Discriminatie', icon: 'block', color: 'purple' },
-  traagheid: { label: 'Traagheid', icon: 'hourglass_empty', color: 'yellow' },
-  fraude: { label: 'Fraude', icon: 'warning', color: 'red' },
-  onvriendelijkheid: { label: 'Onvriendelijkheid', icon: 'mood_bad', color: 'yellow' },
-  nalatigheid: { label: 'Nalatigheid', icon: 'do_not_disturb', color: 'blue' },
-  belangenverstrengeling: { label: 'Belangenverstrengeling', icon: 'swap_horiz', color: 'purple' },
-  overig: { label: 'Overig', icon: 'more_horiz', color: 'blue' }
+  // === SCHANDALEN ===
+  toeslagenaffaire: { label: 'Toeslagenaffaire', icon: 'child_care', color: 'red', schandaal: true, description: 'Slachtoffer van de kinderopvangtoeslagaffaire. Tienduizenden gezinnen onterecht als fraudeur bestempeld.' },
+  gaswinning_groningen: { label: 'Groningen Gaswinning', icon: 'oil_barrel', color: 'red', schandaal: true, description: 'Aardbevingsschade door gaswinning. Vertraagde afhandeling, gebroken beloftes.' },
+  pfas_pfos: { label: 'PFAS/PFOS Vervuiling', icon: 'science', color: 'red', schandaal: true, description: 'Giftige stoffen in grond en water. Overheid keek weg, burgers zijn de dupe.' },
+  jeugdzorg: { label: 'Jeugdzorg', icon: 'family_restroom', color: 'purple', schandaal: true, description: 'Uithuisplaatsingen, gescheiden gezinnen, falend systeem.' },
+  uwv_fraude: { label: 'UWV Wanbeleid', icon: 'work_off', color: 'yellow', schandaal: true, description: 'Foute keuringen, verdwenen dossiers, onterechte kortingen op uitkeringen.' },
+  belastingdienst: { label: 'Belastingdienst', icon: 'account_balance', color: 'red', schandaal: true, description: 'Onterechte aanslagen, etnisch profileren, FSV-lijsten.' },
+  wmo_pgb: { label: 'WMO/PGB Problemen', icon: 'accessible', color: 'purple', schandaal: true, description: 'Zorg onthouden, pgb-fraude beschuldigingen, bureaucratische nachtmerrie.' },
+  woningmarkt: { label: 'Woningmarkt/Huurcommissie', icon: 'house', color: 'yellow', schandaal: true, description: 'Woningnood, falende huurcommissie, onbereikbare corporaties.' },
+  // === ALGEMENE CATEGORIEEN ===
+  corruptie: { label: 'Corruptie', icon: 'paid', color: 'red', description: 'Omkoping, zelfverrijking, ongeoorloofde giften' },
+  machtsmisbruik: { label: 'Machtsmisbruik', icon: 'security', color: 'red', description: 'Onterecht gebruik van bevoegdheden' },
+  discriminatie: { label: 'Discriminatie', icon: 'block', color: 'purple', description: 'Ongelijke behandeling op grond van afkomst, geslacht, etc.' },
+  traagheid: { label: 'Traagheid', icon: 'hourglass_empty', color: 'yellow', description: 'Termijnen overschreden, eindeloos wachten' },
+  fraude: { label: 'Fraude', icon: 'warning', color: 'red', description: 'Valsheid in geschrifte, vervalsen van documenten' },
+  onvriendelijkheid: { label: 'Onvriendelijkheid', icon: 'mood_bad', color: 'yellow', description: 'Onbeschoft, kleinerend of intimiderend gedrag' },
+  nalatigheid: { label: 'Nalatigheid', icon: 'do_not_disturb', color: 'blue', description: 'Plichten niet nakomen, dossiers kwijtraken' },
+  belangenverstrengeling: { label: 'Belangenverstrengeling', icon: 'swap_horiz', color: 'purple', description: 'Persoonlijke belangen boven publiek belang' },
+  intimidatie: { label: 'Intimidatie', icon: 'warning_amber', color: 'red', description: 'Dreigen, onder druk zetten, chanteren' },
+  privacyschending: { label: 'Privacyschending', icon: 'privacy_tip', color: 'purple', description: 'Onrechtmatig gebruik van persoonsgegevens' },
+  verhaal: { label: 'Mijn verhaal', icon: 'auto_stories', color: 'blue', description: 'Deel je ervaring (zonder specifieke ambtenaar te noemen)' },
+  overig: { label: 'Overig', icon: 'more_horiz', color: 'blue', description: 'Past niet in bovenstaande categorieen' }
 };
 
 // ============ ROUTER ============
@@ -641,6 +657,16 @@ function parseRoute(){
     _currentRoute = '/melden';
   } else if(hash === '/rechtszaak'){
     _currentRoute = '/rechtszaak';
+  } else if(hash === '/ambtenaren'){
+    _currentRoute = '/ambtenaren';
+  } else if(hash === '/petities'){
+    _currentRoute = '/petities';
+  } else if(hash.indexOf('/petitie/') === 0){
+    _currentRoute = '/petitie';
+    _routeParams.id = hash.replace('/petitie/', '');
+  } else if(hash.indexOf('/categorie/') === 0){
+    _currentRoute = '/categorie';
+    _routeParams.cat = hash.replace('/categorie/', '');
   } else {
     _currentRoute = '/';
   }
@@ -667,6 +693,10 @@ function renderPage(){
     case '/melding': app.innerHTML = renderMeldingDetail(); break;
     case '/melden': app.innerHTML = renderMelden(); initMeldForm(); break;
     case '/rechtszaak': app.innerHTML = renderRechtszaak(); initRechtszaakWizard(); break;
+    case '/ambtenaren': app.innerHTML = renderAmbtenaren(); break;
+    case '/petities': app.innerHTML = renderPetities(); break;
+    case '/petitie': app.innerHTML = renderPetitieDetail(); break;
+    case '/categorie': app.innerHTML = renderCategoriePagina(); break;
     default: app.innerHTML = renderHome();
   }
 }
@@ -727,6 +757,37 @@ function renderHome(){
     recentHtml += '</div>';
   }
 
+  // Schandalen sectie
+  var schandaalHtml = '<div class="card-grid" style="margin-bottom:24px">';
+  for(var skey in CATEGORIES){
+    var sc = CATEGORIES[skey];
+    if(!sc.schandaal) continue;
+    var scCount = meldingen.filter(function(m){ return m.categorie === skey; }).length;
+    schandaalHtml += '<div class="card melding-card" onclick="navigate(\'/categorie/' + skey + '\')" style="border-left:3px solid var(--accent)">' +
+      '<div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">' +
+        '<span class="mi" style="font-size:28px;color:var(--accent)">' + sc.icon + '</span>' +
+        '<div><h3 style="font-size:15px">' + sc.label + '</h3>' +
+        '<div style="font-size:11px;color:var(--tx3)">' + scCount + ' melding' + (scCount!==1?'en':'') + '</div></div>' +
+      '</div>' +
+      '<div style="font-size:12px;color:var(--tx2)">' + sc.description + '</div>' +
+    '</div>';
+  }
+  schandaalHtml += '</div>';
+
+  // Petities preview
+  var petities = DataStore.getAll('petities');
+  var petitiePreview = '';
+  if(petities.length > 0){
+    var topPetitie = petities.sort(function(a,b){ return (b.handtekeningen||0)-(a.handtekeningen||0); })[0];
+    var pPct = topPetitie.doel > 0 ? Math.min(100, Math.round((topPetitie.handtekeningen||0) / topPetitie.doel * 100)) : 0;
+    petitiePreview = '<div class="card" style="border-left:3px solid var(--blue);margin-bottom:24px;cursor:pointer" onclick="navigate(\'/petitie/' + topPetitie.id + '\')">' +
+      '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><span class="mi" style="color:var(--blue)">draw</span><h3 style="font-size:15px">Lopende petitie</h3></div>' +
+      '<div style="font-size:14px;font-weight:600;margin-bottom:4px">' + escHtml(topPetitie.titel) + '</div>' +
+      '<div class="progress-bar"><div class="progress-fill" style="width:' + pPct + '%;background:var(--blue)"></div></div>' +
+      '<div style="font-size:12px;color:var(--tx2)">' + (topPetitie.handtekeningen||0) + ' van ' + topPetitie.doel + ' handtekeningen (' + pPct + '%)</div>' +
+    '</div>';
+  }
+
   return '<div class="page">' +
     '<div class="hero">' +
       '<h1>Ambtenaren ter <span class="accent">verantwoording</span></h1>' +
@@ -734,19 +795,24 @@ function renderHome(){
       '<div class="hero-actions">' +
         '<button class="btn btn-primary btn-lg" onclick="navigate(\'/melden\')"><span class="mi">add_circle</span> Doe een melding</button>' +
         '<button class="btn btn-secondary btn-lg" onclick="navigate(\'/meldingen\')"><span class="mi">list</span> Bekijk verhalen</button>' +
+        '<button class="btn btn-blue btn-lg" onclick="navigate(\'/petities\')"><span class="mi">draw</span> Petities</button>' +
       '</div>' +
     '</div>' +
     '<div class="stats-row">' +
       '<div class="stat-card"><div class="stat-value">' + meldingen.length + '</div><div class="stat-label">Meldingen</div></div>' +
       '<div class="stat-card"><div class="stat-value">' + zaken.length + '</div><div class="stat-label">Rechtszaken</div></div>' +
       '<div class="stat-card"><div class="stat-value">&euro;' + totalDonaties.toLocaleString('nl-NL') + '</div><div class="stat-label">Gedoneerd</div></div>' +
-      '<div class="stat-card"><div class="stat-value">' + Object.keys(CATEGORIES).length + '</div><div class="stat-label">Categorie\u00ebn</div></div>' +
+      '<div class="stat-card"><div class="stat-value">' + petities.reduce(function(s,p){ return s+(p.handtekeningen||0); },0) + '</div><div class="stat-label">Handtekeningen</div></div>' +
     '</div>' +
+    petitiePreview +
+    '<h2 class="section-title"><span class="mi">local_fire_department</span> Nederlandse schandalen</h2>' +
+    '<p style="font-size:13px;color:var(--tx2);margin-bottom:12px">Klik op een schandaal om verhalen te lezen en actie te ondernemen.</p>' +
+    schandaalHtml +
     '<div class="how-it-works">' +
-      '<div class="how-step card"><span class="mi">edit_note</span><h3>1. Meld</h3><p>Beschrijf wat er is gebeurd, wie de ambtenaar is en voeg bewijsstukken toe.</p></div>' +
-      '<div class="how-step card"><span class="mi">public</span><h3>2. Publiceer</h3><p>Je verhaal wordt gepubliceerd zodat andere burgers het kunnen lezen.</p></div>' +
-      '<div class="how-step card"><span class="mi">volunteer_activism</span><h3>3. Crowdfund</h3><p>Andere burgers kunnen doneren om een rechtszaak te financieren.</p></div>' +
-      '<div class="how-step card"><span class="mi">gavel</span><h3>4. Proceeder</h3><p>Genereer automatisch een dagvaarding en start een zaak bij de kantonrechter.</p></div>' +
+      '<div class="how-step card"><span class="mi">edit_note</span><h3>1. Meld</h3><p>Beschrijf wat er is gebeurd. Met of zonder naam van de ambtenaar.</p></div>' +
+      '<div class="how-step card"><span class="mi">public</span><h3>2. Publiceer</h3><p>Je verhaal wordt gepubliceerd. Ambtenaren die vaker voorkomen worden zichtbaar.</p></div>' +
+      '<div class="how-step card"><span class="mi">draw</span><h3>3. Teken</h3><p>Teken petities voor structurele verandering.</p></div>' +
+      '<div class="how-step card"><span class="mi">gavel</span><h3>4. Proceeder</h3><p>Genereer een dagvaarding en start een zaak bij de kantonrechter.</p></div>' +
     '</div>' +
     '<h2 class="section-title"><span class="mi">schedule</span> Laatste meldingen</h2>' +
     recentHtml +
@@ -879,12 +945,12 @@ function renderMeldingDetail(){
       '</div>' +
     '</div>' +
 
-    '<div class="ambtenaar-card">' +
-      '<h4><span class="mi mi-sm">person</span> Betreffende ambtenaar</h4>' +
-      '<div style="font-size:14px"><strong>' + escHtml(amb.naam || 'Onbekend') + '</strong></div>' +
+    ((amb.naam || amb.organisatie) ? '<div class="ambtenaar-card">' +
+      '<h4><span class="mi mi-sm">' + (amb.naam ? 'person' : 'business') + '</span> ' + (amb.naam ? 'Betreffende ambtenaar' : 'Betreffende organisatie') + '</h4>' +
+      (amb.naam ? '<div style="font-size:14px"><strong>' + escHtml(amb.naam) + '</strong></div>' : '') +
       (amb.functie ? '<div style="font-size:13px;color:var(--tx2)">' + escHtml(amb.functie) + '</div>' : '') +
       (amb.organisatie ? '<div style="font-size:13px;color:var(--tx2)">' + escHtml(amb.organisatie) + '</div>' : '') +
-    '</div>' +
+    '</div>' : '') +
 
     '<div class="detail-body">' + verhaalHtml + '</div>' +
 
@@ -998,15 +1064,33 @@ function renderMeldStep(){
   if(!area) return;
 
   if(_meldStep === 0){
-    // Categorie
-    var html = '<h3 style="font-size:16px;margin-bottom:14px">Waar gaat je melding over?</h3>';
-    html += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px">';
+    // Categorie - schandalen eerst, dan algemeen
+    var html = '<h3 style="font-size:16px;margin-bottom:6px">Waar gaat je melding over?</h3>';
+    html += '<p style="font-size:12px;color:var(--tx3);margin-bottom:14px">Kies een categorie. Je kunt ook alleen je verhaal delen.</p>';
+    // Schandalen
+    html += '<div style="font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--accent);font-weight:700;margin-bottom:6px">Schandalen</div>';
+    html += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;margin-bottom:14px">';
     for(var key in CATEGORIES){
       var c = CATEGORIES[key];
-      var sel = _meldData.categorie === key ? 'border-color:var(--blue);background:var(--blue-soft)' : '';
-      html += '<div class="card" style="padding:14px;cursor:pointer;text-align:center;' + sel + '" onclick="setMeldCat(\'' + key + '\')">' +
-        '<span class="mi" style="font-size:28px;color:var(--accent);display:block;margin-bottom:6px">' + c.icon + '</span>' +
-        '<div style="font-size:13px;font-weight:600">' + c.label + '</div>' +
+      if(!c.schandaal) continue;
+      var sel = _meldData.categorie === key ? 'border-color:var(--accent);background:var(--accent-soft)' : '';
+      html += '<div class="card" style="padding:12px;cursor:pointer;' + sel + '" onclick="setMeldCat(\'' + key + '\')">' +
+        '<div style="display:flex;align-items:center;gap:8px"><span class="mi" style="font-size:22px;color:var(--accent)">' + c.icon + '</span>' +
+        '<div style="font-size:13px;font-weight:600">' + c.label + '</div></div>' +
+        '<div style="font-size:11px;color:var(--tx3);margin-top:4px">' + (c.description||'') + '</div>' +
+      '</div>';
+    }
+    html += '</div>';
+    // Algemeen
+    html += '<div style="font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--tx3);font-weight:700;margin-bottom:6px">Algemene categorieen</div>';
+    html += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px">';
+    for(var key2 in CATEGORIES){
+      var c2 = CATEGORIES[key2];
+      if(c2.schandaal) continue;
+      var sel2 = _meldData.categorie === key2 ? 'border-color:var(--blue);background:var(--blue-soft)' : '';
+      html += '<div class="card" style="padding:10px;cursor:pointer;text-align:center;' + sel2 + '" onclick="setMeldCat(\'' + key2 + '\')">' +
+        '<span class="mi" style="font-size:22px;color:var(--tx2);display:block;margin-bottom:4px">' + c2.icon + '</span>' +
+        '<div style="font-size:12px;font-weight:600">' + c2.label + '</div>' +
       '</div>';
     }
     html += '</div>';
@@ -1014,16 +1098,28 @@ function renderMeldStep(){
     area.innerHTML = html;
 
   } else if(_meldStep === 1){
-    // Ambtenaar
+    // Ambtenaar (optioneel)
+    var isVerhaal = _meldData.categorie === 'verhaal';
     area.innerHTML =
-      '<h3 style="font-size:16px;margin-bottom:14px">Over welke ambtenaar gaat het?</h3>' +
-      '<div class="form-group"><label class="form-label">Naam ambtenaar</label><input class="form-input" id="ambNaam" value="' + escHtml(_meldData.ambNaam||'') + '" placeholder="Volledige naam"></div>' +
-      '<div class="form-group"><label class="form-label">Functie / Afdeling</label><input class="form-input" id="ambFunctie" value="' + escHtml(_meldData.ambFunctie||'') + '" placeholder="Bijv. baliemedewerker, wethouder, etc."></div>' +
-      '<div class="form-group"><label class="form-label">Organisatie / Gemeente</label><input class="form-input" id="ambOrg" value="' + escHtml(_meldData.ambOrg||'') + '" placeholder="Bijv. Gemeente Amsterdam, Belastingdienst"></div>' +
+      '<h3 style="font-size:16px;margin-bottom:14px">' + (isVerhaal ? 'Over welke organisatie gaat het?' : 'Over welke ambtenaar gaat het?') + '</h3>' +
+      '<label class="form-check" style="margin-bottom:14px"><input type="checkbox" id="geenAmbtenaar" ' + (_meldData.geenAmbtenaar ? 'checked' : '') + '> <span style="color:var(--tx2)">Ik wil ' + (isVerhaal ? 'geen organisatie noemen' : 'geen specifieke ambtenaar noemen') + '</span></label>' +
+      '<div id="ambtenaarVelden">' +
+        (isVerhaal ? '' : '<div class="form-group"><label class="form-label">Naam ambtenaar</label><input class="form-input" id="ambNaam" value="' + escHtml(_meldData.ambNaam||'') + '" placeholder="Volledige naam (optioneel)"></div>') +
+        (isVerhaal ? '' : '<div class="form-group"><label class="form-label">Functie / Afdeling</label><input class="form-input" id="ambFunctie" value="' + escHtml(_meldData.ambFunctie||'') + '" placeholder="Bijv. baliemedewerker, wethouder, etc."></div>') +
+        '<div class="form-group"><label class="form-label">Organisatie / Gemeente</label><input class="form-input" id="ambOrg" value="' + escHtml(_meldData.ambOrg||'') + '" placeholder="Bijv. Gemeente Amsterdam, Belastingdienst, UWV"></div>' +
+      '</div>' +
       '<div style="display:flex;justify-content:space-between;margin-top:16px">' +
         '<button class="btn btn-secondary" onclick="prevMeldStep()"><span class="mi mi-sm">arrow_back</span> Vorige</button>' +
         '<button class="btn btn-primary" onclick="saveMeldAmbtenaar();nextMeldStep()">Volgende <span class="mi mi-sm">arrow_forward</span></button>' +
       '</div>';
+    // Toggle ambtenaar velden
+    var gaCb = document.getElementById('geenAmbtenaar');
+    if(gaCb){
+      var avEl = document.getElementById('ambtenaarVelden');
+      function toggleAmb(){ avEl.style.display = gaCb.checked ? 'none' : 'block'; }
+      gaCb.addEventListener('change', toggleAmb);
+      toggleAmb();
+    }
 
   } else if(_meldStep === 2){
     // Verhaal
@@ -1100,6 +1196,7 @@ function nextMeldStep(){ _meldStep = Math.min(5, _meldStep + 1); renderMeldStep(
 function prevMeldStep(){ _meldStep = Math.max(0, _meldStep - 1); renderMeldStep(); }
 
 function saveMeldAmbtenaar(){
+  _meldData.geenAmbtenaar = (document.getElementById('geenAmbtenaar')||{}).checked || false;
   _meldData.ambNaam = (document.getElementById('ambNaam')||{}).value || '';
   _meldData.ambFunctie = (document.getElementById('ambFunctie')||{}).value || '';
   _meldData.ambOrg = (document.getElementById('ambOrg')||{}).value || '';
@@ -1752,10 +1849,360 @@ function generateAll(){
   setTimeout(function(){ generateInfoSheet(); }, 1500);
 }
 
+// ============ PAGE: AMBTENAREN OVERZICHT ============
+function renderAmbtenaren(){
+  var meldingen = DataStore.getAll('meldingen');
+  // Aggregeer ambtenaren: naam → { count, organisaties, categorieen, meldingIds }
+  var ambMap = {};
+  meldingen.forEach(function(m){
+    var amb = m.ambtenaar || {};
+    var naam = (amb.naam || '').trim();
+    if(!naam || naam === 'Onbekend' || m.categorie === 'verhaal' || (m.melder && m.melder.geenAmbtenaar)) return;
+    var key = naam.toLowerCase();
+    if(!ambMap[key]) ambMap[key] = { naam: naam, count: 0, organisaties: {}, categorieen: {}, meldingIds: [] };
+    ambMap[key].count++;
+    if(amb.organisatie) ambMap[key].organisaties[amb.organisatie] = true;
+    if(m.categorie) ambMap[key].categorieen[m.categorie] = true;
+    ambMap[key].meldingIds.push(m.id);
+    // Bewaar meest recente naam-versie
+    if(naam.length > ambMap[key].naam.length) ambMap[key].naam = naam;
+  });
+
+  // Sorteer op aantal meldingen (meeste eerst)
+  var ambList = [];
+  for(var k in ambMap) ambList.push(ambMap[k]);
+  ambList.sort(function(a,b){ return b.count - a.count; });
+
+  var listHtml = '';
+  if(ambList.length === 0){
+    listHtml = '<div class="empty-state"><span class="mi">people</span><p>Nog geen ambtenaren gemeld. Doe een melding om het overzicht te vullen.</p></div>';
+  } else {
+    listHtml = '<div class="card-grid">';
+    ambList.forEach(function(a){
+      var orgs = Object.keys(a.organisaties).join(', ') || 'Onbekend';
+      var cats = Object.keys(a.categorieen);
+      var catBadges = cats.slice(0,3).map(function(c){ return categoryBadge(c); }).join(' ');
+      var kleur = a.count >= 3 ? 'var(--accent)' : (a.count >= 2 ? 'var(--yellow)' : 'var(--tx3)');
+      listHtml += '<div class="card" style="border-left:3px solid ' + kleur + '">' +
+        '<div style="display:flex;justify-content:space-between;align-items:flex-start">' +
+          '<div>' +
+            '<div style="font-size:15px;font-weight:700">' + escHtml(a.naam) + '</div>' +
+            '<div style="font-size:12px;color:var(--tx2)">' + escHtml(orgs) + '</div>' +
+          '</div>' +
+          '<div style="text-align:right">' +
+            '<div style="font-size:22px;font-weight:800;color:' + kleur + '">' + a.count + '</div>' +
+            '<div style="font-size:10px;color:var(--tx3)">melding' + (a.count!==1?'en':'') + '</div>' +
+          '</div>' +
+        '</div>' +
+        '<div style="margin-top:8px;display:flex;gap:4px;flex-wrap:wrap">' + catBadges + '</div>' +
+        '<div style="margin-top:8px;display:flex;gap:4px;flex-wrap:wrap">' +
+          a.meldingIds.map(function(id){ return '<a href="#/melding/' + id + '" style="font-size:11px;color:var(--blue)">Bekijk melding</a>'; }).join(' &middot; ') +
+        '</div>' +
+      '</div>';
+    });
+    listHtml += '</div>';
+  }
+
+  var topOffenders = ambList.filter(function(a){ return a.count >= 2; });
+  var warningHtml = topOffenders.length > 0 ?
+    '<div class="card" style="border-left:3px solid var(--accent);margin-bottom:16px;background:var(--accent-soft)">' +
+      '<div style="font-size:14px;font-weight:700;color:var(--accent);margin-bottom:4px"><span class="mi mi-sm">warning</span> ' + topOffenders.length + ' ambtenar' + (topOffenders.length!==1?'en':'') + ' met meerdere meldingen</div>' +
+      '<div style="font-size:12px;color:var(--tx2)">Deze namen komen bij meerdere, onafhankelijke meldingen voor. Dit kan wijzen op structureel problematisch gedrag.</div>' +
+    '</div>' : '';
+
+  return '<div class="page">' +
+    '<h2 class="section-title"><span class="mi">people</span> Ambtenaren overzicht</h2>' +
+    '<p style="font-size:13px;color:var(--tx2);margin-bottom:16px">Ambtenaren die bij meerdere meldingen voorkomen. Hoe vaker een naam opduikt, hoe waarschijnlijker structureel wangedrag.</p>' +
+    warningHtml +
+    listHtml +
+  '</div>';
+}
+
+// ============ PAGE: PETITIES ============
+function renderPetities(){
+  var petities = DataStore.getAll('petities')
+    .sort(function(a,b){ return (b.handtekeningen||0)-(a.handtekeningen||0); });
+
+  var listHtml = '';
+  if(petities.length === 0){
+    listHtml = '<div class="empty-state"><span class="mi">draw</span><p>Nog geen petities. Start de eerste!</p></div>';
+  } else {
+    listHtml = '<div class="card-grid">';
+    petities.forEach(function(p){
+      var pct = p.doel > 0 ? Math.min(100, Math.round((p.handtekeningen||0) / p.doel * 100)) : 0;
+      listHtml += '<div class="card melding-card" onclick="navigate(\'/petitie/' + p.id + '\')">' +
+        '<h3 style="font-size:15px;margin-bottom:6px">' + escHtml(p.titel) + '</h3>' +
+        '<div style="font-size:12px;color:var(--tx2);margin-bottom:8px">' + escHtml(truncate(p.beschrijving, 120)) + '</div>' +
+        '<div class="progress-bar"><div class="progress-fill" style="width:' + pct + '%;background:var(--blue)"></div></div>' +
+        '<div style="display:flex;justify-content:space-between;font-size:12px;color:var(--tx3);margin-top:4px">' +
+          '<span><strong style="color:var(--tx)">' + (p.handtekeningen||0) + '</strong> handtekeningen</span>' +
+          '<span>Doel: ' + p.doel + '</span>' +
+        '</div>' +
+      '</div>';
+    });
+    listHtml += '</div>';
+  }
+
+  return '<div class="page">' +
+    '<h2 class="section-title"><span class="mi">draw</span> Petities</h2>' +
+    '<p style="font-size:13px;color:var(--tx2);margin-bottom:16px">Teken een petitie en draag bij aan structurele verandering. Elke handtekening telt.</p>' +
+    listHtml +
+  '</div>';
+}
+
+// ============ PAGE: PETITIE DETAIL ============
+function renderPetitieDetail(){
+  var p = DataStore.getById('petities', _routeParams.id);
+  if(!p) return '<div class="page"><div class="empty-state"><span class="mi">error</span><p>Petitie niet gevonden.</p><button class="btn btn-secondary" onclick="navigate(\'/petities\')">Terug</button></div></div>';
+
+  var pct = p.doel > 0 ? Math.min(100, Math.round((p.handtekeningen||0) / p.doel * 100)) : 0;
+  var ondertekenaars = DataStore.query('ondertekeningen', function(o){ return o.petitie_id === p.id; })
+    .sort(function(a,b){ return (b.datum||0)-(a.datum||0); });
+
+  var namenHtml = '';
+  ondertekenaars.forEach(function(o, i){
+    if(i >= 50) return; // max 50 tonen
+    namenHtml += '<span style="display:inline-block;padding:2px 8px;margin:2px;background:var(--bg2);border-radius:12px;font-size:11px">' +
+      escHtml(o.naam || 'Anoniem') + (o.plaats ? ' <span style="color:var(--tx3)">(' + escHtml(o.plaats) + ')</span>' : '') +
+    '</span>';
+  });
+  if(ondertekenaars.length > 50) namenHtml += '<span style="font-size:11px;color:var(--tx3)">en ' + (ondertekenaars.length - 50) + ' anderen...</span>';
+
+  var beschrijvingHtml = (p.beschrijving || '').split('\n').filter(function(l){ return l.trim(); }).map(function(l){ return '<p>' + escHtml(l) + '</p>'; }).join('');
+
+  return '<div class="page">' +
+    '<button class="btn btn-secondary btn-sm" onclick="navigate(\'/petities\')" style="margin-bottom:16px"><span class="mi mi-sm">arrow_back</span> Terug</button>' +
+    '<h1 style="font-size:24px;margin-bottom:12px">' + escHtml(p.titel) + '</h1>' +
+    '<div style="display:flex;gap:8px;margin-bottom:16px">' +
+      (p.categorie ? categoryBadge(p.categorie) : '') +
+      '<span class="badge badge-blue"><span class="mi mi-sm">event</span> ' + formatDate(p.datum) + '</span>' +
+    '</div>' +
+    '<div class="detail-body" style="margin-bottom:20px">' + beschrijvingHtml + '</div>' +
+
+    '<div class="card" style="border-left:3px solid var(--blue);margin-bottom:20px">' +
+      '<h3 style="font-size:16px;margin-bottom:8px"><span class="mi mi-sm">draw</span> Handtekeningen</h3>' +
+      '<div style="font-size:28px;font-weight:800;color:var(--blue)">' + (p.handtekeningen||0) + ' <span style="font-size:14px;font-weight:400;color:var(--tx2)">van ' + p.doel + ' doel</span></div>' +
+      '<div class="progress-bar" style="margin:8px 0"><div class="progress-fill" style="width:' + pct + '%;background:var(--blue)"></div></div>' +
+      '<div style="font-size:12px;color:var(--tx3);margin-bottom:12px">' + pct + '% bereikt</div>' +
+      '<div style="display:grid;grid-template-columns:1fr 1fr auto;gap:8px;align-items:end">' +
+        '<div class="form-group" style="margin:0"><label class="form-label">Naam</label><input class="form-input" id="petNaam" placeholder="Je naam" style="padding:8px 12px"></div>' +
+        '<div class="form-group" style="margin:0"><label class="form-label">Woonplaats</label><input class="form-input" id="petPlaats" placeholder="Optioneel" style="padding:8px 12px"></div>' +
+        '<button class="btn btn-blue" onclick="tekenPetitie(\'' + p.id + '\')"><span class="mi mi-sm">draw</span> Teken</button>' +
+      '</div>' +
+    '</div>' +
+
+    (namenHtml ? '<div class="card" style="margin-bottom:16px"><h4 style="font-size:13px;color:var(--tx3);margin-bottom:8px">Ondertekenaars (' + ondertekenaars.length + ')</h4><div>' + namenHtml + '</div></div>' : '') +
+  '</div>';
+}
+
+function tekenPetitie(petitieId){
+  var naam = (document.getElementById('petNaam')||{}).value;
+  if(!naam || !naam.trim()){ toast('Vul je naam in'); return; }
+  var plaats = (document.getElementById('petPlaats')||{}).value || '';
+
+  // Check dubbel
+  var bestaand = DataStore.query('ondertekeningen', function(o){
+    return o.petitie_id === petitieId && o.naam.toLowerCase() === naam.trim().toLowerCase();
+  });
+  if(bestaand.length > 0){ toast('Je hebt deze petitie al getekend!'); return; }
+
+  DataStore.add('ondertekeningen', {
+    petitie_id: petitieId,
+    naam: naam.trim(),
+    plaats: plaats.trim(),
+    datum: Date.now()
+  });
+
+  // Update telling
+  var p = DataStore.getById('petities', petitieId);
+  if(p) DataStore.update('petities', petitieId, { handtekeningen: (p.handtekeningen||0) + 1 });
+
+  toast('Bedankt voor je handtekening!');
+  renderPage();
+}
+
+// ============ PAGE: CATEGORIE LANDING ============
+function renderCategoriePagina(){
+  var catKey = _routeParams.cat;
+  var cat = CATEGORIES[catKey];
+  if(!cat) return '<div class="page"><div class="empty-state"><span class="mi">error</span><p>Categorie niet gevonden.</p></div></div>';
+
+  var meldingen = DataStore.query('meldingen', function(m){ return m.categorie === catKey; })
+    .sort(function(a,b){ return (b.datum_melding||0)-(a.datum_melding||0); });
+
+  // Ambtenaren in deze categorie
+  var ambMap = {};
+  meldingen.forEach(function(m){
+    var naam = (m.ambtenaar && m.ambtenaar.naam || '').trim();
+    if(!naam || naam === 'Onbekend') return;
+    var key = naam.toLowerCase();
+    if(!ambMap[key]) ambMap[key] = { naam: naam, count: 0, org: m.ambtenaar.organisatie || '' };
+    ambMap[key].count++;
+  });
+  var topAmb = [];
+  for(var k in ambMap) topAmb.push(ambMap[k]);
+  topAmb.sort(function(a,b){ return b.count - a.count; });
+
+  // Petities voor deze categorie
+  var petities = DataStore.query('petities', function(p){ return p.categorie === catKey; });
+
+  var meldingenHtml = '';
+  if(meldingen.length === 0){
+    meldingenHtml = '<div class="empty-state"><span class="mi">inbox</span><p>Nog geen meldingen in deze categorie.</p><button class="btn btn-primary" onclick="navigate(\'/melden\')"><span class="mi mi-sm">add_circle</span> Wees de eerste</button></div>';
+  } else {
+    meldingenHtml = '<div class="card-grid">';
+    meldingen.forEach(function(m){ meldingenHtml += renderMeldingCard(m); });
+    meldingenHtml += '</div>';
+  }
+
+  var topAmbHtml = '';
+  if(topAmb.length > 0){
+    topAmbHtml = '<h3 class="section-title" style="font-size:16px;margin-top:24px"><span class="mi mi-sm">people</span> Genoemde ambtenaren</h3>';
+    topAmbHtml += '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">';
+    topAmb.slice(0,10).forEach(function(a){
+      var kleur = a.count >= 3 ? 'var(--accent)' : (a.count >= 2 ? 'var(--yellow)' : 'var(--tx3)');
+      topAmbHtml += '<div class="card" style="padding:10px 14px;border-left:3px solid ' + kleur + '">' +
+        '<div style="font-size:13px;font-weight:600">' + escHtml(a.naam) + '</div>' +
+        '<div style="font-size:11px;color:var(--tx3)">' + escHtml(a.org) + ' &middot; ' + a.count + 'x gemeld</div>' +
+      '</div>';
+    });
+    topAmbHtml += '</div>';
+  }
+
+  var petitieHtml = '';
+  if(petities.length > 0){
+    petitieHtml = '<h3 class="section-title" style="font-size:16px;margin-top:24px"><span class="mi mi-sm">draw</span> Lopende petities</h3>';
+    petities.forEach(function(pe){
+      var pPct = pe.doel > 0 ? Math.min(100, Math.round((pe.handtekeningen||0) / pe.doel * 100)) : 0;
+      petitieHtml += '<div class="card" style="cursor:pointer;margin-bottom:8px" onclick="navigate(\'/petitie/' + pe.id + '\')">' +
+        '<div style="font-size:14px;font-weight:600">' + escHtml(pe.titel) + '</div>' +
+        '<div class="progress-bar" style="margin:6px 0"><div class="progress-fill" style="width:' + pPct + '%;background:var(--blue)"></div></div>' +
+        '<div style="font-size:12px;color:var(--tx3)">' + (pe.handtekeningen||0) + ' van ' + pe.doel + ' handtekeningen</div>' +
+      '</div>';
+    });
+  }
+
+  return '<div class="page">' +
+    '<button class="btn btn-secondary btn-sm" onclick="navigate(\'/\')" style="margin-bottom:16px"><span class="mi mi-sm">arrow_back</span> Home</button>' +
+    '<div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">' +
+      '<span class="mi" style="font-size:36px;color:var(--accent)">' + cat.icon + '</span>' +
+      '<div><h1 style="font-size:24px;margin-bottom:2px">' + cat.label + '</h1>' +
+        '<p style="font-size:13px;color:var(--tx2)">' + cat.description + '</p>' +
+      '</div>' +
+    '</div>' +
+    '<div class="stats-row" style="margin-bottom:16px">' +
+      '<div class="stat-card"><div class="stat-value">' + meldingen.length + '</div><div class="stat-label">Meldingen</div></div>' +
+      '<div class="stat-card"><div class="stat-value">' + topAmb.length + '</div><div class="stat-label">Ambtenaren</div></div>' +
+      '<div class="stat-card"><div class="stat-value">' + petities.length + '</div><div class="stat-label">Petities</div></div>' +
+    '</div>' +
+    '<div style="display:flex;gap:8px;margin-bottom:20px">' +
+      '<button class="btn btn-primary" onclick="startMeldingVoorCategorie(\'' + catKey + '\')"><span class="mi mi-sm">add_circle</span> Doe een melding</button>' +
+    '</div>' +
+    petitieHtml +
+    topAmbHtml +
+    '<h3 class="section-title" style="font-size:16px;margin-top:24px"><span class="mi mi-sm">list</span> Meldingen (' + meldingen.length + ')</h3>' +
+    meldingenHtml +
+  '</div>';
+}
+
+function startMeldingVoorCategorie(cat){
+  _meldStep = 0;
+  _meldData = { categorie: cat };
+  navigate('/melden');
+}
+
 // ============ DEMO DATA ============
 function seedDemoData(){
   if(DataStore.count('meldingen') > 0) return;
+
+  // Petities
+  var bsnPetitie = DataStore.add('petities', {
+    titel: 'Nieuw BSN-nummer voor alle toeslagenaffaire-slachtoffers',
+    beschrijving: 'Wij, de slachtoffers van de kinderopvangtoeslagaffaire, eisen dat iedere gedupeerde het recht krijgt op een nieuw BSN-nummer.\n\nOns huidige BSN is besmet. Het staat op zwarte lijsten bij de Belastingdienst, banken, verzekeraars en andere instanties. Hierdoor worden wij nog steeds gediscrimineerd en benadeeld, jaren na de erkenning van het onrecht.\n\nEen nieuw BSN geeft ons een schone lei. Geen vlaggetjes meer in systemen, geen automatische verdachtmakingen, geen discriminatie op basis van een nummer dat gekoppeld is aan het onrecht dat ons is aangedaan.\n\nDit is geen gunst. Dit is het minimale wat de overheid kan doen om het vertrouwen te herstellen.',
+    categorie: 'toeslagenaffaire',
+    doel: 10000,
+    handtekeningen: 1847,
+    datum: Date.now() - 30*86400000
+  });
+
+  DataStore.add('petities', {
+    titel: 'Onafhankelijk onderzoek naar UWV-keuringen',
+    beschrijving: 'Het UWV keurt structureel mensen af die wel degelijk arbeidsongeschikt zijn. De keuringsartsen staan onder druk om zo min mogelijk mensen goed te keuren.\n\nWij eisen een volledig onafhankelijk onderzoek naar de keuringspraktijken van het UWV, uitgevoerd door een externe commissie zonder banden met het ministerie.',
+    categorie: 'uwv_fraude',
+    doel: 5000,
+    handtekeningen: 892,
+    datum: Date.now() - 14*86400000
+  });
+
+  // Demo ondertekeningen voor BSN petitie
+  var demoNamen = ['Jan de Vries', 'Fatima El Amrani', 'Pieter Bakker', 'Ayse Yilmaz', 'Lisa van den Berg', 'Mohammed Aziz', 'Sanne Jansen', 'Kees Dekker', 'Nadia Bouziane', 'Tom Visser'];
+  var demoPlaatsen = ['Rotterdam', 'Amsterdam', 'Den Haag', 'Utrecht', 'Eindhoven', 'Almere', 'Tilburg', 'Groningen', 'Breda', 'Haarlem'];
+  demoNamen.forEach(function(n, i){
+    DataStore.add('ondertekeningen', {
+      petitie_id: bsnPetitie.id,
+      naam: n,
+      plaats: demoPlaatsen[i],
+      datum: Date.now() - (30-i)*86400000
+    });
+  });
+
   var demos = [
+    // TOESLAGENAFFAIRE
+    {
+      titel: 'Vijf jaar later nog steeds op zwarte lijst',
+      categorie: 'toeslagenaffaire',
+      verhaal: 'In 2014 werd mijn kinderopvangtoeslag stopgezet en moest ik meer dan 40.000 euro terugbetalen. Geld dat ik niet had. Ik verloor mijn huis, mijn huwelijk liep stuk, en mijn kinderen groeiden op in armoede.\n\nIn 2021 werd ik erkend als slachtoffer. Ik kreeg 30.000 euro compensatie. Maar mijn BSN-nummer staat nog steeds gemarkeerd in systemen. Elke keer als ik een hypotheek aanvraag, een verzekering afsluit of een uitkering aanvraag, gaat er een vlaggetje omhoog.\n\nIk ben geen fraudeur. Dat ben ik nooit geweest. Maar mijn BSN-nummer vertelt een ander verhaal.',
+      ambtenaar: { naam: '', functie: '', organisatie: 'Belastingdienst / Toeslagen' },
+      gemeente: 'Rotterdam',
+      datum_incident: Date.now() - 3650*86400000,
+      datum_melding: Date.now() - 3*86400000,
+      melder: { anoniem: false, naam: 'Fatima E.', email: '' },
+      status: 'bevestigd',
+      crowdfunding: { doel: 0, opgehaald: 0, actief: false },
+      views: 456
+    },
+    {
+      titel: 'Deurwaarder kwam voor schuld die al vergeven was',
+      categorie: 'toeslagenaffaire',
+      verhaal: 'Twee weken geleden stond er een deurwaarder voor mijn deur. Voor een schuld bij de Belastingdienst van 12.000 euro. Deze schuld zou kwijtgescholden zijn als onderdeel van de toeslagenaffaire-compensatie.\n\nNa 6 uur bellen bleek dat "het systeem de kwijtschelding niet had verwerkt." Zes uur bellen. Voor een fout van de overheid. Terwijl mijn kinderen angstig in de gang stonden.\n\nDe ambtenaar die ik uiteindelijk sprak zei: "Ja, dit zien we vaker. Het systeem loopt achter."',
+      ambtenaar: { naam: 'Dhr. K. Hendriksen', functie: 'Invorderingsambtenaar', organisatie: 'Belastingdienst' },
+      gemeente: 'Almere',
+      datum_incident: Date.now() - 14*86400000,
+      datum_melding: Date.now() - 1*86400000,
+      melder: { anoniem: true },
+      status: 'nieuw',
+      crowdfunding: { doel: 2000, opgehaald: 450, actief: true },
+      views: 234
+    },
+    // GRONINGEN
+    {
+      titel: 'Al 4 jaar wachten op versterkingsoperatie',
+      categorie: 'gaswinning_groningen',
+      verhaal: 'Ons huis is in 2020 geinspecteerd en beoordeeld als "onveilig" vanwege aardbevingsschade. We zouden binnen een jaar versterkt worden.\n\nHet is nu 2025 en er is nog niks gebeurd. We wonen met twee kleine kinderen in een huis waarvan de overheid zelf zegt dat het onveilig is.\n\nElke keer als we bellen krijgen we een ander verhaal. De ene ambtenaar zegt dat we op de planning staan voor 2026, de andere zegt 2027. Niemand kan ons een concreet antwoord geven.',
+      ambtenaar: { naam: '', functie: '', organisatie: 'Nationaal Coordinator Groningen (NCG)' },
+      gemeente: 'Loppersum',
+      datum_incident: Date.now() - 365*86400000,
+      datum_melding: Date.now() - 4*86400000,
+      melder: { anoniem: false, naam: 'Familie de Boer', email: '' },
+      status: 'bevestigd',
+      crowdfunding: { doel: 3000, opgehaald: 1200, actief: true },
+      views: 189
+    },
+    // JEUGDZORG
+    {
+      titel: 'Kinderen uithuisgeplaatst op basis van leugens',
+      categorie: 'jeugdzorg',
+      verhaal: 'Op 12 september 2023 zijn mijn twee kinderen uithuisgeplaatst door Jeugdbescherming. Het rapport dat hieraan ten grondslag lag bevatte aantoonbare onwaarheden.\n\nDe gezinsvoogd had nooit met mij gesproken maar schreef in het rapport dat ik "niet meewerkte aan gesprekken." Buren die positief over mij verklaarden werden niet in het rapport opgenomen.\n\nHet heeft 14 maanden geduurd voordat de kinderrechter besloot dat de uithuisplaatsing onterecht was. 14 maanden waarin mijn kinderen in een pleeggezin zaten.',
+      ambtenaar: { naam: 'Mw. L. van Dijk', functie: 'Gezinsvoogd', organisatie: 'Jeugdbescherming West' },
+      gemeente: 'Den Haag',
+      datum_incident: Date.now() - 540*86400000,
+      datum_melding: Date.now() - 6*86400000,
+      melder: { anoniem: false, naam: 'Sarah M.', email: '' },
+      status: 'rechtszaak',
+      crowdfunding: { doel: 5000, opgehaald: 3800, actief: true },
+      views: 678
+    },
+    // BESTAANDE DEMOS
     {
       titel: 'Bouwaanvraag 8 maanden zonder reactie',
       categorie: 'traagheid',
@@ -1815,7 +2262,7 @@ function seedDemoData(){
 seedDemoData();
 parseRoute();
 
-console.log('Meldpunt Ambtenaren v1.0 geladen');
+console.log('Meldpunt Ambtenaren v1.1 geladen');
 </script>
 </body>
 </html>
