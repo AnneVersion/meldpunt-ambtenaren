@@ -1,0 +1,1821 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meldpunt Ambtenaren — Meld, Deel, Onderneem Actie</title>
+<meta name="description" content="Burgerplatform voor meldingen over ambtenaren. Deel je verhaal, start een rechtszaak, crowdfund juridische actie.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300..800;1,9..40,300..800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+/* ============================================================
+   MELDPUNT AMBTENAREN v1.0 — Design System
+   ============================================================ */
+:root {
+  --bg: #0a0e1a;
+  --bg2: #111827;
+  --bg3: #1e293b;
+  --surface: rgba(30,41,59,.65);
+  --glass: rgba(30,41,59,.45);
+  --glass-bd: rgba(148,163,184,.15);
+  --tx: #f1f5f9;
+  --tx2: #94a3b8;
+  --tx3: #64748b;
+  --accent: #ef4444;
+  --accent2: #dc2626;
+  --accent-soft: rgba(239,68,68,.12);
+  --blue: #3b82f6;
+  --blue-soft: rgba(59,130,246,.12);
+  --green: #22c55e;
+  --green-soft: rgba(34,197,94,.12);
+  --yellow: #eab308;
+  --yellow-soft: rgba(234,179,8,.12);
+  --purple: #a855f7;
+  --purple-soft: rgba(168,85,247,.12);
+  --radius: 14px;
+  --radius-sm: 8px;
+  --radius-xs: 5px;
+  --shadow: 0 8px 32px rgba(0,0,0,.3);
+  --shadow-sm: 0 2px 8px rgba(0,0,0,.2);
+  --transition: .2s cubic-bezier(.4,0,.2,1);
+  --font: 'DM Sans', system-ui, sans-serif;
+  --max-w: 1100px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--tx);
+  line-height: 1.6;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--blue); text-decoration: none; }
+a:hover { text-decoration: underline; }
+.mi { font-family: 'Material Icons Round'; font-size: 20px; vertical-align: -4px; }
+.mi-sm { font-size: 16px; vertical-align: -3px; }
+
+/* ============ LAYOUT ============ */
+.app-shell { display: flex; flex-direction: column; min-height: 100vh; }
+
+/* HEADER / NAV */
+.top-bar {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(10,14,26,.85);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--glass-bd);
+  padding: 0 20px;
+}
+.top-bar-inner {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  height: 56px;
+  gap: 8px;
+}
+.logo {
+  font-weight: 700;
+  font-size: 17px;
+  color: var(--tx);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.logo .mi { color: var(--accent); font-size: 26px; }
+.logo span { color: var(--accent); }
+.nav-spacer { flex: 1; }
+.nav-links { display: flex; gap: 4px; align-items: center; }
+.nav-link {
+  padding: 6px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--tx2);
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  border: none;
+  background: none;
+  white-space: nowrap;
+}
+.nav-link:hover { color: var(--tx); background: var(--glass); }
+.nav-link.active { color: var(--tx); background: var(--surface); }
+.nav-link.cta {
+  background: var(--accent);
+  color: #fff;
+  font-weight: 600;
+}
+.nav-link.cta:hover { background: var(--accent2); }
+
+/* Hamburger voor mobiel */
+.hamburger {
+  display: none;
+  background: none;
+  border: none;
+  color: var(--tx);
+  cursor: pointer;
+  padding: 4px;
+}
+@media(max-width:768px){
+  .hamburger { display: block; }
+  .nav-links {
+    display: none;
+    position: absolute;
+    top: 56px;
+    left: 0; right: 0;
+    background: rgba(10,14,26,.95);
+    backdrop-filter: blur(16px);
+    flex-direction: column;
+    padding: 12px;
+    border-bottom: 1px solid var(--glass-bd);
+    gap: 4px;
+  }
+  .nav-links.open { display: flex; }
+  .nav-link { width: 100%; justify-content: flex-start; padding: 10px 16px; }
+}
+
+/* MAIN CONTENT */
+.main-content {
+  flex: 1;
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 24px 20px 60px;
+  width: 100%;
+}
+
+/* ============ CARDS & PANELS ============ */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--glass-bd);
+  border-radius: var(--radius);
+  padding: 20px;
+  backdrop-filter: blur(8px);
+  transition: var(--transition);
+}
+.card:hover { border-color: rgba(148,163,184,.25); }
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 16px;
+}
+
+/* ============ BUTTONS ============ */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 20px;
+  border-radius: var(--radius-sm);
+  font: 600 13px var(--font);
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: var(--transition);
+}
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-primary:hover { background: var(--accent2); }
+.btn-secondary { background: var(--glass); color: var(--tx); border-color: var(--glass-bd); }
+.btn-secondary:hover { background: var(--surface); }
+.btn-blue { background: var(--blue); color: #fff; }
+.btn-blue:hover { background: #2563eb; }
+.btn-green { background: var(--green); color: #fff; }
+.btn-green:hover { background: #16a34a; }
+.btn-sm { padding: 6px 14px; font-size: 12px; }
+.btn-lg { padding: 14px 28px; font-size: 15px; }
+
+/* ============ FORMS ============ */
+.form-group { margin-bottom: 18px; }
+.form-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--tx2);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+}
+.form-input, .form-select, .form-textarea {
+  width: 100%;
+  padding: 10px 14px;
+  background: var(--bg2);
+  border: 1px solid var(--glass-bd);
+  border-radius: var(--radius-sm);
+  color: var(--tx);
+  font: 400 14px var(--font);
+  transition: var(--transition);
+  outline: none;
+}
+.form-input:focus, .form-select:focus, .form-textarea:focus {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px var(--blue-soft);
+}
+.form-textarea { min-height: 120px; resize: vertical; }
+.form-select { cursor: pointer; }
+.form-hint { font-size: 11px; color: var(--tx3); margin-top: 4px; }
+.form-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--tx2);
+}
+.form-check input[type="checkbox"] {
+  width: 18px; height: 18px;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+/* ============ BADGES & TAGS ============ */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+}
+.badge-red { background: var(--accent-soft); color: var(--accent); }
+.badge-blue { background: var(--blue-soft); color: var(--blue); }
+.badge-green { background: var(--green-soft); color: var(--green); }
+.badge-yellow { background: var(--yellow-soft); color: var(--yellow); }
+.badge-purple { background: var(--purple-soft); color: var(--purple); }
+
+/* ============ STATS ROW ============ */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+  margin: 20px 0;
+}
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--glass-bd);
+  border-radius: var(--radius);
+  padding: 16px;
+  text-align: center;
+  backdrop-filter: blur(8px);
+}
+.stat-value {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--tx);
+  line-height: 1.2;
+}
+.stat-label {
+  font-size: 11px;
+  color: var(--tx3);
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  margin-top: 4px;
+}
+
+/* ============ PROGRESS BAR ============ */
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background: var(--bg2);
+  border-radius: 4px;
+  overflow: hidden;
+  margin: 8px 0;
+}
+.progress-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width .5s ease;
+}
+
+/* ============ STEP WIZARD ============ */
+.wizard-steps {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 24px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+.wizard-step {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+  color: var(--tx3);
+  background: var(--bg2);
+  border: 1px solid var(--glass-bd);
+  cursor: pointer;
+  transition: var(--transition);
+}
+.wizard-step.active { color: var(--tx); background: var(--blue-soft); border-color: var(--blue); }
+.wizard-step.done { color: var(--green); background: var(--green-soft); border-color: var(--green); }
+.wizard-step-num {
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: var(--bg3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+}
+.wizard-step.active .wizard-step-num { background: var(--blue); color: #fff; }
+.wizard-step.done .wizard-step-num { background: var(--green); color: #fff; }
+
+/* ============ TOAST ============ */
+.toast-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.toast {
+  background: var(--surface);
+  border: 1px solid var(--glass-bd);
+  backdrop-filter: blur(12px);
+  padding: 10px 18px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  color: var(--tx);
+  box-shadow: var(--shadow);
+  animation: toastIn .3s ease;
+  max-width: 360px;
+}
+.toast.out { animation: toastOut .3s ease forwards; }
+@keyframes toastIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+@keyframes toastOut { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }
+
+/* ============ HERO ============ */
+.hero {
+  text-align: center;
+  padding: 48px 20px 32px;
+}
+.hero h1 {
+  font-size: clamp(28px, 5vw, 42px);
+  font-weight: 800;
+  line-height: 1.15;
+  margin-bottom: 16px;
+}
+.hero h1 .accent { color: var(--accent); }
+.hero p {
+  font-size: 16px;
+  color: var(--tx2);
+  max-width: 600px;
+  margin: 0 auto 24px;
+}
+.hero-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+/* ============ HOE WERKT HET ============ */
+.how-it-works {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin: 32px 0;
+}
+.how-step {
+  text-align: center;
+  padding: 24px 16px;
+}
+.how-step .mi {
+  font-size: 36px;
+  color: var(--accent);
+  display: block;
+  margin-bottom: 12px;
+}
+.how-step h3 { font-size: 15px; margin-bottom: 6px; }
+.how-step p { font-size: 13px; color: var(--tx2); }
+
+/* ============ MELDING CARDS ============ */
+.melding-card { cursor: pointer; }
+.melding-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+.melding-card-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 10px; }
+.melding-card h3 { font-size: 15px; font-weight: 600; line-height: 1.3; }
+.melding-card-meta { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; font-size: 11px; color: var(--tx3); margin-bottom: 8px; }
+.melding-card-excerpt { font-size: 13px; color: var(--tx2); line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+.melding-card-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--glass-bd); font-size: 12px; color: var(--tx3); }
+
+/* ============ DETAIL PAGE ============ */
+.detail-header { margin-bottom: 24px; }
+.detail-header h1 { font-size: 24px; font-weight: 700; margin-bottom: 8px; }
+.detail-meta { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; font-size: 13px; color: var(--tx2); }
+.detail-body { font-size: 15px; line-height: 1.8; color: var(--tx); margin: 20px 0; }
+.detail-body p { margin-bottom: 12px; }
+.ambtenaar-card {
+  background: var(--accent-soft);
+  border: 1px solid rgba(239,68,68,.2);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin: 16px 0;
+}
+.ambtenaar-card h4 { font-size: 13px; color: var(--accent); margin-bottom: 8px; text-transform: uppercase; letter-spacing: .5px; }
+
+/* ============ CROWDFUNDING ============ */
+.crowdfund-section {
+  background: var(--blue-soft);
+  border: 1px solid rgba(59,130,246,.2);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin: 20px 0;
+}
+.crowdfund-amount { font-size: 24px; font-weight: 700; }
+.crowdfund-goal { font-size: 13px; color: var(--tx2); }
+
+/* ============ FILTERS ============ */
+.filters-bar {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+  align-items: center;
+}
+.filter-chip {
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+  background: var(--bg2);
+  border: 1px solid var(--glass-bd);
+  color: var(--tx2);
+  cursor: pointer;
+  transition: var(--transition);
+}
+.filter-chip:hover, .filter-chip.active { color: var(--tx); border-color: var(--blue); background: var(--blue-soft); }
+.search-input {
+  flex: 1;
+  min-width: 200px;
+  padding: 8px 14px 8px 36px;
+  background: var(--bg2);
+  border: 1px solid var(--glass-bd);
+  border-radius: 20px;
+  color: var(--tx);
+  font: 400 13px var(--font);
+  outline: none;
+}
+.search-input:focus { border-color: var(--blue); }
+.search-wrap { position: relative; flex: 1; min-width: 200px; }
+.search-wrap .mi { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--tx3); font-size: 18px; }
+
+/* ============ FOOTER ============ */
+.app-footer {
+  background: var(--bg2);
+  border-top: 1px solid var(--glass-bd);
+  padding: 20px;
+  text-align: center;
+  font-size: 12px;
+  color: var(--tx3);
+}
+
+/* ============ SECTION TITLES ============ */
+.section-title {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ============ PAGE TRANSITIONS ============ */
+.page { animation: pageIn .3s ease; }
+@keyframes pageIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ============ EMPTY STATE ============ */
+.empty-state {
+  text-align: center;
+  padding: 48px 20px;
+  color: var(--tx3);
+}
+.empty-state .mi { font-size: 48px; display: block; margin-bottom: 12px; opacity: .4; }
+.empty-state p { font-size: 14px; margin-bottom: 16px; }
+
+/* ============ RESPONSIVE ============ */
+@media(max-width:600px){
+  .hero { padding: 32px 12px 24px; }
+  .hero h1 { font-size: 24px; }
+  .card { padding: 14px; }
+  .card-grid { grid-template-columns: 1fr; }
+  .stats-row { grid-template-columns: repeat(2, 1fr); }
+  .main-content { padding: 16px 12px 40px; }
+}
+</style>
+</head>
+<body>
+<div class="app-shell">
+  <!-- ============ TOP BAR ============ -->
+  <header class="top-bar">
+    <div class="top-bar-inner">
+      <div class="logo" onclick="navigate('/')">
+        <span class="mi">gavel</span>
+        Meldpunt <span>Ambtenaren</span>
+      </div>
+      <div class="nav-spacer"></div>
+      <button class="hamburger" onclick="document.querySelector('.nav-links').classList.toggle('open')">
+        <span class="mi" style="font-size:28px">menu</span>
+      </button>
+      <nav class="nav-links" id="navLinks">
+        <button class="nav-link" data-route="/" onclick="navigate('/')"><span class="mi mi-sm">home</span> Home</button>
+        <button class="nav-link" data-route="/meldingen" onclick="navigate('/meldingen')"><span class="mi mi-sm">list</span> Meldingen</button>
+        <button class="nav-link" data-route="/rechtszaak" onclick="navigate('/rechtszaak')"><span class="mi mi-sm">balance</span> Rechtszaak</button>
+        <button class="nav-link cta" data-route="/melden" onclick="navigate('/melden')"><span class="mi mi-sm">add_circle</span> Doe een melding</button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ============ MAIN ============ -->
+  <main class="main-content" id="app"></main>
+
+  <!-- ============ FOOTER ============ -->
+  <footer class="app-footer">
+    Meldpunt Ambtenaren v1.0 &mdash; Een burgerplatform voor transparantie en recht.
+    Dit platform is geen juridisch advies. Raadpleeg een jurist voor complexe zaken.
+  </footer>
+</div>
+
+<!-- TOAST CONTAINER -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+/* ============================================================
+   MELDPUNT AMBTENAREN v1.0 — Application Logic
+   ============================================================ */
+
+// ============ DATA STORE (localStorage, later swappable) ============
+var DataStore = {
+  _key: function(collection){ return 'ma_' + collection; },
+
+  getAll: function(collection){
+    try {
+      return JSON.parse(localStorage.getItem(this._key(collection)) || '[]');
+    } catch(e){ return []; }
+  },
+
+  getById: function(collection, id){
+    var items = this.getAll(collection);
+    for(var i = 0; i < items.length; i++){
+      if(items[i].id === id) return items[i];
+    }
+    return null;
+  },
+
+  add: function(collection, item){
+    var items = this.getAll(collection);
+    if(!item.id) item.id = 'id_' + Date.now() + '_' + Math.random().toString(36).substr(2,6);
+    items.push(item);
+    localStorage.setItem(this._key(collection), JSON.stringify(items));
+    return item;
+  },
+
+  update: function(collection, id, updates){
+    var items = this.getAll(collection);
+    for(var i = 0; i < items.length; i++){
+      if(items[i].id === id){
+        for(var k in updates) items[i][k] = updates[k];
+        localStorage.setItem(this._key(collection), JSON.stringify(items));
+        return items[i];
+      }
+    }
+    return null;
+  },
+
+  remove: function(collection, id){
+    var items = this.getAll(collection);
+    var filtered = items.filter(function(it){ return it.id !== id; });
+    localStorage.setItem(this._key(collection), JSON.stringify(filtered));
+  },
+
+  count: function(collection){
+    return this.getAll(collection).length;
+  },
+
+  query: function(collection, filterFn){
+    return this.getAll(collection).filter(filterFn);
+  }
+};
+
+// ============ CATEGORIES ============
+var CATEGORIES = {
+  corruptie: { label: 'Corruptie', icon: 'paid', color: 'red' },
+  machtsmisbruik: { label: 'Machtsmisbruik', icon: 'security', color: 'red' },
+  discriminatie: { label: 'Discriminatie', icon: 'block', color: 'purple' },
+  traagheid: { label: 'Traagheid', icon: 'hourglass_empty', color: 'yellow' },
+  fraude: { label: 'Fraude', icon: 'warning', color: 'red' },
+  onvriendelijkheid: { label: 'Onvriendelijkheid', icon: 'mood_bad', color: 'yellow' },
+  nalatigheid: { label: 'Nalatigheid', icon: 'do_not_disturb', color: 'blue' },
+  belangenverstrengeling: { label: 'Belangenverstrengeling', icon: 'swap_horiz', color: 'purple' },
+  overig: { label: 'Overig', icon: 'more_horiz', color: 'blue' }
+};
+
+// ============ ROUTER ============
+var _currentRoute = '/';
+var _routeParams = {};
+
+function navigate(path){
+  window.location.hash = '#' + path;
+}
+
+function parseRoute(){
+  var hash = window.location.hash.replace(/^#/, '') || '/';
+  _routeParams = {};
+
+  if(hash === '/' || hash === ''){
+    _currentRoute = '/';
+  } else if(hash === '/meldingen'){
+    _currentRoute = '/meldingen';
+  } else if(hash.indexOf('/melding/') === 0){
+    _currentRoute = '/melding';
+    _routeParams.id = hash.replace('/melding/', '');
+  } else if(hash === '/melden'){
+    _currentRoute = '/melden';
+  } else if(hash === '/rechtszaak'){
+    _currentRoute = '/rechtszaak';
+  } else {
+    _currentRoute = '/';
+  }
+  renderPage();
+  updateNav();
+  window.scrollTo(0, 0);
+  // Close mobile menu
+  var nl = document.getElementById('navLinks');
+  if(nl) nl.classList.remove('open');
+}
+
+function updateNav(){
+  document.querySelectorAll('.nav-link[data-route]').forEach(function(el){
+    var route = el.getAttribute('data-route');
+    el.classList.toggle('active', route === _currentRoute && !el.classList.contains('cta'));
+  });
+}
+
+function renderPage(){
+  var app = document.getElementById('app');
+  switch(_currentRoute){
+    case '/': app.innerHTML = renderHome(); break;
+    case '/meldingen': app.innerHTML = renderMeldingen(); break;
+    case '/melding': app.innerHTML = renderMeldingDetail(); break;
+    case '/melden': app.innerHTML = renderMelden(); initMeldForm(); break;
+    case '/rechtszaak': app.innerHTML = renderRechtszaak(); initRechtszaakWizard(); break;
+    default: app.innerHTML = renderHome();
+  }
+}
+
+window.addEventListener('hashchange', parseRoute);
+
+// ============ TOAST ============
+function toast(msg, duration){
+  var el = document.createElement('div');
+  el.className = 'toast';
+  el.textContent = msg;
+  document.getElementById('toastContainer').appendChild(el);
+  setTimeout(function(){
+    el.classList.add('out');
+    setTimeout(function(){ el.remove(); }, 300);
+  }, duration || 3000);
+}
+
+// ============ HELPERS ============
+function formatDate(ts){
+  if(!ts) return '-';
+  var d = new Date(ts);
+  return d.toLocaleDateString('nl-NL', { day: 'numeric', month: 'long', year: 'numeric' });
+}
+
+function escHtml(s){
+  if(!s) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function truncate(s, max){
+  if(!s) return '';
+  return s.length > max ? s.substring(0, max) + '...' : s;
+}
+
+function categoryBadge(cat){
+  var c = CATEGORIES[cat] || CATEGORIES.overig;
+  return '<span class="badge badge-' + c.color + '"><span class="mi mi-sm">' + c.icon + '</span> ' + c.label + '</span>';
+}
+
+// ============ PAGE: HOME ============
+function renderHome(){
+  var meldingen = DataStore.getAll('meldingen');
+  var zaken = DataStore.query('meldingen', function(m){ return m.status === 'rechtszaak'; });
+  var totalDonaties = 0;
+  DataStore.getAll('donaties').forEach(function(d){ totalDonaties += (d.bedrag || 0); });
+
+  var recentHtml = '';
+  var recent = meldingen.slice().sort(function(a,b){ return (b.datum_melding||0)-(a.datum_melding||0); }).slice(0,3);
+
+  if(recent.length === 0){
+    recentHtml = '<div class="empty-state"><span class="mi">inbox</span><p>Nog geen meldingen. Wees de eerste die een melding doet.</p><button class="btn btn-primary" onclick="navigate(\'/melden\')"><span class="mi mi-sm">add_circle</span> Doe een melding</button></div>';
+  } else {
+    recentHtml = '<div class="card-grid">';
+    recent.forEach(function(m){
+      recentHtml += renderMeldingCard(m);
+    });
+    recentHtml += '</div>';
+  }
+
+  return '<div class="page">' +
+    '<div class="hero">' +
+      '<h1>Ambtenaren ter <span class="accent">verantwoording</span></h1>' +
+      '<p>Deel je ervaring, laat je stem horen en onderneem juridische actie. Samen zorgen we voor transparantie en rechtvaardigheid.</p>' +
+      '<div class="hero-actions">' +
+        '<button class="btn btn-primary btn-lg" onclick="navigate(\'/melden\')"><span class="mi">add_circle</span> Doe een melding</button>' +
+        '<button class="btn btn-secondary btn-lg" onclick="navigate(\'/meldingen\')"><span class="mi">list</span> Bekijk verhalen</button>' +
+      '</div>' +
+    '</div>' +
+    '<div class="stats-row">' +
+      '<div class="stat-card"><div class="stat-value">' + meldingen.length + '</div><div class="stat-label">Meldingen</div></div>' +
+      '<div class="stat-card"><div class="stat-value">' + zaken.length + '</div><div class="stat-label">Rechtszaken</div></div>' +
+      '<div class="stat-card"><div class="stat-value">&euro;' + totalDonaties.toLocaleString('nl-NL') + '</div><div class="stat-label">Gedoneerd</div></div>' +
+      '<div class="stat-card"><div class="stat-value">' + Object.keys(CATEGORIES).length + '</div><div class="stat-label">Categorie\u00ebn</div></div>' +
+    '</div>' +
+    '<div class="how-it-works">' +
+      '<div class="how-step card"><span class="mi">edit_note</span><h3>1. Meld</h3><p>Beschrijf wat er is gebeurd, wie de ambtenaar is en voeg bewijsstukken toe.</p></div>' +
+      '<div class="how-step card"><span class="mi">public</span><h3>2. Publiceer</h3><p>Je verhaal wordt gepubliceerd zodat andere burgers het kunnen lezen.</p></div>' +
+      '<div class="how-step card"><span class="mi">volunteer_activism</span><h3>3. Crowdfund</h3><p>Andere burgers kunnen doneren om een rechtszaak te financieren.</p></div>' +
+      '<div class="how-step card"><span class="mi">gavel</span><h3>4. Proceeder</h3><p>Genereer automatisch een dagvaarding en start een zaak bij de kantonrechter.</p></div>' +
+    '</div>' +
+    '<h2 class="section-title"><span class="mi">schedule</span> Laatste meldingen</h2>' +
+    recentHtml +
+  '</div>';
+}
+
+// ============ MELDING CARD (herbruikbaar) ============
+function renderMeldingCard(m){
+  var amb = m.ambtenaar || {};
+  return '<div class="card melding-card" onclick="navigate(\'/melding/' + m.id + '\')">' +
+    '<div class="melding-card-header">' +
+      '<h3>' + escHtml(m.titel) + '</h3>' +
+      categoryBadge(m.categorie) +
+    '</div>' +
+    '<div class="melding-card-meta">' +
+      '<span><span class="mi mi-sm">location_city</span> ' + escHtml(m.gemeente || 'Onbekend') + '</span>' +
+      '<span><span class="mi mi-sm">event</span> ' + formatDate(m.datum_incident) + '</span>' +
+      (amb.naam ? '<span><span class="mi mi-sm">person</span> ' + escHtml(amb.naam) + '</span>' : '') +
+    '</div>' +
+    '<div class="melding-card-excerpt">' + escHtml(truncate(m.verhaal, 200)) + '</div>' +
+    '<div class="melding-card-footer">' +
+      '<span><span class="mi mi-sm">visibility</span> ' + (m.views || 0) + ' views</span>' +
+      '<span>' + (m.melder && m.melder.anoniem ? '<span class="mi mi-sm">visibility_off</span> Anoniem' : '<span class="mi mi-sm">person</span> ' + escHtml((m.melder && m.melder.naam) || 'Burger')) + '</span>' +
+    '</div>' +
+  '</div>';
+}
+
+// ============ PAGE: MELDINGEN OVERZICHT ============
+var _filterCat = 'alle';
+var _filterSearch = '';
+
+function renderMeldingen(){
+  var meldingen = DataStore.getAll('meldingen')
+    .sort(function(a,b){ return (b.datum_melding||0)-(a.datum_melding||0); });
+
+  // Filters
+  var filtersHtml = '<div class="filters-bar">' +
+    '<div class="search-wrap"><span class="mi">search</span><input class="search-input" placeholder="Zoek in meldingen..." value="' + escHtml(_filterSearch) + '" oninput="updateFilter(this.value)"></div>' +
+    '<div class="filter-chip' + (_filterCat==='alle'?' active':'') + '" onclick="setFilterCat(\'alle\')">Alle</div>';
+  for(var key in CATEGORIES){
+    filtersHtml += '<div class="filter-chip' + (_filterCat===key?' active':'') + '" onclick="setFilterCat(\'' + key + '\')">' + CATEGORIES[key].label + '</div>';
+  }
+  filtersHtml += '</div>';
+
+  // Filter toepassen
+  var filtered = meldingen.filter(function(m){
+    if(_filterCat !== 'alle' && m.categorie !== _filterCat) return false;
+    if(_filterSearch){
+      var s = _filterSearch.toLowerCase();
+      var haystack = ((m.titel||'') + ' ' + (m.verhaal||'') + ' ' + (m.gemeente||'') + ' ' + ((m.ambtenaar&&m.ambtenaar.naam)||'')).toLowerCase();
+      if(haystack.indexOf(s) < 0) return false;
+    }
+    return true;
+  });
+
+  var listHtml = '';
+  if(filtered.length === 0){
+    listHtml = '<div class="empty-state"><span class="mi">search_off</span><p>Geen meldingen gevonden' + (_filterSearch ? ' voor "' + escHtml(_filterSearch) + '"' : '') + '.</p><button class="btn btn-primary" onclick="navigate(\'/melden\')"><span class="mi mi-sm">add_circle</span> Doe een melding</button></div>';
+  } else {
+    listHtml = '<div class="card-grid">';
+    filtered.forEach(function(m){ listHtml += renderMeldingCard(m); });
+    listHtml += '</div>';
+  }
+
+  return '<div class="page">' +
+    '<h2 class="section-title"><span class="mi">list</span> Alle meldingen <span style="font-size:14px;color:var(--tx3);font-weight:400">(' + filtered.length + ')</span></h2>' +
+    filtersHtml +
+    listHtml +
+  '</div>';
+}
+
+function setFilterCat(cat){
+  _filterCat = cat;
+  document.getElementById('app').innerHTML = renderMeldingen();
+}
+
+function updateFilter(val){
+  _filterSearch = val;
+  // Debounce
+  clearTimeout(window._filterTimeout);
+  window._filterTimeout = setTimeout(function(){
+    document.getElementById('app').innerHTML = renderMeldingen();
+    // Refocus search
+    var inp = document.querySelector('.search-input');
+    if(inp){ inp.focus(); inp.setSelectionRange(inp.value.length, inp.value.length); }
+  }, 300);
+}
+
+// ============ PAGE: MELDING DETAIL ============
+function renderMeldingDetail(){
+  var m = DataStore.getById('meldingen', _routeParams.id);
+  if(!m) return '<div class="page"><div class="empty-state"><span class="mi">error</span><p>Melding niet gevonden.</p><button class="btn btn-secondary" onclick="navigate(\'/meldingen\')">Terug naar overzicht</button></div></div>';
+
+  // Verhoog views
+  DataStore.update('meldingen', m.id, { views: (m.views||0) + 1 });
+
+  var amb = m.ambtenaar || {};
+  var melder = m.melder || {};
+  var cf = m.crowdfunding || { doel: 0, opgehaald: 0, actief: false };
+  var pct = cf.doel > 0 ? Math.min(100, Math.round(cf.opgehaald / cf.doel * 100)) : 0;
+
+  var reacties = DataStore.query('reacties', function(r){ return r.melding_id === m.id; })
+    .sort(function(a,b){ return (a.datum||0)-(b.datum||0); });
+
+  var reactieHtml = '';
+  reacties.forEach(function(r){
+    reactieHtml += '<div class="card" style="padding:12px;margin-bottom:8px">' +
+      '<div style="display:flex;justify-content:space-between;font-size:12px;color:var(--tx3);margin-bottom:4px">' +
+        '<span><span class="mi mi-sm">person</span> ' + escHtml(r.auteur_naam || 'Anoniem') + '</span>' +
+        '<span>' + formatDate(r.datum) + '</span>' +
+      '</div>' +
+      '<div style="font-size:13px">' + escHtml(r.tekst) + '</div>' +
+    '</div>';
+  });
+
+  var verhaalHtml = (m.verhaal || '').split('\n').filter(function(p){ return p.trim(); }).map(function(p){ return '<p>' + escHtml(p) + '</p>'; }).join('');
+
+  return '<div class="page">' +
+    '<button class="btn btn-secondary btn-sm" onclick="navigate(\'/meldingen\')" style="margin-bottom:16px"><span class="mi mi-sm">arrow_back</span> Terug</button>' +
+    '<div class="detail-header">' +
+      '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:8px">' +
+        categoryBadge(m.categorie) +
+        '<span class="badge badge-blue"><span class="mi mi-sm">event</span> ' + formatDate(m.datum_incident) + '</span>' +
+        '<span class="badge badge-blue"><span class="mi mi-sm">location_city</span> ' + escHtml(m.gemeente) + '</span>' +
+      '</div>' +
+      '<h1>' + escHtml(m.titel) + '</h1>' +
+      '<div class="detail-meta">' +
+        '<span>Gemeld op ' + formatDate(m.datum_melding) + '</span>' +
+        '<span>' + (melder.anoniem ? 'Anoniem gemeld' : 'Door ' + escHtml(melder.naam || 'Burger')) + '</span>' +
+      '</div>' +
+    '</div>' +
+
+    '<div class="ambtenaar-card">' +
+      '<h4><span class="mi mi-sm">person</span> Betreffende ambtenaar</h4>' +
+      '<div style="font-size:14px"><strong>' + escHtml(amb.naam || 'Onbekend') + '</strong></div>' +
+      (amb.functie ? '<div style="font-size:13px;color:var(--tx2)">' + escHtml(amb.functie) + '</div>' : '') +
+      (amb.organisatie ? '<div style="font-size:13px;color:var(--tx2)">' + escHtml(amb.organisatie) + '</div>' : '') +
+    '</div>' +
+
+    '<div class="detail-body">' + verhaalHtml + '</div>' +
+
+    (cf.actief ? '<div class="crowdfund-section">' +
+      '<h3 style="font-size:15px;margin-bottom:8px"><span class="mi">volunteer_activism</span> Crowdfunding voor rechtszaak</h3>' +
+      '<div class="crowdfund-amount">&euro;' + (cf.opgehaald||0).toLocaleString('nl-NL') + ' <span class="crowdfund-goal">van &euro;' + (cf.doel||0).toLocaleString('nl-NL') + ' doel</span></div>' +
+      '<div class="progress-bar"><div class="progress-fill" style="width:' + pct + '%;background:var(--blue)"></div></div>' +
+      '<div style="font-size:12px;color:var(--tx2);margin-bottom:12px">' + pct + '% bereikt</div>' +
+      '<button class="btn btn-blue" onclick="doneerAanMelding(\'' + m.id + '\')"><span class="mi mi-sm">favorite</span> Doneer</button>' +
+    '</div>' : '') +
+
+    '<div style="margin:20px 0;display:flex;gap:8px;flex-wrap:wrap">' +
+      '<button class="btn btn-primary" onclick="startRechtszaakVoorMelding(\'' + m.id + '\')"><span class="mi mi-sm">gavel</span> Start rechtszaak</button>' +
+      (cf.actief ? '' : '<button class="btn btn-blue" onclick="startCrowdfunding(\'' + m.id + '\')"><span class="mi mi-sm">volunteer_activism</span> Start crowdfunding</button>') +
+    '</div>' +
+
+    '<h3 class="section-title" style="font-size:16px;margin-top:24px"><span class="mi mi-sm">chat</span> Reacties (' + reacties.length + ')</h3>' +
+    reactieHtml +
+    '<div class="card" style="padding:14px;margin-top:8px">' +
+      '<textarea class="form-textarea" id="reactieText" placeholder="Schrijf een reactie..." style="min-height:60px;margin-bottom:8px"></textarea>' +
+      '<div style="display:flex;gap:8px;align-items:center">' +
+        '<input class="form-input" id="reactieNaam" placeholder="Je naam (optioneel)" style="flex:1;padding:8px 12px">' +
+        '<button class="btn btn-primary btn-sm" onclick="plaatsReactie(\'' + m.id + '\')"><span class="mi mi-sm">send</span> Plaats</button>' +
+      '</div>' +
+    '</div>' +
+  '</div>';
+}
+
+function plaatsReactie(meldingId){
+  var tekst = document.getElementById('reactieText').value.trim();
+  if(!tekst){ toast('Schrijf eerst een reactie'); return; }
+  var naam = document.getElementById('reactieNaam').value.trim() || 'Anoniem';
+  DataStore.add('reacties', {
+    melding_id: meldingId,
+    auteur_naam: naam,
+    tekst: tekst,
+    datum: Date.now()
+  });
+  toast('Reactie geplaatst!');
+  renderPage();
+}
+
+function doneerAanMelding(meldingId){
+  var bedrag = prompt('Welk bedrag wil je doneren? (in euro)');
+  if(!bedrag) return;
+  bedrag = parseFloat(bedrag);
+  if(isNaN(bedrag) || bedrag <= 0){ toast('Ongeldig bedrag'); return; }
+  var naam = prompt('Je naam (laat leeg voor anoniem)') || 'Anoniem';
+  DataStore.add('donaties', {
+    melding_id: meldingId,
+    bedrag: bedrag,
+    donateur_naam: naam,
+    datum: Date.now()
+  });
+  // Update crowdfunding
+  var m = DataStore.getById('meldingen', meldingId);
+  if(m && m.crowdfunding){
+    DataStore.update('meldingen', meldingId, { crowdfunding: { doel: m.crowdfunding.doel, opgehaald: (m.crowdfunding.opgehaald||0) + bedrag, actief: true } });
+  }
+  toast('Bedankt voor je donatie van \u20AC' + bedrag.toFixed(2) + '!');
+  renderPage();
+}
+
+function startCrowdfunding(meldingId){
+  var doel = prompt('Wat is het crowdfunding-doel? (in euro, bijv. griffierecht + advocaatkosten)');
+  if(!doel) return;
+  doel = parseFloat(doel);
+  if(isNaN(doel) || doel <= 0){ toast('Ongeldig bedrag'); return; }
+  DataStore.update('meldingen', meldingId, { crowdfunding: { doel: doel, opgehaald: 0, actief: true } });
+  toast('Crowdfunding gestart!');
+  renderPage();
+}
+
+function startRechtszaakVoorMelding(meldingId){
+  _rechtszaakMeldingId = meldingId;
+  navigate('/rechtszaak');
+}
+
+// ============ PAGE: MELDING INDIENEN ============
+var _meldStep = 0;
+var _meldData = {};
+
+function renderMelden(){
+  var steps = ['Categorie', 'Ambtenaar', 'Verhaal', 'Wanneer & waar', 'Jouw gegevens', 'Controleer'];
+  var stepsHtml = '<div class="wizard-steps">';
+  steps.forEach(function(s, i){
+    var cls = i === _meldStep ? 'active' : (i < _meldStep ? 'done' : '');
+    stepsHtml += '<div class="wizard-step ' + cls + '" onclick="goMeldStep(' + i + ')">' +
+      '<span class="wizard-step-num">' + (i < _meldStep ? '<span class="mi" style="font-size:14px">check</span>' : (i+1)) + '</span>' +
+      s + '</div>';
+  });
+  stepsHtml += '</div>';
+
+  return '<div class="page">' +
+    '<h2 class="section-title"><span class="mi">edit_note</span> Melding indienen</h2>' +
+    stepsHtml +
+    '<div class="card" id="meldFormArea"></div>' +
+  '</div>';
+}
+
+function initMeldForm(){
+  renderMeldStep();
+}
+
+function goMeldStep(n){
+  if(n <= _meldStep){ _meldStep = n; renderMeldStep(); }
+}
+
+function renderMeldStep(){
+  var area = document.getElementById('meldFormArea');
+  if(!area) return;
+
+  if(_meldStep === 0){
+    // Categorie
+    var html = '<h3 style="font-size:16px;margin-bottom:14px">Waar gaat je melding over?</h3>';
+    html += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px">';
+    for(var key in CATEGORIES){
+      var c = CATEGORIES[key];
+      var sel = _meldData.categorie === key ? 'border-color:var(--blue);background:var(--blue-soft)' : '';
+      html += '<div class="card" style="padding:14px;cursor:pointer;text-align:center;' + sel + '" onclick="setMeldCat(\'' + key + '\')">' +
+        '<span class="mi" style="font-size:28px;color:var(--accent);display:block;margin-bottom:6px">' + c.icon + '</span>' +
+        '<div style="font-size:13px;font-weight:600">' + c.label + '</div>' +
+      '</div>';
+    }
+    html += '</div>';
+    html += '<div style="margin-top:16px;text-align:right"><button class="btn btn-primary" onclick="nextMeldStep()">Volgende <span class="mi mi-sm">arrow_forward</span></button></div>';
+    area.innerHTML = html;
+
+  } else if(_meldStep === 1){
+    // Ambtenaar
+    area.innerHTML =
+      '<h3 style="font-size:16px;margin-bottom:14px">Over welke ambtenaar gaat het?</h3>' +
+      '<div class="form-group"><label class="form-label">Naam ambtenaar</label><input class="form-input" id="ambNaam" value="' + escHtml(_meldData.ambNaam||'') + '" placeholder="Volledige naam"></div>' +
+      '<div class="form-group"><label class="form-label">Functie / Afdeling</label><input class="form-input" id="ambFunctie" value="' + escHtml(_meldData.ambFunctie||'') + '" placeholder="Bijv. baliemedewerker, wethouder, etc."></div>' +
+      '<div class="form-group"><label class="form-label">Organisatie / Gemeente</label><input class="form-input" id="ambOrg" value="' + escHtml(_meldData.ambOrg||'') + '" placeholder="Bijv. Gemeente Amsterdam, Belastingdienst"></div>' +
+      '<div style="display:flex;justify-content:space-between;margin-top:16px">' +
+        '<button class="btn btn-secondary" onclick="prevMeldStep()"><span class="mi mi-sm">arrow_back</span> Vorige</button>' +
+        '<button class="btn btn-primary" onclick="saveMeldAmbtenaar();nextMeldStep()">Volgende <span class="mi mi-sm">arrow_forward</span></button>' +
+      '</div>';
+
+  } else if(_meldStep === 2){
+    // Verhaal
+    area.innerHTML =
+      '<h3 style="font-size:16px;margin-bottom:14px">Beschrijf wat er is gebeurd</h3>' +
+      '<div class="form-group"><label class="form-label">Titel</label><input class="form-input" id="meldTitel" value="' + escHtml(_meldData.titel||'') + '" placeholder="Korte omschrijving van het incident"></div>' +
+      '<div class="form-group"><label class="form-label">Volledig verhaal</label><textarea class="form-textarea" id="meldVerhaal" style="min-height:200px" placeholder="Beschrijf zo gedetailleerd mogelijk wat er is gebeurd. Vermeld data, tijden, locaties en eventuele getuigen.">' + escHtml(_meldData.verhaal||'') + '</textarea></div>' +
+      '<div class="form-hint">Tip: Hoe gedetailleerder je verhaal, hoe sterker het bewijs voor een eventuele rechtszaak.</div>' +
+      '<div style="display:flex;justify-content:space-between;margin-top:16px">' +
+        '<button class="btn btn-secondary" onclick="saveMeldVerhaal();prevMeldStep()"><span class="mi mi-sm">arrow_back</span> Vorige</button>' +
+        '<button class="btn btn-primary" onclick="saveMeldVerhaal();nextMeldStep()">Volgende <span class="mi mi-sm">arrow_forward</span></button>' +
+      '</div>';
+
+  } else if(_meldStep === 3){
+    // Wanneer & waar
+    area.innerHTML =
+      '<h3 style="font-size:16px;margin-bottom:14px">Wanneer en waar gebeurde het?</h3>' +
+      '<div class="form-group"><label class="form-label">Datum incident</label><input class="form-input" type="date" id="meldDatum" value="' + (_meldData.datum||'') + '"></div>' +
+      '<div class="form-group"><label class="form-label">Gemeente</label><input class="form-input" id="meldGemeente" value="' + escHtml(_meldData.gemeente||'') + '" placeholder="Bijv. Rotterdam"></div>' +
+      '<div class="form-group"><label class="form-label">Locatie (optioneel)</label><input class="form-input" id="meldLocatie" value="' + escHtml(_meldData.locatie||'') + '" placeholder="Bijv. Stadhuis, loket 3"></div>' +
+      '<div style="display:flex;justify-content:space-between;margin-top:16px">' +
+        '<button class="btn btn-secondary" onclick="saveMeldWanneer();prevMeldStep()"><span class="mi mi-sm">arrow_back</span> Vorige</button>' +
+        '<button class="btn btn-primary" onclick="saveMeldWanneer();nextMeldStep()">Volgende <span class="mi mi-sm">arrow_forward</span></button>' +
+      '</div>';
+
+  } else if(_meldStep === 4){
+    // Jouw gegevens
+    area.innerHTML =
+      '<h3 style="font-size:16px;margin-bottom:14px">Jouw gegevens</h3>' +
+      '<label class="form-check" style="margin-bottom:16px"><input type="checkbox" id="meldAnoniem" ' + (_meldData.anoniem ? 'checked' : '') + '> Ik wil anoniem melden</label>' +
+      '<div id="melderVelden">' +
+        '<div class="form-group"><label class="form-label">Naam</label><input class="form-input" id="melderNaam" value="' + escHtml(_meldData.melderNaam||'') + '" placeholder="Je volledige naam"></div>' +
+        '<div class="form-group"><label class="form-label">E-mail</label><input class="form-input" type="email" id="melderEmail" value="' + escHtml(_meldData.melderEmail||'') + '" placeholder="Voor eventuele opvolging"></div>' +
+        '<div class="form-group"><label class="form-label">Telefoon (optioneel)</label><input class="form-input" type="tel" id="melderTel" value="' + escHtml(_meldData.melderTel||'') + '" placeholder="06-12345678"></div>' +
+      '</div>' +
+      '<div class="form-hint" style="margin-top:8px">Je gegevens worden nooit publiek getoond en alleen gebruikt voor eventuele opvolging.</div>' +
+      '<div style="display:flex;justify-content:space-between;margin-top:16px">' +
+        '<button class="btn btn-secondary" onclick="saveMeldGegevens();prevMeldStep()"><span class="mi mi-sm">arrow_back</span> Vorige</button>' +
+        '<button class="btn btn-primary" onclick="saveMeldGegevens();nextMeldStep()">Controleer <span class="mi mi-sm">arrow_forward</span></button>' +
+      '</div>';
+
+  } else if(_meldStep === 5){
+    // Preview
+    var c = CATEGORIES[_meldData.categorie] || CATEGORIES.overig;
+    area.innerHTML =
+      '<h3 style="font-size:16px;margin-bottom:14px">Controleer je melding</h3>' +
+      '<table style="width:100%;font-size:13px;border-collapse:collapse">' +
+        '<tr><td style="padding:6px 8px;color:var(--tx3);width:120px">Categorie</td><td style="padding:6px 8px">' + categoryBadge(_meldData.categorie) + '</td></tr>' +
+        '<tr><td style="padding:6px 8px;color:var(--tx3)">Titel</td><td style="padding:6px 8px;font-weight:600">' + escHtml(_meldData.titel) + '</td></tr>' +
+        '<tr><td style="padding:6px 8px;color:var(--tx3)">Ambtenaar</td><td style="padding:6px 8px">' + escHtml(_meldData.ambNaam) + ' — ' + escHtml(_meldData.ambFunctie) + ' bij ' + escHtml(_meldData.ambOrg) + '</td></tr>' +
+        '<tr><td style="padding:6px 8px;color:var(--tx3)">Datum</td><td style="padding:6px 8px">' + escHtml(_meldData.datum) + '</td></tr>' +
+        '<tr><td style="padding:6px 8px;color:var(--tx3)">Gemeente</td><td style="padding:6px 8px">' + escHtml(_meldData.gemeente) + '</td></tr>' +
+        '<tr><td style="padding:6px 8px;color:var(--tx3)">Melder</td><td style="padding:6px 8px">' + (_meldData.anoniem ? 'Anoniem' : escHtml(_meldData.melderNaam) + ' (' + escHtml(_meldData.melderEmail) + ')') + '</td></tr>' +
+      '</table>' +
+      '<div style="margin-top:12px;padding:12px;background:var(--bg2);border-radius:var(--radius-sm);font-size:13px;max-height:200px;overflow-y:auto;white-space:pre-wrap">' + escHtml(_meldData.verhaal) + '</div>' +
+      '<div style="display:flex;justify-content:space-between;margin-top:20px">' +
+        '<button class="btn btn-secondary" onclick="prevMeldStep()"><span class="mi mi-sm">arrow_back</span> Wijzig</button>' +
+        '<button class="btn btn-primary btn-lg" onclick="submitMelding()"><span class="mi mi-sm">send</span> Melding indienen</button>' +
+      '</div>';
+  }
+
+  // Anoniem toggle
+  var anoniemCb = document.getElementById('meldAnoniem');
+  if(anoniemCb){
+    var veldenEl = document.getElementById('melderVelden');
+    function toggleAnoniem(){ veldenEl.style.display = anoniemCb.checked ? 'none' : 'block'; }
+    anoniemCb.addEventListener('change', toggleAnoniem);
+    toggleAnoniem();
+  }
+}
+
+function setMeldCat(cat){ _meldData.categorie = cat; renderMeldStep(); }
+function nextMeldStep(){ _meldStep = Math.min(5, _meldStep + 1); renderMeldStep(); }
+function prevMeldStep(){ _meldStep = Math.max(0, _meldStep - 1); renderMeldStep(); }
+
+function saveMeldAmbtenaar(){
+  _meldData.ambNaam = (document.getElementById('ambNaam')||{}).value || '';
+  _meldData.ambFunctie = (document.getElementById('ambFunctie')||{}).value || '';
+  _meldData.ambOrg = (document.getElementById('ambOrg')||{}).value || '';
+}
+function saveMeldVerhaal(){
+  _meldData.titel = (document.getElementById('meldTitel')||{}).value || '';
+  _meldData.verhaal = (document.getElementById('meldVerhaal')||{}).value || '';
+}
+function saveMeldWanneer(){
+  _meldData.datum = (document.getElementById('meldDatum')||{}).value || '';
+  _meldData.gemeente = (document.getElementById('meldGemeente')||{}).value || '';
+  _meldData.locatie = (document.getElementById('meldLocatie')||{}).value || '';
+}
+function saveMeldGegevens(){
+  _meldData.anoniem = (document.getElementById('meldAnoniem')||{}).checked || false;
+  _meldData.melderNaam = (document.getElementById('melderNaam')||{}).value || '';
+  _meldData.melderEmail = (document.getElementById('melderEmail')||{}).value || '';
+  _meldData.melderTel = (document.getElementById('melderTel')||{}).value || '';
+}
+
+function submitMelding(){
+  if(!_meldData.titel){ toast('Vul een titel in'); return; }
+  if(!_meldData.verhaal){ toast('Beschrijf wat er is gebeurd'); return; }
+  if(!_meldData.categorie){ toast('Kies een categorie'); return; }
+
+  var melding = {
+    titel: _meldData.titel,
+    categorie: _meldData.categorie || 'overig',
+    verhaal: _meldData.verhaal,
+    ambtenaar: {
+      naam: _meldData.ambNaam || 'Onbekend',
+      functie: _meldData.ambFunctie || '',
+      organisatie: _meldData.ambOrg || ''
+    },
+    gemeente: _meldData.gemeente || '',
+    locatie: _meldData.locatie || '',
+    datum_incident: _meldData.datum ? new Date(_meldData.datum).getTime() : Date.now(),
+    datum_melding: Date.now(),
+    melder: {
+      anoniem: !!_meldData.anoniem,
+      naam: _meldData.anoniem ? null : _meldData.melderNaam,
+      email: _meldData.anoniem ? null : _meldData.melderEmail,
+      telefoon: _meldData.anoniem ? null : _meldData.melderTel
+    },
+    status: 'nieuw',
+    crowdfunding: { doel: 0, opgehaald: 0, actief: false },
+    views: 0
+  };
+
+  var saved = DataStore.add('meldingen', melding);
+  toast('Melding ingediend!');
+  _meldStep = 0;
+  _meldData = {};
+  navigate('/melding/' + saved.id);
+}
+
+// ============ PAGE: RECHTSZAAK WIZARD ============
+var _rzStep = 0;
+var _rzData = {};
+var _rechtszaakMeldingId = null;
+
+function renderRechtszaak(){
+  var steps = ['Melding', 'Type zaak', 'Eiser', 'Gedaagde', 'Eis', 'Feiten', 'Genereer'];
+  var stepsHtml = '<div class="wizard-steps">';
+  steps.forEach(function(s, i){
+    var cls = i === _rzStep ? 'active' : (i < _rzStep ? 'done' : '');
+    stepsHtml += '<div class="wizard-step ' + cls + '" onclick="goRzStep(' + i + ')">' +
+      '<span class="wizard-step-num">' + (i < _rzStep ? '<span class="mi" style="font-size:14px">check</span>' : (i+1)) + '</span>' +
+      s + '</div>';
+  });
+  stepsHtml += '</div>';
+
+  return '<div class="page">' +
+    '<h2 class="section-title"><span class="mi">gavel</span> Rechtszaak starten</h2>' +
+    '<p style="font-size:13px;color:var(--tx2);margin-bottom:16px">Genereer automatisch een dagvaarding, begeleidende brief en bewijsstukken-index voor de kantonrechter. Zonder advocaat, voor vorderingen tot &euro;25.000.</p>' +
+    stepsHtml +
+    '<div class="card" id="rzFormArea"></div>' +
+  '</div>';
+}
+
+function initRechtszaakWizard(){
+  // Pre-fill als vanuit melding
+  if(_rechtszaakMeldingId){
+    var m = DataStore.getById('meldingen', _rechtszaakMeldingId);
+    if(m){
+      _rzData.melding_id = m.id;
+      _rzData.meldingTitel = m.titel;
+      _rzData.feiten = m.verhaal || '';
+      _rzData.gedaagdeNaam = (m.ambtenaar && m.ambtenaar.organisatie) || '';
+      _rechtszaakMeldingId = null;
+    }
+  }
+  renderRzStep();
+}
+
+function goRzStep(n){
+  if(n <= _rzStep){ _rzStep = n; renderRzStep(); }
+}
+
+function renderRzStep(){
+  var area = document.getElementById('rzFormArea');
+  if(!area) return;
+
+  if(_rzStep === 0){
+    // Selecteer melding
+    var meldingen = DataStore.getAll('meldingen');
+    var optHtml = '<option value="">— Maak een keuze —</option>';
+    meldingen.forEach(function(m){
+      optHtml += '<option value="' + m.id + '"' + (_rzData.melding_id === m.id ? ' selected' : '') + '>' + escHtml(m.titel) + ' (' + formatDate(m.datum_melding) + ')</option>';
+    });
+    area.innerHTML =
+      '<h3 style="font-size:16px;margin-bottom:14px">Op basis van welke melding?</h3>' +
+      '<div class="form-group"><label class="form-label">Selecteer een melding</label><select class="form-select" id="rzMelding">' + optHtml + '</select></div>' +
+      '<p style="font-size:12px;color:var(--tx3)">Je kunt ook zonder melding een rechtszaak starten. Selecteer dan "— Maak een keuze —" en vul later handmatig de feiten in.</p>' +
+      '<div style="text-align:right;margin-top:16px"><button class="btn btn-primary" onclick="saveRzMelding();nextRzStep()">Volgende <span class="mi mi-sm">arrow_forward</span></button></div>';
+
+  } else if(_rzStep === 1){
+    // Type zaak
+    area.innerHTML =
+      '<h3 style="font-size:16px;margin-bottom:14px">Welk type zaak?</h3>' +
+      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">' +
+        '<div class="card" style="padding:20px;cursor:pointer;text-align:center;' + (_rzData.type==='dagvaarding'?'border-color:var(--blue);background:var(--blue-soft)':'') + '" onclick="setRzType(\'dagvaarding\')">' +
+          '<span class="mi" style="font-size:32px;color:var(--blue);display:block;margin-bottom:8px">description</span>' +
+          '<div style="font-weight:700;font-size:15px">Dagvaarding</div>' +
+          '<div style="font-size:12px;color:var(--tx2);margin-top:4px">Vordering tot betaling of schadevergoeding. Meest gebruikelijk.</div>' +
+        '</div>' +
+        '<div class="card" style="padding:20px;cursor:pointer;text-align:center;' + (_rzData.type==='verzoekschrift'?'border-color:var(--blue);background:var(--blue-soft)':'') + '" onclick="setRzType(\'verzoekschrift\')">' +
+          '<span class="mi" style="font-size:32px;color:var(--purple);display:block;margin-bottom:8px">request_page</span>' +
+          '<div style="font-weight:700;font-size:15px">Verzoekschrift</div>' +
+          '<div style="font-size:12px;color:var(--tx2);margin-top:4px">Verzoek aan de rechter voor een beslissing (bijv. inzage, rectificatie).</div>' +
+        '</div>' +
+      '</div>' +
+      '<div style="display:flex;justify-content:space-between;margin-top:16px">' +
+        '<button class="btn btn-secondary" onclick="prevRzStep()"><span class="mi mi-sm">arrow_back</span> Vorige</button>' +
+        '<button class="btn btn-primary" onclick="nextRzStep()">Volgende <span class="mi mi-sm">arrow_forward</span></button>' +
+      '</div>';
+
+  } else if(_rzStep === 2){
+    // Eiser
+    area.innerHTML =
+      '<h3 style="font-size:16px;margin-bottom:14px">Jouw gegevens (eiser)</h3>' +
+      '<div class="form-hint" style="margin-bottom:12px;background:var(--green-soft);padding:8px 12px;border-radius:var(--radius-sm);color:var(--green)"><span class="mi mi-sm">lock</span> Deze gegevens worden alleen lokaal opgeslagen en gaan <strong>niet</strong> naar een server.</div>' +
+      '<div class="form-group"><label class="form-label">Volledige naam</label><input class="form-input" id="rzEiserNaam" value="' + escHtml(_rzData.eiserNaam||'') + '"></div>' +
+      '<div class="form-group"><label class="form-label">Adres</label><input class="form-input" id="rzEiserAdres" value="' + escHtml(_rzData.eiserAdres||'') + '" placeholder="Straat + huisnummer"></div>' +
+      '<div style="display:grid;grid-template-columns:120px 1fr;gap:12px">' +
+        '<div class="form-group"><label class="form-label">Postcode</label><input class="form-input" id="rzEiserPC" value="' + escHtml(_rzData.eiserPC||'') + '"></div>' +
+        '<div class="form-group"><label class="form-label">Woonplaats</label><input class="form-input" id="rzEiserPlaats" value="' + escHtml(_rzData.eiserPlaats||'') + '"></div>' +
+      '</div>' +
+      '<div style="display:flex;justify-content:space-between;margin-top:16px">' +
+        '<button class="btn btn-secondary" onclick="saveRzEiser();prevRzStep()"><span class="mi mi-sm">arrow_back</span> Vorige</button>' +
+        '<button class="btn btn-primary" onclick="saveRzEiser();nextRzStep()">Volgende <span class="mi mi-sm">arrow_forward</span></button>' +
+      '</div>';
+
+  } else if(_rzStep === 3){
+    // Gedaagde
+    area.innerHTML =
+      '<h3 style="font-size:16px;margin-bottom:14px">Gegevens gedaagde (overheidsorgaan)</h3>' +
+      '<div class="form-group"><label class="form-label">Naam organisatie / gemeente</label><input class="form-input" id="rzGedNaam" value="' + escHtml(_rzData.gedaagdeNaam||'') + '" placeholder="Bijv. Gemeente Rotterdam"></div>' +
+      '<div class="form-group"><label class="form-label">Adres</label><input class="form-input" id="rzGedAdres" value="' + escHtml(_rzData.gedaagdeAdres||'') + '" placeholder="Bezoekadres overheidsorgaan"></div>' +
+      '<div style="display:grid;grid-template-columns:120px 1fr;gap:12px">' +
+        '<div class="form-group"><label class="form-label">Postcode</label><input class="form-input" id="rzGedPC" value="' + escHtml(_rzData.gedaagdePC||'') + '"></div>' +
+        '<div class="form-group"><label class="form-label">Vestigingsplaats</label><input class="form-input" id="rzGedPlaats" value="' + escHtml(_rzData.gedaagdePlaats||'') + '"></div>' +
+      '</div>' +
+      '<div style="display:flex;justify-content:space-between;margin-top:16px">' +
+        '<button class="btn btn-secondary" onclick="saveRzGedaagde();prevRzStep()"><span class="mi mi-sm">arrow_back</span> Vorige</button>' +
+        '<button class="btn btn-primary" onclick="saveRzGedaagde();nextRzStep()">Volgende <span class="mi mi-sm">arrow_forward</span></button>' +
+      '</div>';
+
+  } else if(_rzStep === 4){
+    // Eis
+    area.innerHTML =
+      '<h3 style="font-size:16px;margin-bottom:14px">Wat is je eis?</h3>' +
+      '<div class="form-group"><label class="form-label">Type vordering</label>' +
+        '<select class="form-select" id="rzEisType">' +
+          '<option value="schadevergoeding"' + (_rzData.eisType==='schadevergoeding'?' selected':'') + '>Schadevergoeding (geldbedrag)</option>' +
+          '<option value="rectificatie"' + (_rzData.eisType==='rectificatie'?' selected':'') + '>Rectificatie / Excuses</option>' +
+          '<option value="dwangsom"' + (_rzData.eisType==='dwangsom'?' selected':'') + '>Nakoming + dwangsom</option>' +
+          '<option value="verklaring"' + (_rzData.eisType==='verklaring'?' selected':'') + '>Verklaring voor recht (onrechtmatig handelen)</option>' +
+          '<option value="combinatie"' + (_rzData.eisType==='combinatie'?' selected':'') + '>Combinatie</option>' +
+        '</select></div>' +
+      '<div class="form-group"><label class="form-label">Gevorderd bedrag (&euro;)</label><input class="form-input" type="number" id="rzBedrag" value="' + (_rzData.bedrag||'') + '" placeholder="0.00"></div>' +
+      '<div class="form-group"><label class="form-label">Omschrijving eis</label><textarea class="form-textarea" id="rzEisText" placeholder="Beschrijf concreet wat je vordert. Bijv: schadevergoeding wegens onrechtmatig handelen door...">' + escHtml(_rzData.eisText||'') + '</textarea></div>' +
+      '<div style="display:flex;justify-content:space-between;margin-top:16px">' +
+        '<button class="btn btn-secondary" onclick="saveRzEis();prevRzStep()"><span class="mi mi-sm">arrow_back</span> Vorige</button>' +
+        '<button class="btn btn-primary" onclick="saveRzEis();nextRzStep()">Volgende <span class="mi mi-sm">arrow_forward</span></button>' +
+      '</div>';
+
+  } else if(_rzStep === 5){
+    // Feiten & gronden
+    area.innerHTML =
+      '<h3 style="font-size:16px;margin-bottom:14px">Feiten & juridische gronden</h3>' +
+      '<div class="form-group"><label class="form-label">Feitelijke gang van zaken</label><textarea class="form-textarea" id="rzFeiten" style="min-height:200px" placeholder="Beschrijf chronologisch wat er is gebeurd. Nummer elk feit.\n\n1. Op [datum] ...\n2. Vervolgens ...\n3. Als gevolg hiervan ...">' + escHtml(_rzData.feiten||'') + '</textarea></div>' +
+      '<div class="form-group"><label class="form-label">Juridische grondslag</label>' +
+        '<select class="form-select" id="rzGrondslag">' +
+          '<option value="6:162"' + (_rzData.grondslag==='6:162'?' selected':'') + '>Art. 6:162 BW — Onrechtmatige daad</option>' +
+          '<option value="6:74"' + (_rzData.grondslag==='6:74'?' selected':'') + '>Art. 6:74 BW — Wanprestatie / tekortkoming</option>' +
+          '<option value="awb"' + (_rzData.grondslag==='awb'?' selected':'') + '>Awb — Schending algemene beginselen behoorlijk bestuur</option>' +
+          '<option value="avg"' + (_rzData.grondslag==='avg'?' selected':'') + '>AVG — Schending privacyrechten</option>' +
+          '<option value="anders"' + (_rzData.grondslag==='anders'?' selected':'') + '>Anders / combinatie</option>' +
+        '</select></div>' +
+      '<div class="form-group"><label class="form-label">Bewijsstukken (opsomming)</label><textarea class="form-textarea" id="rzBewijs" style="min-height:100px" placeholder="Lijst je bewijsstukken op:\n\nProductie 1: E-mail d.d. [datum]\nProductie 2: Brief van gemeente\nProductie 3: Foto van ...">' + escHtml(_rzData.bewijs||'') + '</textarea></div>' +
+      '<div style="display:flex;justify-content:space-between;margin-top:16px">' +
+        '<button class="btn btn-secondary" onclick="saveRzFeiten();prevRzStep()"><span class="mi mi-sm">arrow_back</span> Vorige</button>' +
+        '<button class="btn btn-primary" onclick="saveRzFeiten();nextRzStep()">Genereer documenten <span class="mi mi-sm">arrow_forward</span></button>' +
+      '</div>';
+
+  } else if(_rzStep === 6){
+    // Genereer
+    area.innerHTML =
+      '<h3 style="font-size:16px;margin-bottom:14px"><span class="mi">description</span> Documenten genereren</h3>' +
+      '<p style="font-size:13px;color:var(--tx2);margin-bottom:20px">Je documenten worden lokaal in je browser gegenereerd. Er wordt niets naar een server gestuurd.</p>' +
+      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">' +
+        '<div class="card" style="padding:20px;text-align:center;cursor:pointer" onclick="generateDagvaarding()">' +
+          '<span class="mi" style="font-size:36px;color:var(--blue);display:block;margin-bottom:8px">description</span>' +
+          '<div style="font-weight:700">Dagvaarding</div>' +
+          '<div style="font-size:12px;color:var(--tx2)">Officieel processtuk</div>' +
+        '</div>' +
+        '<div class="card" style="padding:20px;text-align:center;cursor:pointer" onclick="generateBrief()">' +
+          '<span class="mi" style="font-size:36px;color:var(--green);display:block;margin-bottom:8px">mail</span>' +
+          '<div style="font-weight:700">Begeleidende brief</div>' +
+          '<div style="font-size:12px;color:var(--tx2)">Aan de griffie</div>' +
+        '</div>' +
+        '<div class="card" style="padding:20px;text-align:center;cursor:pointer" onclick="generateProducities()">' +
+          '<span class="mi" style="font-size:36px;color:var(--yellow);display:block;margin-bottom:8px">folder</span>' +
+          '<div style="font-weight:700">Productielijst</div>' +
+          '<div style="font-size:12px;color:var(--tx2)">Bewijsstukken-index</div>' +
+        '</div>' +
+        '<div class="card" style="padding:20px;text-align:center;cursor:pointer" onclick="generateInfoSheet()">' +
+          '<span class="mi" style="font-size:36px;color:var(--purple);display:block;margin-bottom:8px">info</span>' +
+          '<div style="font-weight:700">Info-sheet</div>' +
+          '<div style="font-size:12px;color:var(--tx2)">Griffierecht & procedure</div>' +
+        '</div>' +
+      '</div>' +
+      '<div style="text-align:center;margin-top:20px">' +
+        '<button class="btn btn-primary btn-lg" onclick="generateAll()"><span class="mi">download</span> Alles downloaden</button>' +
+      '</div>' +
+      '<div style="margin-top:16px"><button class="btn btn-secondary" onclick="prevRzStep()"><span class="mi mi-sm">arrow_back</span> Terug naar feiten</button></div>';
+  }
+}
+
+function setRzType(type){ _rzData.type = type; renderRzStep(); }
+function nextRzStep(){ _rzStep = Math.min(6, _rzStep + 1); renderRzStep(); }
+function prevRzStep(){ _rzStep = Math.max(0, _rzStep - 1); renderRzStep(); }
+
+function saveRzMelding(){
+  var sel = document.getElementById('rzMelding');
+  if(sel && sel.value){
+    _rzData.melding_id = sel.value;
+    var m = DataStore.getById('meldingen', sel.value);
+    if(m){
+      _rzData.meldingTitel = m.titel;
+      if(!_rzData.feiten) _rzData.feiten = m.verhaal || '';
+      if(!_rzData.gedaagdeNaam) _rzData.gedaagdeNaam = (m.ambtenaar && m.ambtenaar.organisatie) || '';
+    }
+  }
+}
+function saveRzEiser(){
+  _rzData.eiserNaam = (document.getElementById('rzEiserNaam')||{}).value || '';
+  _rzData.eiserAdres = (document.getElementById('rzEiserAdres')||{}).value || '';
+  _rzData.eiserPC = (document.getElementById('rzEiserPC')||{}).value || '';
+  _rzData.eiserPlaats = (document.getElementById('rzEiserPlaats')||{}).value || '';
+}
+function saveRzGedaagde(){
+  _rzData.gedaagdeNaam = (document.getElementById('rzGedNaam')||{}).value || '';
+  _rzData.gedaagdeAdres = (document.getElementById('rzGedAdres')||{}).value || '';
+  _rzData.gedaagdePC = (document.getElementById('rzGedPC')||{}).value || '';
+  _rzData.gedaagdePlaats = (document.getElementById('rzGedPlaats')||{}).value || '';
+}
+function saveRzEis(){
+  _rzData.eisType = (document.getElementById('rzEisType')||{}).value || 'schadevergoeding';
+  _rzData.bedrag = parseFloat((document.getElementById('rzBedrag')||{}).value) || 0;
+  _rzData.eisText = (document.getElementById('rzEisText')||{}).value || '';
+}
+function saveRzFeiten(){
+  _rzData.feiten = (document.getElementById('rzFeiten')||{}).value || '';
+  _rzData.grondslag = (document.getElementById('rzGrondslag')||{}).value || '6:162';
+  _rzData.bewijs = (document.getElementById('rzBewijs')||{}).value || '';
+}
+
+// ============ PDF GENERATIE ============
+function getJsPdf(){
+  if(typeof window.jspdf !== 'undefined') return window.jspdf.jsPDF;
+  if(typeof jsPDF !== 'undefined') return jsPDF;
+  return null;
+}
+
+function createPdf(){
+  var JsPDF = getJsPdf();
+  if(!JsPDF){ toast('PDF library niet geladen. Herlaad de pagina.'); return null; }
+  var doc = new JsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+  doc.setFont('helvetica');
+  return doc;
+}
+
+// Helper: tekst met woordterugloop
+function pdfAddWrappedText(doc, text, x, y, maxW, lineH){
+  var lines = doc.splitTextToSize(text, maxW);
+  lines.forEach(function(line){
+    if(y > 275){ doc.addPage(); y = 25; }
+    doc.text(line, x, y);
+    y += lineH;
+  });
+  return y;
+}
+
+function todayStr(){
+  return new Date().toLocaleDateString('nl-NL', { day: 'numeric', month: 'long', year: 'numeric' });
+}
+
+function grondslagTekst(code){
+  var map = {
+    '6:162': 'artikel 6:162 van het Burgerlijk Wetboek (onrechtmatige daad)',
+    '6:74': 'artikel 6:74 van het Burgerlijk Wetboek (tekortkoming in de nakoming)',
+    'awb': 'de Algemene wet bestuursrecht (schending algemene beginselen van behoorlijk bestuur)',
+    'avg': 'de Algemene Verordening Gegevensbescherming (AVG)',
+    'anders': 'nader aan te voeren grondslagen'
+  };
+  return map[code] || map['anders'];
+}
+
+// DAGVAARDING
+function generateDagvaarding(){
+  var doc = createPdf();
+  if(!doc) return;
+  var d = _rzData;
+  var y = 25;
+  var lh = 6;
+  var mw = 170;
+
+  // Kop
+  doc.setFontSize(18);
+  doc.setFont('helvetica', 'bold');
+  doc.text('DAGVAARDING', 105, y, { align: 'center' });
+  y += 12;
+
+  doc.setFontSize(10);
+  doc.setFont('helvetica', 'normal');
+  doc.text('Datum: ' + todayStr(), 20, y);
+  y += 10;
+
+  // Eiser
+  doc.setFont('helvetica', 'bold');
+  doc.text('EISER:', 20, y); y += lh;
+  doc.setFont('helvetica', 'normal');
+  doc.text(d.eiserNaam || '[Naam eiser]', 20, y); y += lh;
+  doc.text((d.eiserAdres || '[Adres]') + ', ' + (d.eiserPC || '[Postcode]') + ' ' + (d.eiserPlaats || '[Woonplaats]'), 20, y);
+  y += lh;
+  doc.text('hierna te noemen: "eiser",', 20, y);
+  y += 10;
+
+  // Gedaagde
+  doc.setFont('helvetica', 'bold');
+  doc.text('GEDAAGDE:', 20, y); y += lh;
+  doc.setFont('helvetica', 'normal');
+  doc.text(d.gedaagdeNaam || '[Naam gedaagde]', 20, y); y += lh;
+  doc.text((d.gedaagdeAdres || '[Adres]') + ', ' + (d.gedaagdePC || '[Postcode]') + ' ' + (d.gedaagdePlaats || '[Vestigingsplaats]'), 20, y);
+  y += lh;
+  doc.text('hierna te noemen: "gedaagde",', 20, y);
+  y += 10;
+
+  // Bevoegde rechter
+  doc.setFont('helvetica', 'bold');
+  doc.text('BEVOEGDE RECHTER:', 20, y); y += lh;
+  doc.setFont('helvetica', 'normal');
+  y = pdfAddWrappedText(doc, 'De kantonrechter te ' + (d.gedaagdePlaats || '[vestigingsplaats gedaagde]') + ', als de bevoegde rechter op grond van artikel 99 lid 1 Rv (woonplaats gedaagde).', 20, y, mw, lh);
+  y += 6;
+
+  // Eis
+  doc.setFont('helvetica', 'bold');
+  doc.text('VORDERING:', 20, y); y += lh;
+  doc.setFont('helvetica', 'normal');
+  var eisTekst = 'Eiser vordert dat de kantonrechter, bij vonnis uitvoerbaar bij voorraad, gedaagde veroordeelt tot:\n\n';
+  if(d.bedrag > 0){
+    eisTekst += '1. Betaling van een bedrag van \u20AC ' + d.bedrag.toLocaleString('nl-NL', {minimumFractionDigits:2}) + ' aan schadevergoeding;\n';
+  }
+  if(d.eisText){
+    eisTekst += (d.bedrag > 0 ? '2. ' : '1. ') + d.eisText + ';\n';
+  }
+  eisTekst += '\nMet veroordeling van gedaagde in de proceskosten.';
+  y = pdfAddWrappedText(doc, eisTekst, 20, y, mw, lh);
+  y += 6;
+
+  // Feiten
+  doc.setFont('helvetica', 'bold');
+  doc.text('FEITEN:', 20, y); y += lh;
+  doc.setFont('helvetica', 'normal');
+  y = pdfAddWrappedText(doc, d.feiten || '[Beschrijf hier de feiten]', 20, y, mw, lh);
+  y += 6;
+
+  // Gronden
+  doc.setFont('helvetica', 'bold');
+  doc.text('JURIDISCHE GRONDEN:', 20, y); y += lh;
+  doc.setFont('helvetica', 'normal');
+  var grondTekst = 'Eiser baseert zijn vordering op ' + grondslagTekst(d.grondslag) + '.\n\n' +
+    'Gedaagde heeft door bovengenoemd handelen onrechtmatig gehandeld jegens eiser, waardoor eiser schade heeft geleden. ' +
+    'Aan alle vereisten van ' + (d.grondslag === '6:162' ? 'artikel 6:162 BW' : 'de aangevoerde grondslag') + ' is voldaan: ' +
+    'er is sprake van een onrechtmatige gedraging, welke aan gedaagde kan worden toegerekend, en waardoor eiser schade heeft geleden.';
+  y = pdfAddWrappedText(doc, grondTekst, 20, y, mw, lh);
+  y += 6;
+
+  // Bewijs
+  doc.setFont('helvetica', 'bold');
+  doc.text('BEWIJSAANBOD:', 20, y); y += lh;
+  doc.setFont('helvetica', 'normal');
+  y = pdfAddWrappedText(doc, 'Eiser biedt aan zijn stellingen te bewijzen door alle middelen rechtens, in het bijzonder door de hierna genoemde producties en het horen van getuigen.', 20, y, mw, lh);
+  y += 6;
+
+  // Producties
+  if(d.bewijs){
+    doc.setFont('helvetica', 'bold');
+    doc.text('PRODUCTIES:', 20, y); y += lh;
+    doc.setFont('helvetica', 'normal');
+    y = pdfAddWrappedText(doc, d.bewijs, 20, y, mw, lh);
+    y += 6;
+  }
+
+  // Ondertekening
+  y += 10;
+  doc.text(d.eiserPlaats || '[Plaats]', 20, y);
+  doc.text(todayStr(), 100, y);
+  y += 16;
+  doc.text('_________________________________', 20, y);
+  y += lh;
+  doc.text(d.eiserNaam || '[Handtekening eiser]', 20, y);
+
+  doc.save('dagvaarding_' + (d.gedaagdeNaam||'zaak').replace(/\s+/g,'_') + '.pdf');
+  toast('Dagvaarding gegenereerd en gedownload!');
+}
+
+// BEGELEIDENDE BRIEF
+function generateBrief(){
+  var doc = createPdf();
+  if(!doc) return;
+  var d = _rzData;
+  var y = 25;
+  var lh = 6;
+  var mw = 170;
+
+  // Afzender
+  doc.setFontSize(10);
+  doc.text(d.eiserNaam || '[Naam]', 20, y); y += lh;
+  doc.text(d.eiserAdres || '[Adres]', 20, y); y += lh;
+  doc.text((d.eiserPC || '[Postcode]') + ' ' + (d.eiserPlaats || '[Plaats]'), 20, y);
+  y += 12;
+
+  // Geadresseerde
+  doc.text('Griffie Rechtbank ' + (d.gedaagdePlaats || '[Plaats]'), 20, y); y += lh;
+  doc.text('Sector kanton', 20, y);
+  y += 12;
+
+  // Datum
+  doc.text((d.eiserPlaats || '[Plaats]') + ', ' + todayStr(), 20, y);
+  y += 10;
+
+  // Betreft
+  doc.setFont('helvetica', 'bold');
+  doc.text('Betreft: Indienen dagvaarding', 20, y);
+  y += 10;
+
+  doc.setFont('helvetica', 'normal');
+  doc.text('Geachte griffier,', 20, y);
+  y += 8;
+
+  var briefTekst = 'Hierbij bied ik u ter inschrijving op de rol aan de bijgesloten dagvaarding in de zaak van ' +
+    (d.eiserNaam || '[eiser]') + ' tegen ' + (d.gedaagdeNaam || '[gedaagde]') + '.\n\n' +
+    'Bijgesloten treft u aan:\n' +
+    '- De dagvaarding in tweevoud\n' +
+    '- De producties zoals vermeld in de productielijst\n' +
+    (d.bewijs ? '- Bewijsstukken-index\n' : '') +
+    '\nHet griffierecht bedraagt ' + getGriffierecht(d.bedrag) + '.\n\n' +
+    'Ik verzoek u de dagvaarding in te schrijven op de eerstdienende roldatum.\n\n' +
+    'Hoogachtend,';
+
+  y = pdfAddWrappedText(doc, briefTekst, 20, y, mw, lh);
+  y += 16;
+
+  doc.text('_________________________________', 20, y); y += lh;
+  doc.text(d.eiserNaam || '[Handtekening]', 20, y);
+
+  doc.save('brief_griffie_' + (d.gedaagdeNaam||'zaak').replace(/\s+/g,'_') + '.pdf');
+  toast('Begeleidende brief gegenereerd!');
+}
+
+function getGriffierecht(bedrag){
+  // Griffierecht kantonrechter 2025 (natuurlijke personen)
+  if(!bedrag || bedrag <= 0) return '\u20AC 92,- (onbepaalde waarde)';
+  if(bedrag <= 500) return '\u20AC 92,-';
+  if(bedrag <= 5000) return '\u20AC 244,-';
+  if(bedrag <= 12500) return '\u20AC 244,-';
+  return '\u20AC 498,-';
+}
+
+// PRODUCTIELIJST
+function generateProducities(){
+  var doc = createPdf();
+  if(!doc) return;
+  var d = _rzData;
+  var y = 25;
+  var lh = 6;
+
+  doc.setFontSize(16);
+  doc.setFont('helvetica', 'bold');
+  doc.text('PRODUCTIELIJST', 105, y, { align: 'center' });
+  y += 10;
+
+  doc.setFontSize(10);
+  doc.setFont('helvetica', 'normal');
+  doc.text('Zaak: ' + (d.eiserNaam||'[Eiser]') + ' vs. ' + (d.gedaagdeNaam||'[Gedaagde]'), 20, y);
+  y += lh;
+  doc.text('Datum: ' + todayStr(), 20, y);
+  y += 12;
+
+  doc.setFont('helvetica', 'bold');
+  doc.text('Nr.', 20, y);
+  doc.text('Omschrijving', 40, y);
+  doc.text('Type', 150, y);
+  y += 2;
+  doc.setDrawColor(100);
+  doc.line(20, y, 190, y);
+  y += 6;
+
+  doc.setFont('helvetica', 'normal');
+  var bewijsRegels = (d.bewijs || 'Productie 1: [Omschrijving bewijsstuk]').split('\n').filter(function(l){ return l.trim(); });
+  bewijsRegels.forEach(function(regel, i){
+    if(y > 275){ doc.addPage(); y = 25; }
+    doc.text(String(i + 1), 20, y);
+    var omschr = regel.replace(/^productie\s*\d+\s*[:.\-]\s*/i, '').trim();
+    doc.text(omschr.substring(0, 80), 40, y);
+    doc.text('Document', 150, y);
+    y += lh;
+  });
+
+  y += 10;
+  doc.text('Totaal aantal producties: ' + bewijsRegels.length, 20, y);
+
+  doc.save('productielijst_' + (d.gedaagdeNaam||'zaak').replace(/\s+/g,'_') + '.pdf');
+  toast('Productielijst gegenereerd!');
+}
+
+// INFO-SHEET
+function generateInfoSheet(){
+  var doc = createPdf();
+  if(!doc) return;
+  var y = 25;
+  var lh = 6;
+  var mw = 170;
+
+  doc.setFontSize(16);
+  doc.setFont('helvetica', 'bold');
+  doc.text('INFORMATIE: PROCEDURE BIJ DE KANTONRECHTER', 105, y, { align: 'center' });
+  y += 12;
+
+  doc.setFontSize(12);
+  doc.text('1. Griffierecht (2025)', 20, y); y += 8;
+  doc.setFontSize(10);
+  doc.setFont('helvetica', 'normal');
+
+  var griffieInfo = [
+    ['Vordering', 'Griffierecht (particulier)'],
+    ['Tot \u20AC 500', '\u20AC 92,-'],
+    ['\u20AC 500 - \u20AC 5.000', '\u20AC 244,-'],
+    ['\u20AC 5.000 - \u20AC 12.500', '\u20AC 244,-'],
+    ['\u20AC 12.500 - \u20AC 25.000', '\u20AC 498,-']
+  ];
+  griffieInfo.forEach(function(row, i){
+    if(i === 0){ doc.setFont('helvetica', 'bold'); }
+    else { doc.setFont('helvetica', 'normal'); }
+    doc.text(row[0], 25, y);
+    doc.text(row[1], 110, y);
+    y += lh;
+  });
+  y += 6;
+
+  doc.setFontSize(12);
+  doc.setFont('helvetica', 'bold');
+  doc.text('2. Procedureverloop', 20, y); y += 8;
+  doc.setFontSize(10);
+  doc.setFont('helvetica', 'normal');
+  var stappen = [
+    '1. Dagvaarding laten betekenen door een deurwaarder (\u00B1 \u20AC 80-120)',
+    '2. Dagvaarding indienen bij de griffie van de rechtbank',
+    '3. Griffierecht betalen (zie tabel hierboven)',
+    '4. Gedaagde krijgt 4 weken om schriftelijk te reageren (conclusie van antwoord)',
+    '5. Eventueel: comparitie (zitting) waar beide partijen worden gehoord',
+    '6. Vonnis: de rechter doet uitspraak (meestal binnen 4-6 weken na zitting)',
+    '7. Bij toewijzing: gedaagde moet betalen/handelen, eventueel via deurwaarder'
+  ];
+  stappen.forEach(function(s){
+    if(y > 270){ doc.addPage(); y = 25; }
+    y = pdfAddWrappedText(doc, s, 25, y, 160, lh);
+    y += 2;
+  });
+  y += 6;
+
+  doc.setFontSize(12);
+  doc.setFont('helvetica', 'bold');
+  doc.text('3. Termijnen', 20, y); y += 8;
+  doc.setFontSize(10);
+  doc.setFont('helvetica', 'normal');
+  var termijnen = [
+    'Dagvaardingstermijn: minimaal 1 week voor de roldatum',
+    'Conclusie van antwoord: 4 weken na eerste rolzitting',
+    'Comparitie: meestal 4-8 weken na antwoord',
+    'Vonnis: 4-6 weken na comparitie',
+    'Hoger beroep: binnen 3 maanden na vonnis (alleen boven \u20AC 1.750)',
+    'Totale doorlooptijd: gemiddeld 3-6 maanden'
+  ];
+  termijnen.forEach(function(t){
+    if(y > 270){ doc.addPage(); y = 25; }
+    y = pdfAddWrappedText(doc, '\u2022 ' + t, 25, y, 160, lh);
+    y += 2;
+  });
+  y += 6;
+
+  doc.setFontSize(12);
+  doc.setFont('helvetica', 'bold');
+  doc.text('4. Tips voor de zitting', 20, y); y += 8;
+  doc.setFontSize(10);
+  doc.setFont('helvetica', 'normal');
+  var tips = [
+    'Neem alle originele bewijsstukken mee',
+    'Bereid een korte samenvatting voor (max 5 minuten spreektijd)',
+    'Kleed je netjes (geen pak nodig, maar verzorgd)',
+    'Spreek de rechter aan met "edelachtbare" of "meneer/mevrouw de rechter"',
+    'Blijf zakelijk en emotieloos \u2014 feiten tellen, geen meningen',
+    'De rechter zal vragen stellen aan beide partijen \u2014 beantwoord alleen wat gevraagd wordt',
+    'Je mag een bijstandspersoon meenemen (geen advocaat nodig bij kantonrechter)',
+    'Maak aantekeningen tijdens de zitting'
+  ];
+  tips.forEach(function(t){
+    if(y > 270){ doc.addPage(); y = 25; }
+    y = pdfAddWrappedText(doc, '\u2022 ' + t, 25, y, 160, lh);
+    y += 2;
+  });
+
+  y += 10;
+  doc.setFontSize(8);
+  doc.setTextColor(128);
+  doc.text('Dit document is informatief en geen juridisch advies. Raadpleeg een jurist voor complexe zaken.', 105, y, { align: 'center' });
+  doc.text('Gegenereerd door Meldpunt Ambtenaren op ' + todayStr(), 105, y + 5, { align: 'center' });
+
+  doc.save('info_kantonrechter_procedure.pdf');
+  toast('Info-sheet gegenereerd!');
+}
+
+function generateAll(){
+  generateDagvaarding();
+  setTimeout(function(){ generateBrief(); }, 500);
+  setTimeout(function(){ generateProducities(); }, 1000);
+  setTimeout(function(){ generateInfoSheet(); }, 1500);
+}
+
+// ============ DEMO DATA ============
+function seedDemoData(){
+  if(DataStore.count('meldingen') > 0) return;
+  var demos = [
+    {
+      titel: 'Bouwaanvraag 8 maanden zonder reactie',
+      categorie: 'traagheid',
+      verhaal: 'Op 14 maart 2024 heb ik een bouwaanvraag ingediend bij de gemeente voor een dakkapel op mijn woning. De wettelijke termijn is 8 weken. Het is nu december 2024 en ik heb nog steeds geen enkele reactie ontvangen.\n\nIk heb 6 keer gebeld naar het gemeentehuis. Elke keer word ik doorverbonden naar een andere persoon die belooft terug te bellen, maar dat gebeurt nooit. Op 10 juni heb ik een ingebrekestelling gestuurd per aangetekende brief. Hierop heb ik evenmin reactie ontvangen.\n\nDoor deze vertraging kan ik niet beginnen met de verbouwing en lopen de offertes van aannemers af. De financiele schade bedraagt inmiddels meerdere duizenden euros.',
+      ambtenaar: { naam: 'Dhr. J. van der Berg', functie: 'Behandelaar omgevingsvergunningen', organisatie: 'Gemeente Voorburg' },
+      gemeente: 'Voorburg',
+      datum_incident: Date.now() - 180*86400000,
+      datum_melding: Date.now() - 2*86400000,
+      melder: { anoniem: false, naam: 'Peter Janssen', email: 'p.janssen@email.nl' },
+      status: 'bevestigd',
+      crowdfunding: { doel: 1500, opgehaald: 340, actief: true },
+      views: 127
+    },
+    {
+      titel: 'Discriminatie bij loket Burgerzaken',
+      categorie: 'discriminatie',
+      verhaal: 'Op 3 november 2024 bezocht ik het loket Burgerzaken voor het verlengen van mijn paspoort. De medewerker achter het loket weigerde mij in het Nederlands te woord te staan en sprak mij aan in het Engels, ondanks dat ik in accentloos Nederlands had gesproken.\n\nToen ik hier bezwaar tegen maakte, werd mij verteld dat ik "achteraan moest aansluiten als ik moeilijk ging doen". Andere bezoekers die na mij waren binnengekomen werden wel direct geholpen.\n\nIk heb een klacht ingediend bij de balie, maar de leidinggevende zei dat ik het verkeerd had begrepen en dat de medewerker "gewoon druk was".',
+      ambtenaar: { naam: 'Mw. A. de Groot', functie: 'Baliemedewerker Burgerzaken', organisatie: 'Gemeente Den Haag' },
+      gemeente: 'Den Haag',
+      datum_incident: Date.now() - 90*86400000,
+      datum_melding: Date.now() - 5*86400000,
+      melder: { anoniem: true },
+      status: 'nieuw',
+      crowdfunding: { doel: 0, opgehaald: 0, actief: false },
+      views: 89
+    },
+    {
+      titel: 'WOZ-bezwaar bewust vertraagd en genegeerd',
+      categorie: 'machtsmisbruik',
+      verhaal: 'Ik heb in februari 2024 bezwaar gemaakt tegen mijn WOZ-beschikking. De waarde was met 40% verhoogd zonder enige onderbouwing. Volgens de wet moet de gemeente binnen 6 weken reageren op een bezwaarschrift, of in ieder geval een verlenging mededelen.\n\nNa 3 maanden zonder reactie heb ik gebeld. De behandelaar vertelde mij letterlijk: "We hebben zo veel bezwaren, die van u staat onderaan de stapel." Toen ik aangaf dat dit in strijd was met de Awb, werd de verbinding verbroken.\n\nIk heb vervolgens een formele ingebrekestelling gestuurd. De reactie: een standaardbrief dat mijn bezwaar "ongegrond" is verklaard, zonder inhoudelijke motivering.',
+      ambtenaar: { naam: 'Dhr. R. Smit', functie: 'Taxateur / WOZ-behandelaar', organisatie: 'Gemeente Amersfoort' },
+      gemeente: 'Amersfoort',
+      datum_incident: Date.now() - 250*86400000,
+      datum_melding: Date.now() - 1*86400000,
+      melder: { anoniem: false, naam: 'Maria van Dam', email: 'maria.vd@email.nl' },
+      status: 'rechtszaak',
+      crowdfunding: { doel: 2500, opgehaald: 1875, actief: true },
+      views: 312
+    }
+  ];
+
+  demos.forEach(function(d){
+    DataStore.add('meldingen', d);
+  });
+
+  // Demo reacties
+  var meldingen = DataStore.getAll('meldingen');
+  if(meldingen.length >= 3){
+    DataStore.add('reacties', { melding_id: meldingen[0].id, auteur_naam: 'Sandra K.', tekst: 'Herkenbaar! Bij mij duurde het ook meer dan 6 maanden. Sterkte met je zaak.', datum: Date.now() - 86400000 });
+    DataStore.add('reacties', { melding_id: meldingen[0].id, auteur_naam: 'Anoniem', tekst: 'Je kunt een dwangsom eisen na de ingebrekestelling. Maximaal 42 dagen x \u20AC1.442 per dag.', datum: Date.now() - 43200000 });
+    DataStore.add('reacties', { melding_id: meldingen[2].id, auteur_naam: 'Henk B.', tekst: 'Ik doneer. Dit moet stoppen.', datum: Date.now() - 3600000 });
+    DataStore.add('donaties', { melding_id: meldingen[2].id, bedrag: 50, donateur_naam: 'Henk B.', datum: Date.now() - 3600000 });
+  }
+}
+
+// ============ INIT ============
+seedDemoData();
+parseRoute();
+
+console.log('Meldpunt Ambtenaren v1.0 geladen');
+</script>
+</body>
+</html>
