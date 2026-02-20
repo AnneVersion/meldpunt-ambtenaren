@@ -723,6 +723,15 @@ function pgMelden(){
 
     '<div class="card" style="padding:24px">' +
 
+      // BRIEVEN UPLOADEN (meerdere)
+      '<div style="padding:18px;margin-bottom:12px;border:2px dashed var(--blue);border-radius:var(--r);text-align:center;background:var(--blue-soft);cursor:pointer" onclick="document.getElementById(\'briefUpload\').click()" id="briefDropzone">' +
+        '<span class="mi" style="font-size:36px;color:var(--blue);display:block;margin-bottom:6px">upload_file</span>' +
+        '<div style="font-size:14px;font-weight:700;margin-bottom:4px">Upload brieven van de overheid</div>' +
+        '<div style="font-size:12px;color:var(--tx2)">Sleep brieven hierheen of klik om te kiezen. Meerdere bestanden tegelijk kan.<br>Wij halen automatisch namen, instantie, datum en context eruit.</div>' +
+        '<input type="file" id="briefUpload" accept=".pdf,.jpg,.jpeg,.png,.gif,.bmp,.txt,.doc,.docx" style="display:none" multiple onchange="verwerkBrieven(this.files)">' +
+      '</div>' +
+      '<div id="briefResult" style="display:none;margin-bottom:18px"></div>' +
+
       // Namen
       '<div style="font-size:13px;font-weight:700;margin-bottom:8px;color:var(--accent)"><span class="mi mi-sm">person</span> Naam / namen</div>' +
       namenHtml +
@@ -821,6 +830,317 @@ document.addEventListener('change', function(e){
   if(e.target && e.target.id === 'mAnoniem'){
     var v = document.getElementById('melderVelden');
     if(v) v.style.display = e.target.checked ? 'none' : 'block';
+  }
+});
+
+// ============ BRIEF UPLOAD + EXTRACTIE (MEERDERE BRIEVEN) ============
+var _briefTeksten = []; // alle briefteksten verzameld
+var _briefBestanden = []; // bestandsnamen
+
+function verwerkBrieven(files){
+  if(!files || files.length === 0) return;
+  var dropzone = document.getElementById('briefDropzone');
+  var total = files.length;
+  var klaar = 0;
+  dropzone.innerHTML = '<span class="mi" style="font-size:28px;color:var(--blue);display:block;margin-bottom:4px">hourglass_top</span><div style="font-size:13px;font-weight:600">' + total + ' brief' + (total > 1 ? 'brieven' : '') + ' worden gelezen...</div><div style="font-size:11px;color:var(--tx3)" id="briefProgress">0/' + total + '</div>';
+
+  for(var i = 0; i < files.length; i++){
+    (function(file){
+      verwerkBrief(file, function(){
+        klaar++;
+        var prog = document.getElementById('briefProgress');
+        if(prog) prog.textContent = klaar + '/' + total;
+        if(klaar >= total){
+          // Alle brieven verwerkt — combineer resultaten
+          combineerBriefResultaten();
+        }
+      });
+    })(files[i]);
+  }
+}
+
+function verwerkBrief(file, callback){
+  if(!file){ if(callback) callback(); return; }
+
+  var _cb = callback || function(){};
+  if(file.type === 'text/plain' || file.name.endsWith('.txt')){
+    var reader = new FileReader();
+    reader.onload = function(e){ briefGelezenMulti(e.target.result, file.name); _cb(); };
+    reader.readAsText(file);
+  } else if(file.type === 'application/pdf'){
+    if(typeof pdfjsLib !== 'undefined'){
+      extractPdfText(file, _cb);
+    } else {
+      var s = document.createElement('script');
+      s.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+      s.onload = function(){
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+        extractPdfText(file, _cb);
+      };
+      s.onerror = function(){ briefGelezenMulti('', file.name); _cb(); };
+      document.head.appendChild(s);
+    }
+  } else if(file.type.startsWith('image/')){
+    if(typeof Tesseract !== 'undefined'){
+      extractImageText(file, _cb);
+    } else {
+      var s = document.createElement('script');
+      s.src = 'https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';
+      s.onload = function(){ extractImageText(file, _cb); };
+      s.onerror = function(){ briefGelezenMulti('', file.name); _cb(); };
+      document.head.appendChild(s);
+    }
+  } else {
+    briefGelezenMulti('', file.name); _cb();
+  }
+}
+
+function briefGelezenMulti(tekst, filename){
+  if(tekst && tekst.trim().length > 10){
+    _briefTeksten.push(tekst);
+    _briefBestanden.push(filename);
+  }
+}
+
+function extractPdfText(file, cb){
+  var reader = new FileReader();
+  reader.onload = function(e){
+    var data = new Uint8Array(e.target.result);
+    pdfjsLib.getDocument({data: data}).promise.then(function(pdf){
+      var pages = [];
+      var total = pdf.numPages;
+      function nextPage(i){
+        if(i > total){ briefGelezenMulti(pages.join('\n\n'), file.name); if(cb) cb(); return; }
+        pdf.getPage(i).then(function(page){
+          page.getTextContent().then(function(tc){
+            pages.push(tc.items.map(function(it){ return it.str; }).join(' '));
+            nextPage(i+1);
+          });
+        });
+      }
+      nextPage(1);
+    }).catch(function(err){
+      briefGelezenMulti('', file.name); if(cb) cb();
+    });
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function extractImageText(file, cb){
+  Tesseract.recognize(file, 'nld', {
+    logger: function(m){
+      if(m.status === 'recognizing text' && m.progress){
+        var prog = document.getElementById('briefProgress');
+        if(prog) prog.textContent = 'OCR: ' + Math.round(m.progress * 100) + '%';
+      }
+    }
+  }).then(function(result){
+    briefGelezenMulti(result.data.text, file.name); if(cb) cb();
+  }).catch(function(err){
+    briefGelezenMulti('', file.name); if(cb) cb();
+  });
+}
+
+function combineerBriefResultaten(){
+  var dropzone = document.getElementById('briefDropzone');
+  var resultDiv = document.getElementById('briefResult');
+
+  if(_briefTeksten.length === 0){
+    dropzone.innerHTML = '<span class="mi" style="font-size:28px;color:var(--yellow);display:block;margin-bottom:4px">warning</span><div style="font-size:13px;font-weight:600">Geen tekst gevonden in de bestanden</div><div style="font-size:11px;color:var(--tx3)">Typ de gegevens handmatig in of probeer andere bestanden.<br>Klik om opnieuw te uploaden.</div><input type="file" id="briefUpload" accept=".pdf,.jpg,.jpeg,.png,.gif,.bmp,.txt" style="display:none" multiple onchange="verwerkBrieven(this.files)">';
+    dropzone.onclick = function(){ document.getElementById('briefUpload').click(); };
+    return;
+  }
+
+  // Combineer alle teksten en extracteer
+  var alleTekst = _briefTeksten.join('\n\n--- VOLGENDE BRIEF ---\n\n');
+  var alleNamen = [];
+  var alleInstanties = [];
+  var alleDatums = [];
+  var alleOnderwerpen = [];
+  var alleKenmerken = [];
+  var context = [];
+
+  _briefTeksten.forEach(function(tekst, idx){
+    var ext = extracteerGegevens(tekst);
+    ext.namen.forEach(function(n){ if(alleNamen.indexOf(n) < 0) alleNamen.push(n); });
+    if(ext.instantie && alleInstanties.indexOf(ext.instantie) < 0) alleInstanties.push(ext.instantie);
+    if(ext.datum) alleDatums.push(ext.datum);
+    if(ext.onderwerp) alleOnderwerpen.push(ext.onderwerp);
+    if(ext.kenmerk && alleKenmerken.indexOf(ext.kenmerk) < 0) alleKenmerken.push(ext.kenmerk);
+  });
+
+  // Bouw context-samenvatting
+  if(alleDatums.length > 1){
+    context.push('Correspondentie van ' + alleDatums[0] + ' tot ' + alleDatums[alleDatums.length-1]);
+  }
+  if(_briefTeksten.length > 1){
+    context.push(_briefTeksten.length + ' brieven geanalyseerd');
+  }
+  if(alleKenmerken.length > 0){
+    context.push('Zaaknummer(s): ' + alleKenmerken.join(', '));
+  }
+
+  // Toon succes
+  dropzone.innerHTML = '<span class="mi" style="font-size:28px;color:var(--green);display:block;margin-bottom:4px">check_circle</span>' +
+    '<div style="font-size:13px;font-weight:600;color:var(--green)">' + _briefBestanden.length + ' brief' + (_briefBestanden.length > 1 ? 'ven' : '') + ' gelezen!</div>' +
+    '<div style="font-size:11px;color:var(--tx3)">' + _briefBestanden.map(esc).join(', ') + '</div>' +
+    '<div style="font-size:11px;color:var(--blue);margin-top:4px;cursor:pointer" onclick="event.stopPropagation(); _briefTeksten=[]; _briefBestanden=[]; document.getElementById(\'briefUpload2\').click()">+ Meer brieven toevoegen</div>' +
+    '<input type="file" id="briefUpload2" accept=".pdf,.jpg,.jpeg,.png,.gif,.bmp,.txt" style="display:none" multiple onchange="verwerkBrieven(this.files)">';
+  dropzone.onclick = null;
+
+  // Vul formuliervelden in
+  if(alleNamen.length > 0){
+    _namen = alleNamen.map(function(n){ return {naam: n, functie: ''}; });
+  }
+  setTimeout(function(){
+    var el = document.getElementById('mInstantie');
+    if(el && !el.value && alleInstanties.length > 0) el.value = alleInstanties.join(', ');
+    var el2 = document.getElementById('mTitel');
+    if(el2 && !el2.value && alleOnderwerpen.length > 0) el2.value = alleOnderwerpen[0];
+    // Bouw context-verhaal
+    var el3 = document.getElementById('mVerhaal');
+    if(el3 && !el3.value && context.length > 0){
+      el3.value = 'Uit ' + _briefBestanden.length + ' brief' + (_briefBestanden.length > 1 ? 'ven' : '') + ':\n' +
+        context.join('\n') +
+        (alleOnderwerpen.length > 0 ? '\n\nOnderwerpen: ' + alleOnderwerpen.join(' / ') : '') +
+        (alleKenmerken.length > 0 ? '\nKenmerken: ' + alleKenmerken.join(', ') : '') +
+        '\n\n[Vul hier je verhaal aan — wat is er gebeurd?]';
+    }
+  }, 100);
+
+  // Toon resultaat
+  var resHtml = '<div class="card" style="padding:14px;border-left:3px solid var(--green)">' +
+    '<div style="font-size:12px;font-weight:700;margin-bottom:8px;color:var(--green)"><span class="mi mi-sm">auto_fix_high</span> Automatisch gevonden uit ' + _briefBestanden.length + ' brief' + (_briefBestanden.length > 1 ? 'ven' : '') + ':</div>';
+  if(alleNamen.length > 0){
+    resHtml += '<div style="font-size:12px;margin-bottom:4px"><strong>Namen (' + alleNamen.length + '):</strong> ' + alleNamen.map(esc).join(', ') + '</div>';
+  }
+  if(alleInstanties.length > 0){
+    resHtml += '<div style="font-size:12px;margin-bottom:4px"><strong>Instantie' + (alleInstanties.length > 1 ? 's' : '') + ':</strong> ' + alleInstanties.map(esc).join(', ') + '</div>';
+  }
+  if(alleDatums.length > 0){
+    resHtml += '<div style="font-size:12px;margin-bottom:4px"><strong>Datum' + (alleDatums.length > 1 ? 's' : '') + ':</strong> ' + alleDatums.map(esc).join(', ') + '</div>';
+  }
+  if(alleOnderwerpen.length > 0){
+    resHtml += '<div style="font-size:12px;margin-bottom:4px"><strong>Onderwerp' + (alleOnderwerpen.length > 1 ? 'en' : '') + ':</strong> ' + alleOnderwerpen.map(esc).join(' / ') + '</div>';
+  }
+  if(alleKenmerken.length > 0){
+    resHtml += '<div style="font-size:12px;margin-bottom:4px"><strong>Kenmerk' + (alleKenmerken.length > 1 ? 'en' : '') + ':</strong> ' + alleKenmerken.map(esc).join(', ') + '</div>';
+  }
+  resHtml += '<div style="font-size:11px;color:var(--tx3);margin-top:8px">Controleer de gegevens en vul aan waar nodig. De briefteksten worden niet opgeslagen — alleen de gevonden gegevens.</div>';
+  resHtml += '</div>';
+  resultDiv.innerHTML = resHtml;
+  resultDiv.style.display = 'block';
+
+  render();
+}
+
+function extracteerGegevens(tekst){
+  var result = { namen: [], instantie: '', datum: '', onderwerp: '', kenmerk: '' };
+  var lines = tekst.split(/\n/);
+
+  // Instanties herkennen
+  var bekende = [
+    'Belastingdienst', 'Dienst Toeslagen', 'UWV', 'SVB', 'DUO', 'IND', 'CBR', 'CJIB',
+    'Rijksdienst', 'RVO', 'CAK', 'CIZ', 'Kadaster', 'KvK', 'Kamer van Koophandel',
+    'Politie', 'Openbaar Ministerie', 'Rechtbank', 'Raad van State', 'Hoge Raad',
+    'Jeugdzorg', 'Veilig Thuis', 'Raad voor de Kinderbescherming',
+    'Sociale Verzekeringsbank', 'Inspectie', 'NVWA', 'FIOD',
+    'Immigratie- en Naturalisatiedienst'
+  ];
+  var gemeenteMatch = tekst.match(/[Gg]emeente\s+([A-Z][a-z]+(?:\s+[a-z]+)?(?:\s+[A-Z][a-z]+)?)/);
+  if(gemeenteMatch) result.instantie = 'Gemeente ' + gemeenteMatch[1].trim();
+
+  bekende.forEach(function(inst){
+    if(tekst.indexOf(inst) >= 0 && !result.instantie) result.instantie = inst;
+  });
+
+  // Datum herkennen (diverse formats)
+  var datumPatterns = [
+    /(\d{1,2})\s+(januari|februari|maart|april|mei|juni|juli|augustus|september|oktober|november|december)\s+(\d{4})/i,
+    /(\d{1,2})[-\/](\d{1,2})[-\/](\d{4})/,
+    /(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})/
+  ];
+  datumPatterns.forEach(function(p){
+    var m = tekst.match(p);
+    if(m && !result.datum) result.datum = m[0];
+  });
+
+  // Onderwerp
+  lines.forEach(function(line){
+    var l = line.trim();
+    if(/^[Oo]nderwerp\s*[:;]\s*(.+)/.test(l)){
+      result.onderwerp = l.replace(/^[Oo]nderwerp\s*[:;]\s*/, '').trim();
+    }
+    if(/^[Bb]etreft\s*[:;]\s*(.+)/.test(l)){
+      result.onderwerp = l.replace(/^[Bb]etreft\s*[:;]\s*/, '').trim();
+    }
+  });
+
+  // Kenmerk
+  lines.forEach(function(line){
+    var l = line.trim();
+    if(/[Kk]enmerk\s*[:;]\s*(.+)/.test(l)){
+      result.kenmerk = l.replace(/.*[Kk]enmerk\s*[:;]\s*/, '').trim();
+    }
+    if(/[Zz]aaknummer\s*[:;]\s*(.+)/.test(l)){
+      result.kenmerk = l.replace(/.*[Zz]aaknummer\s*[:;]\s*/, '').trim();
+    }
+  });
+
+  // Namen extraheren: zoek "Hoogachtend," / "Met vriendelijke groet," etc. en kijk wat erna komt
+  var ondertekeningIndex = -1;
+  var groetPatterns = [/[Hh]oogachtend/, /[Mm]et\s+(vriendelijke\s+)?groet/, /[Nn]amens\s+de/, /[Dd]e\s+inspecteur/, /[Dd]e\s+directeur/, /[Dd]e\s+minister/, /[Dd]e\s+staatssecretaris/, /[Dd]e\s+wethouder/, /[Dd]e\s+burgemeester/];
+  lines.forEach(function(line, idx){
+    groetPatterns.forEach(function(p){
+      if(p.test(line) && ondertekeningIndex < 0) ondertekeningIndex = idx;
+    });
+  });
+
+  if(ondertekeningIndex >= 0){
+    // Zoek namen na de ondertekening
+    for(var i = ondertekeningIndex + 1; i < Math.min(ondertekeningIndex + 8, lines.length); i++){
+      var naam = lines[i].trim();
+      // Filter lege regels en niet-namen
+      if(!naam || naam.length < 3 || naam.length > 60) continue;
+      if(/^[a-z]/.test(naam)) continue; // begint niet met hoofdletter
+      if(/^\d/.test(naam)) continue; // begint met getal
+      if(/^(Postbus|Telefoon|Tel|Fax|E-mail|Website|www|http|Bijlage)/i.test(naam)) continue;
+      if(/^(de |het |een |van |voor |bij |op |in |met |aan )/i.test(naam) && !/^(de heer|mevrouw)/i.test(naam)) continue;
+      // Lijkt op een naam
+      if(/^[A-Z][a-zéèëêïöüá]+\.?\s/.test(naam) || /^(drs\.|mr\.|ir\.|dr\.|prof\.|ing\.)\s/i.test(naam) || /^[A-Z]\.\s*[A-Z]/.test(naam)){
+        var cleanNaam = naam.replace(/^(drs\.|mr\.|ir\.|dr\.|prof\.|ing\.)\s*/i, '').trim();
+        if(cleanNaam.length > 2 && cleanNaam.length < 50){
+          result.namen.push(cleanNaam);
+        }
+      }
+    }
+  }
+
+  // Zoek ook naar "De heer/Mevrouw X" of "behandeld door"
+  lines.forEach(function(line){
+    var l = line.trim();
+    var m;
+    if((m = l.match(/[Bb]ehandeld\s+door\s*[:;]?\s*(.+)/))) {
+      var n = m[1].trim().replace(/^(drs\.|mr\.|ir\.|dr\.|prof\.|ing\.)\s*/i, '');
+      if(n.length > 2 && n.length < 50 && result.namen.indexOf(n) < 0) result.namen.push(n);
+    }
+    if((m = l.match(/[Cc]ontactpersoon\s*[:;]?\s*(.+)/))) {
+      var n2 = m[1].trim().replace(/^(drs\.|mr\.|ir\.|dr\.|prof\.|ing\.)\s*/i, '');
+      if(n2.length > 2 && n2.length < 50 && result.namen.indexOf(n2) < 0) result.namen.push(n2);
+    }
+  });
+
+  return result;
+}
+
+// Drag & drop op briefDropzone
+document.addEventListener('dragover', function(e){ e.preventDefault(); });
+document.addEventListener('drop', function(e){
+  e.preventDefault();
+  var dz = document.getElementById('briefDropzone');
+  if(dz && e.target.closest('#briefDropzone')){
+    var file = e.dataTransfer.files[0];
+    if(file) verwerkBrief(file);
   }
 });
 
