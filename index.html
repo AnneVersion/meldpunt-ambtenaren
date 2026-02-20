@@ -2838,7 +2838,17 @@ function pgDocumentatie(){
 }
 
 function seedDemo(){
-  if(DS.count('meldingen') > 0) return;
+  // Versie-check: als meldingen geen bronnen[] array hebben, wis en herseed
+  var SEED_VERSION = 3;
+  var curVer = parseInt(localStorage.getItem('ma_seed_version') || '0');
+  if(curVer < SEED_VERSION){
+    // Verwijder oude demo-meldingen (met melder_naam 'Meldpunt Ambtenaren')
+    var alle = DS.all('meldingen');
+    alle.forEach(function(m){
+      if(m.melder_naam === 'Meldpunt Ambtenaren') DS.del('meldingen', m.id);
+    });
+    localStorage.setItem('ma_seed_version', String(SEED_VERSION));
+  } else if(DS.count('meldingen') > 0) return;
 
   // === ECHTE ZAKEN — alle namen en feiten zijn publiek gedocumenteerd ===
 
