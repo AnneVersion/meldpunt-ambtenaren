@@ -1744,12 +1744,29 @@ function pgTijdlijn(){
     '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:20px">' +
       '<div class="card" style="text-align:center;padding:14px"><div style="font-size:24px;font-weight:800;color:var(--accent)">37.000+</div><div style="font-size:10px;color:var(--tx3)">ERKENDE GEDUPEERDEN</div></div>' +
       '<div class="card" style="text-align:center;padding:14px"><div style="font-size:24px;font-weight:800;color:var(--accent)">3.500+</div><div style="font-size:10px;color:var(--tx3)">KINDEREN UIT HUIS</div></div>' +
-      '<div class="card" style="text-align:center;padding:14px"><div style="font-size:24px;font-weight:800;color:var(--accent)">482</div><div style="font-size:10px;color:var(--tx3)">KINDEREN OVERLEDEN</div></div>' +
       '<div class="card" style="text-align:center;padding:14px"><div style="font-size:24px;font-weight:800;color:var(--yellow)">23</div><div style="font-size:10px;color:var(--tx3)">KINDEREN TERUG</div></div>' +
       '<div class="card" style="text-align:center;padding:14px"><div style="font-size:24px;font-weight:800;color:var(--accent)">€7,1 mrd</div><div style="font-size:10px;color:var(--tx3)">KOSTEN HERSTEL</div></div>' +
       '<div class="card" style="text-align:center;padding:14px"><div style="font-size:24px;font-weight:800;color:var(--yellow)">0</div><div style="font-size:10px;color:var(--tx3)">POLITICI VERVOLGD</div></div>' +
     '</div>' +
-    '<p style="font-size:10px;color:var(--tx3);margin:-14px 0 16px;padding:0 4px">482 kinderen van gedupeerden overleden (2005–2021). Bron: Commissie-Hamer / CBS, maart 2025.</p>';
+
+    // 482 KINDEREN — HERDENKING
+    '<div style="padding:24px;margin-bottom:24px;background:linear-gradient(135deg,rgba(0,0,0,.4),rgba(0,0,0,.2));border:1px solid rgba(148,163,184,.1);border-radius:var(--r);text-align:center">' +
+      '<div style="font-size:48px;margin-bottom:8px">🕯</div>' +
+      '<div style="font-size:42px;font-weight:800;color:#fff;letter-spacing:2px;margin-bottom:8px">482</div>' +
+      '<div style="font-size:16px;color:var(--tx);font-weight:600;margin-bottom:12px">kinderen van gedupeerde ouders zijn overleden</div>' +
+      '<div style="font-size:13px;color:var(--tx2);max-width:520px;margin:0 auto;line-height:1.8">' +
+        'Tussen 2005 en 2021 zijn 482 kinderen van gedupeerde toeslagenouders overleden. ' +
+        'Elk van deze kinderen had een naam, een gezicht, een leven dat nog moest beginnen. ' +
+        'Sommigen zijn uit huis geplaatst en hebben hun ouders nooit meer gezien. ' +
+        'Sommigen konden de druk niet aan. Sommigen zijn nooit oud genoeg geworden om te begrijpen wat er met hun gezin was gebeurd.' +
+      '</div>' +
+      '<div style="font-size:13px;color:var(--tx2);max-width:520px;margin:12px auto 0;line-height:1.8">' +
+        'Dit zijn geen statistieken. Dit zijn kinderen die er niet meer zijn. ' +
+        'Ouders die een kind hebben verloren terwijl de overheid hun leven kapotmaakte. ' +
+        'Geen enkel bedrag, geen enkele excuusbrief, geen enkele commissie maakt dit ongedaan.' +
+      '</div>' +
+      '<div style="margin-top:16px;font-size:11px;color:var(--tx3)">Bron: Commissie-Hamer / CBS, maart 2025</div>' +
+    '</div>';
 
   // TIJDLIJN
   events.forEach(function(e, i){
@@ -2087,6 +2104,93 @@ function pgRechtspraak(){
         'GeenStijl noemde het treffend: "Kontzak Belastingdienst krijgt boete van vestzak AP." ' +
         'De ouders zagen er geen cent van. €6,45 miljoen aan boetes — niet naar de slachtoffers, maar naar dezelfde overheid die hen kapot maakte.' +
       '</p>' +
+    '</div>' +
+
+    // JURIDISCHE ROUTEKAART VOOR OUDERS
+    '<div class="card" style="padding:24px;margin-bottom:20px;border-left:3px solid var(--blue)">' +
+      '<h3 style="font-size:18px;font-weight:800;margin-bottom:6px">' +
+        '<span class="mi" style="vertical-align:-4px;color:var(--blue)">balance</span> Wat kun je als ouder doen?' +
+      '</h3>' +
+      '<p style="font-size:13px;color:var(--tx2);margin-bottom:16px;line-height:1.7">' +
+        'Ja, je kunt individuele ambtenaren aanpakken. Hier zijn je juridische routes — van goedkoop naar ingrijpend.' +
+      '</p>' +
+
+      // Route 1: Art 12 Sv
+      '<div style="padding:14px;background:var(--green-soft);border-radius:var(--rs);margin-bottom:10px;border-left:3px solid var(--green)">' +
+        '<div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:4px">' +
+          '<div style="font-size:14px;font-weight:700"><span class="mi mi-sm" style="color:var(--green)">gavel</span> Route 1: Art. 12 Sv — Klacht niet-vervolging</div>' +
+          '<div style="font-size:11px;color:var(--green);font-weight:700">GRATIS</div>' +
+        '</div>' +
+        '<div style="font-size:12px;color:var(--tx2);line-height:1.7;margin-top:6px">' +
+          'Als het OM een ambtenaar niet vervolgt, kun je een klacht indienen bij het gerechtshof. <strong>Geen griffierecht, geen advocaat nodig.</strong> ' +
+          'Het Hof Den Haag oordeelde in 2024 (ECLI:NL:GHDHA:2024:329) dat individuele ambtenaren WEL vervolgbaar zijn — een doorbraak. ' +
+          'Let op: indienen binnen 3 maanden na kennisneming niet-vervolging.' +
+        '</div>' +
+      '</div>' +
+
+      // Route 2: Bestuursrechter
+      '<div style="padding:14px;background:var(--blue-soft);border-radius:var(--rs);margin-bottom:10px;border-left:3px solid var(--blue)">' +
+        '<div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:4px">' +
+          '<div style="font-size:14px;font-weight:700"><span class="mi mi-sm" style="color:var(--blue)">account_balance</span> Route 2: Bestuursrechter — Schadevergoeding tot €25.000</div>' +
+          '<div style="font-size:11px;color:var(--blue);font-weight:700">€54 – €200</div>' +
+        '</div>' +
+        '<div style="font-size:12px;color:var(--tx2);line-height:1.7;margin-top:6px">' +
+          'Art. 8:88 Awb: vraag schadevergoeding voor onrechtmatige besluiten. Geen advocaat verplicht. ' +
+          'Griffierecht: €200, met toevoeging €54. Max. €25.000. ' +
+          'Stuur eerst een verzoek naar het bestuursorgaan (art. 8:90 Awb), wacht 8 weken, dien dan het verzoekschrift in.' +
+        '</div>' +
+      '</div>' +
+
+      // Route 3: Kantonrechter
+      '<div style="padding:14px;background:var(--yellow-soft);border-radius:var(--rs);margin-bottom:10px;border-left:3px solid var(--yellow)">' +
+        '<div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:4px">' +
+          '<div style="font-size:14px;font-weight:700"><span class="mi mi-sm" style="color:var(--yellow)">person</span> Route 3: Kantonrechter — Individuele ambtenaar dagvaarden</div>' +
+          '<div style="font-size:11px;color:var(--yellow);font-weight:700">€93 – €753</div>' +
+        '</div>' +
+        '<div style="font-size:12px;color:var(--tx2);line-height:1.7;margin-top:6px">' +
+          'Art. 6:162 BW (onrechtmatige daad): je kunt een individuele ambtenaar persoonlijk aansprakelijk stellen. ' +
+          'Vereist: "ernstig persoonlijk verwijt" (Staat/Hofmann-criterium). Geen advocaat verplicht tot €25.000. ' +
+          'Griffierecht met toevoeging: €93. Moeilijk maar niet onmogelijk — er is jurisprudentie.' +
+        '</div>' +
+      '</div>' +
+
+      // Route 4: Strafrechtelijk
+      '<div style="padding:14px;background:var(--accent-soft);border-radius:var(--rs);margin-bottom:10px;border-left:3px solid var(--accent)">' +
+        '<div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:4px">' +
+          '<div style="font-size:14px;font-weight:700"><span class="mi mi-sm" style="color:var(--accent)">local_police</span> Route 4: Strafrechtelijke aangifte</div>' +
+          '<div style="font-size:11px;color:var(--accent);font-weight:700">GRATIS</div>' +
+        '</div>' +
+        '<div style="font-size:12px;color:var(--tx2);line-height:1.7;margin-top:6px">' +
+          '<strong>Knevelarij (art. 366 Sr):</strong> max. 6 jaar, verjaringstermijn 12 jaar — feiten vanaf 2014 zijn nog niet verjaard.<br>' +
+          '<strong>Valsheid in geschrift (art. 225 Sr):</strong> max. 6 jaar, verjaringstermijn 12 jaar — achterhouden/vervalsen dossiers.<br>' +
+          '<strong>Ambtelijke discriminatie (art. 137g Sr):</strong> max. 6 maanden, verjaringstermijn 6 jaar — deels verjaard.<br>' +
+          'Doe aangifte bij de politie. Als het OM niet vervolgt → Route 1 (art. 12 Sv).' +
+        '</div>' +
+      '</div>' +
+
+      // Route 5: Civiel tegen de Staat
+      '<div style="padding:14px;background:var(--purple-soft);border-radius:var(--rs);margin-bottom:10px;border-left:3px solid var(--purple)">' +
+        '<div style="display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:4px">' +
+          '<div style="font-size:14px;font-weight:700"><span class="mi mi-sm" style="color:var(--purple)">groups</span> Route 5: Civiel tegen de Staat (art. 6:170 BW)</div>' +
+          '<div style="font-size:11px;color:var(--purple);font-weight:700">€93 – €1.414</div>' +
+        '</div>' +
+        '<div style="font-size:12px;color:var(--tx2);line-height:1.7;margin-top:6px">' +
+          'De Staat is als werkgever aansprakelijk voor fouten van ambtenaren. Kansrijker dan individuele ambtenaren aanklagen. ' +
+          'Rechtbank Overijssel (ECLI:NL:RBOVE:2023:1459) en Rotterdam (ECLI:NL:RBROT:2023:3475) oordeelden al: Staat handelde onrechtmatig. ' +
+          'Boven €25.000 is een advocaat verplicht. Met toevoeging: eigen bijdrage €69–€138.' +
+        '</div>' +
+      '</div>' +
+
+      // Rechtsbijstand
+      '<div style="padding:14px;background:var(--glass);border-radius:var(--rs);margin-top:4px">' +
+        '<div style="font-size:13px;font-weight:700;margin-bottom:6px"><span class="mi mi-sm" style="color:var(--green)">savings</span> Gesubsidieerde rechtsbijstand (2026)</div>' +
+        '<div style="font-size:12px;color:var(--tx2);line-height:1.7">' +
+          '<strong>Inkomensgrenzen:</strong> alleenstaand max. €35.400, samenwonend max. €50.000.<br>' +
+          '<strong>Vermogensgrens:</strong> max. €36.952 per persoon.<br>' +
+          '<strong>Eigen bijdrage:</strong> €69 of €138 (afhankelijk van inkomen). Korting €69 via Juridisch Loket.<br>' +
+          '<strong>Tip:</strong> Veel toeslagenouders komen in aanmerking. Peiljaarverlegging is mogelijk als je nu minder verdient.' +
+        '</div>' +
+      '</div>' +
     '</div>' +
 
     // DE OPLOSSING
