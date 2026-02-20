@@ -263,6 +263,7 @@ a:hover { text-decoration: underline; }
         <button class="nav-btn" data-r="/missie" onclick="go('/missie')"><span class="mi mi-sm">flag</span> Missie</button>
         <button class="nav-btn" data-r="/organigram" onclick="go('/organigram')"><span class="mi mi-sm">account_tree</span> Daders</button>
         <button class="nav-btn" data-r="/tijdlijn" onclick="go('/tijdlijn')"><span class="mi mi-sm">timeline</span> Tijdlijn</button>
+        <button class="nav-btn" data-r="/documentatie" onclick="go('/documentatie')"><span class="mi mi-sm">menu_book</span> Bronnen</button>
         <button class="nav-btn cta" data-r="/melden" onclick="go('/melden')"><span class="mi mi-sm">add_circle</span> Meld</button>
       </nav>
     </div>
@@ -323,6 +324,7 @@ function parseRoute(){
   else if(h === '/klokkenluider') _route = '/klokkenluider';
   else if(h === '/organigram') _route = '/organigram';
   else if(h === '/tijdlijn') _route = '/tijdlijn';
+  else if(h === '/documentatie') _route = '/documentatie';
   else _route = '/';
   render();
   updateNav();
@@ -349,6 +351,7 @@ function render(){
     case '/klokkenluider': app.innerHTML = pgKlokkenluider(); break;
     case '/organigram': app.innerHTML = pgOrganigram(); break;
     case '/tijdlijn': app.innerHTML = pgTijdlijn(); break;
+    case '/documentatie': app.innerHTML = pgDocumentatie(); break;
     default: app.innerHTML = pgHome();
   }
 }
@@ -1044,14 +1047,30 @@ function pgMissie(){
 
     // DE RUTTE DOCTRINE
     '<div class="card" style="padding:24px;margin-bottom:16px;border-left:4px solid var(--yellow)">' +
-      '<h2 style="font-size:19px;margin-bottom:12px"><span class="mi mi-sm" style="color:var(--yellow)">history_edu</span> Mark Rutte — het grootste voorbeeld</h2>' +
+      '<h2 style="font-size:19px;margin-bottom:12px"><span class="mi mi-sm" style="color:var(--yellow)">history_edu</span> Mark Rutte — het slechtste voorbeeld</h2>' +
       '<p style="font-size:14px;line-height:1.8;color:var(--tx);margin-bottom:10px">' +
         'Als je wilt begrijpen waarom ambtenaren zich onaantastbaar voelen, kijk naar de man die het systeem 14 jaar lang leidde.' +
       '</p>' +
 
+      // WIE IS MARK RUTTE
+      '<div style="background:var(--bg2);border-radius:var(--rs);padding:16px;margin-bottom:12px">' +
+        '<div style="font-size:12px;font-weight:700;color:var(--tx3);text-transform:uppercase;margin-bottom:8px"><span class="mi mi-sm">person</span> Wie is Mark Rutte?</div>' +
+        '<div style="font-size:13px;color:var(--tx);line-height:1.8">' +
+          'Jongste van zeven kinderen uit een hervormd gezin in Den Haag. Zijn vader Izaak zat in een Japans krijgsgevangenenkamp; zijn eerste vrouw stierf in kamp Tjideng. Na de oorlog herbegonnen in Indonesië, opnieuw alles kwijt toen Soekarno de Nederlanders verdreef in 1958. Mark groeide op in het Benoordenhout — "in de positieve zin beschaafd en glad, in de negatieve zin bekakt" aldus een medestudent.<br><br>' +
+          'Wilde concertpianist worden, koos voor geschiedenis in Leiden. Werd voorzitter van de JOVD. Werkte 10 jaar bij <strong>Unilever</strong> op de HR-afdeling — reorganisaties doorvoeren en mensen ontslaan. Ging de politiek in. <strong>Nooit een relatie gehad. Nooit een maaltijd gekookt.</strong> Wel de langst zittende premier van Nederland.<br><br>' +
+          'Persoonlijkheidsonderzoek VU Amsterdam/LTP (2017): scoort in het <strong>5e percentiel op integriteit</strong> — 95% van de bevolking scoort hoger. Bijnaam: <strong>Teflon Mark</strong> — er blijft nooit iets aan hem kleven. De biograaf Petra de Koning beschrijft een "obsessieve controledrift" en een man die geen vaste overtuigingen heeft, maar meebeweegt met de wind.<br><br>' +
+          'Zijn broer stierf aan aids. Zijn vader stierf jong. De enige plek waar Rutte empathie toonde was privé, nooit in beleid. 26.000 gezinnen kapot, 2.090 kinderen uit huis — en Mark Rutte gaat op wintersport met Jort Kelder in Zermatt.' +
+        '</div>' +
+      '</div>' +
+
       // FEITELIJKE CHRONOLOGIE
       '<div style="background:var(--bg2);border-radius:var(--rs);padding:16px;margin-bottom:12px">' +
         '<div style="font-size:12px;font-weight:700;color:var(--yellow);text-transform:uppercase;margin-bottom:10px"><span class="mi mi-sm">timeline</span> De feiten</div>' +
+
+        '<div style="border-left:2px solid var(--accent);padding-left:14px;margin-bottom:10px">' +
+          '<div style="font-size:12px;font-weight:700;color:var(--accent)">2003</div>' +
+          '<div style="font-size:13px;color:var(--tx);line-height:1.7">Als <strong>staatssecretaris SZW</strong> schrijft Rutte een brief aan alle gemeenten om Somalische Nederlanders te traceren via geboorteplaats Mogadishu voor extra fraudecontroles. De rechtbank Haarlem oordeelt in 2007: <strong>rassendiscriminatie</strong>. Ruttes eerste discriminatieschandaal — 20 jaar vóór het tweede.</div>' +
+        '</div>' +
 
         '<div style="border-left:2px solid var(--yellow);padding-left:14px;margin-bottom:10px">' +
           '<div style="font-size:12px;font-weight:700;color:var(--yellow)">2013</div>' +
@@ -1084,8 +1103,8 @@ function pgMissie(){
         '</div>' +
 
         '<div style="border-left:2px solid var(--accent);padding-left:14px;margin-bottom:0">' +
-          '<div style="font-size:12px;font-weight:700;color:var(--accent)">Oktober 2024</div>' +
-          '<div style="font-size:13px;color:var(--tx);line-height:1.7">Mark Rutte wordt <strong>secretaris-generaal van de NAVO</strong>. De man die verantwoordelijk was voor het grootste discriminatieschandaal in de Nederlandse naoorlogse geschiedenis wordt beloond met de hoogste functie in het westerse militaire bondgenootschap.</div>' +
+          '<div style="font-size:12px;font-weight:700;color:var(--accent)">Oktober 2024 — NAVO</div>' +
+          '<div style="font-size:13px;color:var(--tx);line-height:1.7">Mark Rutte wordt <strong>secretaris-generaal van de NAVO</strong>. Jaarsalaris ~€270.000 belastingvrij. De man verantwoordelijk voor het grootste discriminatieschandaal in de naoorlogse Nederlandse geschiedenis, veroordeeld voor rassendiscriminatie, wiens kabinet viel vanwege het ruïneren van 26.000 gezinnen — beloond met de hoogste functie in het westerse militaire bondgenootschap. Terwijl slachtoffers wachten op compensatie en 23 van de 2.090 uithuisgeplaatste kinderen terug zijn. <strong>Karim Aachboun</strong>, toeslagenslachtoffer en belastingadviseur, dagvaardde Rutte voor het Brusselse Hof van Cassatie — een rechtszaak die nog loopt.</div>' +
         '</div>' +
       '</div>' +
 
@@ -1368,6 +1387,20 @@ function pgOrganigram(){
         '<div class="wet-item"><div class="wet-art">Art. 17 AVG — Recht op vergetelheid</div><div class="wet-desc">Persoonsgegevens die onrechtmatig verwerkt zijn moeten worden gewist. Het FSV-systeem (Fraude Signalerings Voorziening) bevatte 180.000 namen van burgers. Hoewel het systeem werd stilgelegd, werden de gegevens en hun effecten niet volledig gewist uit alle gekoppelde systemen.</div></div>' +
         '<div class="wet-item"><div class="wet-art">Art. 3:2 Awb — Zorgvuldigheidsbeginsel</div><div class="wet-desc">De hersteloperatie die Van Huffelen leidde werd zelf een tweede schandaal. Tergend langzaam, bureaucratisch, voor veel ouders opnieuw traumatiserend. In 2024 wachtten nog steeds duizenden ouders. Onzorgvuldig herstel van onzorgvuldig beleid.</div></div>' +
         '<div class="wet-item"><div class="wet-art">Art. 13 EVRM — Recht op effectief rechtsmiddel</div><div class="wet-desc">Eenieder wiens rechten zijn geschonden heeft recht op een daadwerkelijk rechtsmiddel. De hersteloperatie was voor veel ouders ontoegankelijk: complexe procedures, lange wachttijden, en een systeem dat opnieuw het gevoel gaf dat de overheid tegen hen werkte in plaats van voor hen.</div></div>'
+    },
+    klijnsma: {
+      naam: 'Jetta Klijnsma', functie: 'Staatssecretaris SZW (2012–2017)', korte_functie: 'Stss. SZW', partij: 'PvdA', partij_kleur: '#E12B1A',
+      foto: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Jetta_Klijnsma_2015.jpg/220px-Jetta_Klijnsma_2015.jpg',
+      nu: 'Commissaris van de Koning Drenthe',
+      dossier: '<strong>2012–2017 — Mede-architect fraudebeleid:</strong> Als staatssecretaris SZW in kabinet-Rutte II zat Klijnsma aan tafel bij de Ministeriële Commissie Fraude die de keiharde fraudeaanpak lanceerde. Verantwoordelijk voor de Participatiewet die mensen met een bijstandsuitkering als potentiële fraudeurs behandelde.<br><br>' +
+        '<strong>2013 — Waarschuwing genegeerd:</strong> Ombudsman Alex Brenninkmeijer waarschuwde Klijnsma en Asscher persoonlijk over de gevolgen van het harde fraudebeleid. De ministers "hapten niet" — de waarschuwing werd "voor kennisgeving aangenomen."<br><br>' +
+        '<strong>Commissie-Donner:</strong> Werd in 2019 lid van de Commissie-Donner die het toeslagenschandaal moest onderzoeken. Follow the Money onthulde dat deze commissie conclusies trok die in strijd waren met eigen onderzoek — conclusies die gunstig waren voor de Belastingdienst en voor haar partijgenoot Asscher.<br><br>' +
+        '<strong>Eigen uitspraak:</strong> "Het is geen usance dat je je verdiept in wetgeving die niet bij jou regardeert. Ik heb er niet mee van doen gehad." — terwijl ze als lid van de ministerraad medeverantwoordelijk was voor álle kabinetsbesluiten.<br><br>' +
+        '<strong style="color:var(--yellow)">Consequenties:</strong> Geen. Gepromoveerd tot Commissaris van de Koning.<br>' +
+        '<strong style="color:var(--yellow)">Nu:</strong> <strong>Commissaris van de Koning in Drenthe</strong> (sinds 2017). Lid van de Commissie-Donner. Bekritiseerde in 2024 BBB-bestuurders om hun "gebrek aan bestuurservaring" — terwijl ze zelf deel uitmaakte van het kabinet dat 26.000 gezinnen ruïneerde.',
+      wetten: '<div class="wet-item"><div class="wet-art">Art. 42 lid 2 Grondwet — Ministeriële verantwoordelijkheid</div><div class="wet-desc">Als staatssecretaris SZW en lid van de ministerraad was Klijnsma medeverantwoordelijk voor alle kabinetsbesluiten, inclusief de fraudeaanpak. "Ik heb er niet mee van doen gehad" is geen juridisch verweer — art. 42 lid 2 kent geen uitzonderingen.</div></div>' +
+        '<div class="wet-item"><div class="wet-art">Art. 3:4 Awb — Evenredigheidsbeginsel</div><div class="wet-desc">Klijnsma\'s Participatiewet (2015) legde disproportionele verplichtingen op aan bijstandsgerechtigden en behandelde burgers als potentiële fraudeurs. Haar eigen partijgenoot Gijs van Dijk noemde de wet later gebaseerd op "een verkeerd mensbeeld."</div></div>' +
+        '<div class="wet-item"><div class="wet-art">Art. 1 Grondwet — Discriminatieverbod</div><div class="wet-desc">Als lid van de Ministeriële Commissie Fraude keurde Klijnsma beleid goed dat disproportioneel mensen met een migratieachtergrond trof. De commissie waarvan zij deel uitmaakte, lanceerde de harde fraudeaanpak die leidde tot etnisch profileren.</div></div>'
     }
   };
 
@@ -1395,8 +1428,9 @@ function pgOrganigram(){
         '<div><strong>Asscher</strong> → Voorzitter FNV-toezicht</div>' +
         '<div><strong>Van Ark</strong> → Bestuurskamers</div>' +
         '<div><strong>Van Huffelen</strong> → Voorzitter Radboud Uni + D66</div>' +
+        '<div><strong>Klijnsma</strong> → Commissaris van de Koning</div>' +
       '</div>' +
-      '<div style="font-size:12px;color:var(--tx2);margin-top:8px;border-top:1px solid rgba(239,68,68,.15);padding-top:8px">Strafrechtelijk vervolgd: <strong style="color:var(--accent)">0</strong>. Persoonlijk aansprakelijk gesteld: <strong style="color:var(--accent)">0</strong>. Weggepromoveerd: <strong style="color:var(--accent)">7 van 7</strong>.</div>' +
+      '<div style="font-size:12px;color:var(--tx2);margin-top:8px;border-top:1px solid rgba(239,68,68,.15);padding-top:8px">Strafrechtelijk vervolgd: <strong style="color:var(--accent)">0</strong>. Persoonlijk aansprakelijk gesteld: <strong style="color:var(--accent)">0</strong>. Weggepromoveerd: <strong style="color:var(--accent)">8 van 8</strong>.</div>' +
     '</div>' +
 
     // ORGANIGRAM
@@ -1419,6 +1453,7 @@ function pgOrganigram(){
       // LAAG 3: Uitvoerend / Herstel
       '<div style="font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;text-align:center">Uitvoerend &amp; Herstel</div>' +
       '<div class="org-row">' +
+        node(p.klijnsma, false) +
         node(p.vanark, false) +
         node(p.vanhuffelen, false) +
       '</div>' +
@@ -1557,7 +1592,15 @@ function pgTijdlijn(){
     { jaar: '2021–2023', titel: 'Hersteloperatie mislukt', tekst: 'Staatssecretaris Van Huffelen belooft iedere gedupeerde €30.000. Maar de uitvoering is tergend langzaam. In 2023 wachten nog duizenden ouders. Van Huffelen weigert een nieuw BSN. Het FSV-systeem met 180.000 namen wordt stilgelegd — maar de schade is al aangericht.', kleur: 'var(--yellow)' },
     { jaar: 'Okt 2023', titel: 'College voor de Rechten van de Mens: discriminatie', tekst: 'Het College oordeelt in drie zaken dat er sprake was van indirecte discriminatie door de Belastingdienst/Toeslagen. Amnesty International had de affaire eerder al als mensenrechtenschending geclassificeerd.', kleur: 'var(--accent)' },
     { jaar: '2024', titel: 'Raad van State biedt excuses aan', tekst: 'De Raad van State erkent dat zij jarenlang een te strikte lijn hanteerde en biedt excuses aan toeslagenouders. Te laat, te weinig — maar een erkenning.', kleur: 'var(--yellow)' },
-    { jaar: 'Okt 2024', titel: 'Rutte wordt NAVO-baas', tekst: 'Mark Rutte wordt de 14e secretaris-generaal van de NAVO. De man verantwoordelijk voor het grootste discriminatieschandaal in de naoorlogse Nederlandse geschiedenis wordt beloond met de hoogste functie in het westerse militaire bondgenootschap. 26.000 gezinnen kapot. 2.090 kinderen uit huis. Nul consequenties.', kleur: 'var(--accent)' }
+    { jaar: 'Feb 2024', titel: 'Parlementaire enquête: "Blind voor mens en recht"', tekst: 'De enquêtecommissie onder voorzitter Michiel van Nispen (SP) concludeert: "In een verhard politiek en maatschappelijk klimaat zijn de drie staatsmachten blind geweest voor mens en recht, waardoor levens zijn vermorzeld." De commissie beveelt aan om bestuursrechtspraak weg te halen bij de Raad van State. De Raad van State weigert schuld te erkennen.', kleur: 'var(--accent)' },
+    { jaar: 'Okt 2024', titel: 'Rutte wordt NAVO-baas', tekst: 'Mark Rutte wordt de 14e secretaris-generaal van de NAVO. Jaarsalaris ~€270.000 belastingvrij. 26.000 gezinnen kapot. 2.090 kinderen uit huis. Nul consequenties. Karim Aachboun dagvaardt Rutte voor het Brusselse Hof van Cassatie.', kleur: 'var(--accent)' },
+    { jaar: 'Nov 2024', titel: 'Staatssecretaris Achahbar stapt op', tekst: 'Nora Achahbar, pas maanden in functie als staatssecretaris hersteloperatie, treedt af. De zoveelste bestuurder die wegloopt. 37.000 erkende gedupeerden wachten nog steeds.', kleur: 'var(--yellow)' },
+    { jaar: '2025', titel: 'Rechters slaan alarm: €100 miljoen aan dwangsommen', tekst: 'De Raad van State onthult: tussen november 2023 en november 2024 is <strong>€101,6 miljoen</strong> aan dwangsommen opgelegd omdat de Dienst Toeslagen wettelijke termijnen overschrijdt. 9.300 rechtszaken lopen, 500 nieuwe per maand. Het geld verdwijnt in boetes — niet in herstel.', kleur: 'var(--accent)' },
+    { jaar: '2025', titel: 'Dienst Toeslagen geeft bewust geen informatie', tekst: 'NOS onthult een intern memo: de Dienst Toeslagen weigert <strong>bewust</strong> uit te leggen aan ouders waarom ze als fraudeur zijn bestempeld. Het memo erkent dat dit "niet houdbaar in beroep" is — ze weten dat het illegaal is en doen het tóch.', kleur: 'var(--accent)' },
+    { jaar: '2025', titel: 'College: directe discriminatie op ras', tekst: 'Het College voor de Rechten van de Mens oordeelt voor het eerst dat de Belastingdienst <strong>direct discrimineerde op grond van ras</strong> — niet indirect, maar bewust. 20+ discriminatieoordelen inmiddels.', kleur: 'var(--accent)' },
+    { jaar: 'Mrt 2025', titel: 'Commissie-Hamer: 3.500 kinderen, 23 terug', tekst: 'De Commissie-Hamer concludeert dat de toeslagenaffaire een "grote rol" speelde bij uithuisplaatsingen. Van de 3.500+ kinderen zijn er slechts <strong>23</strong> herenigd met hun ouders. 482 kinderen van gedupeerden zijn overleden. De gevolgen zijn "blijvend — mogelijk generatielang."', kleur: 'var(--accent)' },
+    { jaar: '2025', titel: '50+ illegale algoritmes nog actief', tekst: 'Follow the Money onthult: meer dan 50 van de 100+ algoritmes van de Belastingdienst zijn <strong>onrechtmatig</strong>. De Autoriteit Persoonsgegevens weigert te handhaven en gedraagt zich als "consultant van de Belastingdienst" aldus Bits of Freedom.', kleur: 'var(--yellow)' },
+    { jaar: '2026', titel: 'Het is niet voorbij', tekst: 'Anno 2026 wachten duizenden ouders nog op compensatie. Volledige afronding: niet voor 2030. 50+ illegale algoritmes draaien door. Geen enkele ambtenaar of politicus is strafrechtelijk vervolgd. De patronen die de enquêtecommissie signaleerde zijn <strong>"nog steeds aanwezig."</strong> Het kan morgen opnieuw gebeuren.', kleur: 'var(--accent)' }
   ];
 
   var html = '<div class="page">' +
@@ -1569,9 +1612,11 @@ function pgTijdlijn(){
 
     // IMPACT STATS
     '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:20px">' +
-      '<div class="card" style="text-align:center;padding:14px"><div style="font-size:24px;font-weight:800;color:var(--accent)">26.000+</div><div style="font-size:10px;color:var(--tx3)">OUDERS SLACHTOFFER</div></div>' +
-      '<div class="card" style="text-align:center;padding:14px"><div style="font-size:24px;font-weight:800;color:var(--accent)">2.090</div><div style="font-size:10px;color:var(--tx3)">KINDEREN UIT HUIS</div></div>' +
-      '<div class="card" style="text-align:center;padding:14px"><div style="font-size:24px;font-weight:800;color:var(--accent)">68.000</div><div style="font-size:10px;color:var(--tx3)">KINDEREN GETROFFEN</div></div>' +
+      '<div class="card" style="text-align:center;padding:14px"><div style="font-size:24px;font-weight:800;color:var(--accent)">37.000+</div><div style="font-size:10px;color:var(--tx3)">ERKENDE GEDUPEERDEN</div></div>' +
+      '<div class="card" style="text-align:center;padding:14px"><div style="font-size:24px;font-weight:800;color:var(--accent)">3.500+</div><div style="font-size:10px;color:var(--tx3)">KINDEREN UIT HUIS</div></div>' +
+      '<div class="card" style="text-align:center;padding:14px"><div style="font-size:24px;font-weight:800;color:var(--accent)">482</div><div style="font-size:10px;color:var(--tx3)">KINDEREN OVERLEDEN</div></div>' +
+      '<div class="card" style="text-align:center;padding:14px"><div style="font-size:24px;font-weight:800;color:var(--yellow)">23</div><div style="font-size:10px;color:var(--tx3)">KINDEREN TERUG</div></div>' +
+      '<div class="card" style="text-align:center;padding:14px"><div style="font-size:24px;font-weight:800;color:var(--accent)">€7,1 mrd</div><div style="font-size:10px;color:var(--tx3)">KOSTEN HERSTEL</div></div>' +
       '<div class="card" style="text-align:center;padding:14px"><div style="font-size:24px;font-weight:800;color:var(--yellow)">0</div><div style="font-size:10px;color:var(--tx3)">POLITICI VERVOLGD</div></div>' +
     '</div>';
 
@@ -1603,6 +1648,140 @@ function pgTijdlijn(){
 }
 
 // ============ DEMO DATA ============
+// ============ PAGE: DOCUMENTATIE ============
+function pgDocumentatie(){
+  var bronnen = {
+    parlementair: [
+      { titel: 'Rapport "Ongekend Onrecht"', bron: 'Parlementaire ondervragingscommissie Kinderopvangtoeslag', jaar: '2020', url: 'https://www.tweedekamer.nl/kamerstukken/detail?id=2020Z25198' },
+      { titel: '"Blind voor mens en recht"', bron: 'Parlementaire enquêtecommissie Fraudebeleid en Dienstverlening', jaar: '2024', url: 'https://www.tweedekamer.nl/kamerstukken/detail?id=2024D07858' },
+      { titel: '"Minder belomen, meer doen"', bron: 'Commissie-Van Dam', jaar: '2025', url: 'https://www.rijksoverheid.nl/documenten/rapporten/2025/02/13/rapport-commissie-van-dam' },
+      { titel: 'Rapport uithuisplaatsingen kinderen gedupeerden', bron: 'Commissie-Hamer', jaar: '2025', url: 'https://www.rijksoverheid.nl/documenten/rapporten/2025/03/03/rapport-commissie-hamer' }
+    ],
+    rechtspraak: [
+      { titel: 'Oordeel 2023-103, 2023-104, 2023-105: indirecte discriminatie', bron: 'College voor de Rechten van de Mens', jaar: '2023', url: 'https://oordelen.mensenrechten.nl/oordeel/2023-103' },
+      { titel: 'Oordeel 2024-51: discriminatie moeder Turkse achternaam', bron: 'College voor de Rechten van de Mens', jaar: '2024', url: 'https://www.mensenrechten.nl/actueel/nieuws/2024/06/12/' },
+      { titel: 'Oordeel 2025: directe discriminatie op ras', bron: 'College voor de Rechten van de Mens', jaar: '2025', url: 'https://www.mensenrechten.nl/actueel/nieuws/2025/07/03/' },
+      { titel: 'Staat handelde onrechtmatig (ECLI:NL:RBOVL:2023)', bron: 'Rechtbank Overijssel', jaar: '2023', url: 'https://www.rechtspraak.nl/Organisatie-en-contact/Organisatie/Rechtbanken/Rechtbank-Overijssel/Nieuws/Paginas/Staat-handelde-onrechtmatig-tegen-twee-gedupeerde-ouders-toeslagenaffaire-.aspx' },
+      { titel: 'Dwangsommen-uitspraak (ECLI:NL:RVS:2025:1301)', bron: 'Raad van State', jaar: '2025', url: 'https://www.raadvanstate.nl/uitspraken/@141810/202403045-1-a2/' },
+      { titel: '"Recht vinden bij de rechtbank" — zelfreflectie rechtbanken', bron: 'Raad voor de Rechtspraak', jaar: '2021', url: 'https://www.rechtspraak.nl/Organisatie-en-contact/Organisatie/Raad-voor-de-rechtspraak/Nieuws/Paginas/Toeslagenaffaire-Belang-rechtsbescherming-individu-moet-zwaarder-wegen-dan-vaste-lijn-jurisprudentie.aspx' },
+      { titel: '"Lessen uit de kinderopvangtoeslagzaken"', bron: 'Raad van State — Afdeling bestuursrechtspraak', jaar: '2021', url: 'https://www.raadvanstate.nl/lessen-uit-de-kinderopvangtoeslagzaken/' }
+    ],
+    toezicht: [
+      { titel: 'Boete Belastingdienst — discriminatie dubbele nationaliteit (€2,75 mln)', bron: 'Autoriteit Persoonsgegevens', jaar: '2021', url: 'https://www.autoriteitpersoonsgegevens.nl/nl/nieuws/boete-belastingdienst-kinderopvangtoeslag' },
+      { titel: 'Boete Belastingdienst — FSV zwarte lijst (€3,7 mln)', bron: 'Autoriteit Persoonsgegevens', jaar: '2022', url: 'https://www.autoriteitpersoonsgegevens.nl/nl/nieuws/boete-belastingdienst-voor-zwarte-lijst-fsv' },
+      { titel: 'Informatiehuishouding Toeslagen voldoet niet', bron: 'Inspectie Overheidsinformatie en Erfgoed', jaar: '2024', url: 'https://www.inspectie-oe.nl/actueel/nieuws/2024/04/26/informatiehuishouding-toeslagen' },
+      { titel: 'Hersteloperatie Toeslagen — verantwoording', bron: 'Algemene Rekenkamer', jaar: '2025', url: 'https://www.rekenkamer.nl/publicaties/rapporten/2025/05/21/hersteloperatie-toeslagen' },
+      { titel: '"Xenofobe machines" — mensenrechtenschending', bron: 'Amnesty International', jaar: '2021', url: 'https://www.amnesty.nl/content/uploads/2021/10/Amnesty-International-rapport-Xenofobe-machines.pdf' }
+    ],
+    journalistiek: [
+      { titel: 'Dienst Toeslagen geeft bewust geen informatie aan slachtoffers', bron: 'NOS', jaar: '2025', url: 'https://nos.nl/artikel/2599959' },
+      { titel: 'Toeslagenouders opnieuw in de schulden door betaalpauze', bron: 'NOS', jaar: '2025', url: 'https://nos.nl/artikel/2601552' },
+      { titel: 'Meer dan 50 algoritmes van de Belastingdienst zijn onrechtmatig', bron: 'Follow the Money', jaar: '2025', url: 'https://www.ftm.nl/artikelen/meer-dan-50-algoritmes-van-de-belasting-dienst-zijn-onrechtmatig' },
+      { titel: 'Het hardnekkige wegkijken van de commissie-Donner', bron: 'Follow the Money', jaar: '2021', url: 'https://www.ftm.nl/artikelen/hardnekkig-wegkijken-commissie-donner' },
+      { titel: 'Toeslagenaffaire had grote rol bij uithuisplaatsingen', bron: 'NOS', jaar: '2025', url: 'https://nos.nl/artikel/2561277' },
+      { titel: 'Belastingmedewerkers toeslagenaffaire werken nu aan compensatie ouders', bron: 'EenVandaag', jaar: '2024', url: 'https://eenvandaag.avrotros.nl/item/belastingmedewerkers-toeslagenaffaire-werken-nu-aan-compensatie-ouders-dit-kan-en-mag-helemaal-nie/' }
+    ],
+    juridisch: [
+      { titel: 'Knevelarij in de toeslagenaffaire', bron: 'BijzonderStrafrecht.nl', jaar: '2024', url: 'https://www.bijzonderstrafrecht.nl/home/artikel-knevelarij-in-de-toeslagenaffaire' },
+      { titel: 'Geen vervolging individuele ambtenaren Belastingdienst', bron: 'BijzonderStrafrecht.nl', jaar: '2024', url: 'https://www.bijzonderstrafrecht.nl/home/geen-vervolging-van-individuele-ambtenaren-van-de-belastingdienst-uit-de-toeslagenaffaire-voor-beroepsmatige-discriminatie' },
+      { titel: 'Tuchtrecht voor ambtenaren — het handhavingstekort', bron: 'BijzonderStrafrecht.nl', jaar: '2024', url: 'https://www.bijzonderstrafrecht.nl/home/tuchtrecht-voor-ambtenaren-een-oplossing-voor-het-handhavingstekort-bij-handhavers-en-toezichthouders' },
+      { titel: 'Formele rechtskracht bij de toeslagenaffaire', bron: 'Lawyrup.nl', jaar: '2023', url: 'https://lawyrup.nl/formele-rechtskracht-toeslagenaffaire/' },
+      { titel: 'Strafrechtelijke immuniteit overheid bij toeslagenaffaire', bron: 'Mr. Online', jaar: '2022', url: 'https://www.mr-online.nl/strafrechtelijke-aansprakelijkheid-overheid-in-het-licht-van-toeslagenaffaire/' },
+      { titel: 'Herziening art. 119 Grondwet — ambtsmisdrijven bewindslieden', bron: 'Raad van State — advies', jaar: '2025', url: 'https://www.raadvanstate.nl/adviezen/@151990/w01-25-00144/' }
+    ],
+    internationaal: [
+      { titel: 'Concluding Observations Netherlands — raciale discriminatie', bron: 'CERD (VN-comité)', jaar: '2021', url: 'https://www.ohchr.org/en/documents/concluding-observations/cerdcnldco22-24' },
+      { titel: 'Country visit Netherlands — racisme en discriminatie', bron: 'VN Speciaal Rapporteur', jaar: '2019', url: 'https://www.ohchr.org/en/documents/country-reports/ahrc4457add2-visit-netherlands' },
+      { titel: 'Venice Commission — advies toetsingsverbod', bron: 'Raad van Europa', jaar: '2021', url: 'https://verfassungsblog.de/constitutional-review-in-sight/' },
+      { titel: 'Aachboun vs. Rutte — Brusselse Hof van Cassatie', bron: 'DutchEcho', jaar: '2025', url: 'https://dutchecho.com/2025/03/30/aachboun-vs-rutte-the-legal-showdown/' }
+    ],
+    boeken: [
+      { titel: 'Mark Rutte — biografie', bron: 'Petra de Koning', jaar: '2020', url: '' },
+      { titel: 'Mark: Portret van een premier', bron: 'Sheila Sitalsing', jaar: '2016', url: '' },
+      { titel: 'De toeslagenaffaire (diverse publicaties)', bron: 'Jesse Frederik (De Correspondent)', jaar: '2021', url: '' }
+    ]
+  };
+
+  function renderBronnen(lijst, kleur){
+    var h = '';
+    lijst.forEach(function(b){
+      h += '<div style="padding:8px 0;border-bottom:1px solid var(--glass-bd);font-size:12px;line-height:1.7">' +
+        (b.url ? '<a href="' + esc(b.url) + '" target="_blank" rel="noopener" style="color:var(--blue);font-weight:700;text-decoration:none">' + esc(b.titel) + ' ↗</a>' : '<strong>' + esc(b.titel) + '</strong>') +
+        '<br><span style="color:var(--tx3)">' + esc(b.bron) + ' (' + esc(b.jaar) + ')</span>' +
+      '</div>';
+    });
+    return h;
+  }
+
+  return '<div class="page">' +
+    '<div style="text-align:center;padding:24px 0 16px">' +
+      '<span class="mi" style="font-size:44px;color:var(--blue);display:block;margin-bottom:8px">menu_book</span>' +
+      '<h1 style="font-size:clamp(22px,4vw,30px);font-weight:800;margin-bottom:6px">Documentatie &amp; Bronnen</h1>' +
+      '<p style="font-size:14px;color:var(--tx2);max-width:560px;margin:0 auto">Alle feiten op deze site zijn onderbouwd met parlementaire rapporten, rechterlijke uitspraken, toezichthoudersrapporten en journalistiek onderzoek.</p>' +
+    '</div>' +
+
+    '<div class="card" style="padding:18px;margin-bottom:14px;border-left:4px solid var(--accent)">' +
+      '<h2 style="font-size:16px;font-weight:700;margin-bottom:10px"><span class="mi mi-sm" style="color:var(--accent)">account_balance</span> Parlementaire rapporten</h2>' +
+      renderBronnen(bronnen.parlementair) +
+    '</div>' +
+
+    '<div class="card" style="padding:18px;margin-bottom:14px;border-left:4px solid var(--yellow)">' +
+      '<h2 style="font-size:16px;font-weight:700;margin-bottom:10px"><span class="mi mi-sm" style="color:var(--yellow)">gavel</span> Rechtspraak &amp; discriminatie-oordelen</h2>' +
+      renderBronnen(bronnen.rechtspraak) +
+    '</div>' +
+
+    '<div class="card" style="padding:18px;margin-bottom:14px;border-left:4px solid var(--blue)">' +
+      '<h2 style="font-size:16px;font-weight:700;margin-bottom:10px"><span class="mi mi-sm" style="color:var(--blue)">shield</span> Toezichthouders</h2>' +
+      renderBronnen(bronnen.toezicht) +
+    '</div>' +
+
+    '<div class="card" style="padding:18px;margin-bottom:14px;border-left:4px solid var(--green)">' +
+      '<h2 style="font-size:16px;font-weight:700;margin-bottom:10px"><span class="mi mi-sm" style="color:var(--green)">newspaper</span> Journalistiek onderzoek</h2>' +
+      renderBronnen(bronnen.journalistiek) +
+    '</div>' +
+
+    '<div class="card" style="padding:18px;margin-bottom:14px;border-left:4px solid var(--accent)">' +
+      '<h2 style="font-size:16px;font-weight:700;margin-bottom:10px"><span class="mi mi-sm" style="color:var(--accent)">policy</span> Juridische analyses</h2>' +
+      renderBronnen(bronnen.juridisch) +
+    '</div>' +
+
+    '<div class="card" style="padding:18px;margin-bottom:14px;border-left:4px solid var(--yellow)">' +
+      '<h2 style="font-size:16px;font-weight:700;margin-bottom:10px"><span class="mi mi-sm" style="color:var(--yellow)">public</span> Internationaal</h2>' +
+      renderBronnen(bronnen.internationaal) +
+    '</div>' +
+
+    '<div class="card" style="padding:18px;margin-bottom:14px;border-left:4px solid var(--tx3)">' +
+      '<h2 style="font-size:16px;font-weight:700;margin-bottom:10px"><span class="mi mi-sm" style="color:var(--tx3)">auto_stories</span> Boeken</h2>' +
+      renderBronnen(bronnen.boeken) +
+    '</div>' +
+
+    // KEY FIGURES
+    '<div class="card" style="padding:18px;margin-bottom:14px;background:var(--accent-soft);border:1px solid rgba(239,68,68,.2)">' +
+      '<h2 style="font-size:16px;font-weight:700;margin-bottom:10px;color:var(--accent)"><span class="mi mi-sm">fact_check</span> Kernfeiten (februari 2026)</h2>' +
+      '<div style="display:grid;grid-template-columns:auto 1fr;gap:4px 14px;font-size:12px;line-height:1.8">' +
+        '<div style="font-weight:700;color:var(--accent)">37.000+</div><div>erkende gedupeerden van de toeslagenaffaire</div>' +
+        '<div style="font-weight:700;color:var(--accent)">3.500+</div><div>kinderen uit huis geplaatst (Commissie-Hamer, 2025)</div>' +
+        '<div style="font-weight:700;color:var(--accent)">23</div><div>kinderen herenigd met hun ouders (2024)</div>' +
+        '<div style="font-weight:700;color:var(--accent)">482</div><div>kinderen van gedupeerden overleden (2005–2021)</div>' +
+        '<div style="font-weight:700;color:var(--accent)">€6,45 mln</div><div>boetes Autoriteit Persoonsgegevens (€2,75M + €3,7M)</div>' +
+        '<div style="font-weight:700;color:var(--accent)">€101,6 mln</div><div>dwangsommen opgelegd aan Dienst Toeslagen (nov 2023–nov 2024)</div>' +
+        '<div style="font-weight:700;color:var(--accent)">€7,1 mrd</div><div>totale kosten hersteloperatie en stijgend</div>' +
+        '<div style="font-weight:700;color:var(--accent)">9.300</div><div>lopende rechtszaken (begin 2025), +500 per maand</div>' +
+        '<div style="font-weight:700;color:var(--accent)">50+</div><div>onrechtmatige algoritmes nog actief bij Belastingdienst (FTM, 2025)</div>' +
+        '<div style="font-weight:700;color:var(--accent)">20+</div><div>discriminatie-oordelen College voor de Rechten van de Mens</div>' +
+        '<div style="font-weight:700;color:var(--yellow)">0</div><div>politici of ambtenaren strafrechtelijk vervolgd</div>' +
+        '<div style="font-weight:700;color:var(--yellow)">0</div><div>individuele ambtenaren disciplinair gesanctioneerd</div>' +
+      '</div>' +
+    '</div>' +
+
+    '<div style="text-align:center;padding:20px 0">' +
+      '<p style="font-size:13px;color:var(--tx2);margin-bottom:12px">Ontbrekende bron? Stuur ons een <a href="#" onclick="go(\'/melden\');return false" style="color:var(--blue)">melding</a>.</p>' +
+      '<button class="btn btn-ghost" onclick="go(\'/organigram\')"><span class="mi mi-sm">account_tree</span> Bekijk de daders</button> ' +
+      '<button class="btn btn-ghost" onclick="go(\'/tijdlijn\')"><span class="mi mi-sm">timeline</span> Tijdlijn</button>' +
+    '</div>' +
+  '</div>';
+}
+
 function seedDemo(){
   if(DS.count('meldingen') > 0) return;
 
