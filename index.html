@@ -192,9 +192,9 @@ a:hover { text-decoration: underline; }
 
 .org-node {
   position: relative; display: flex; flex-direction: column; align-items: center;
-  cursor: pointer; transition: var(--tr); padding: 8px;
+  cursor: pointer; transition: var(--tr); padding: 8px; z-index: 1;
 }
-.org-node:hover { transform: translateY(-4px); }
+.org-node:hover { transform: translateY(-4px); z-index: 9000; }
 .org-node:hover .org-tooltip { display: block; }
 
 .org-foto {
@@ -212,7 +212,7 @@ a:hover { text-decoration: underline; }
   display: none; position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
   width: 620px; max-width: 92vw; max-height: 75vh; overflow-y: auto;
   background: var(--bg2); border: 1px solid var(--glass-bd); border-radius: var(--r);
-  padding: 24px; z-index: 999; box-shadow: 0 16px 48px rgba(0,0,0,.6);
+  padding: 24px; z-index: 9999; box-shadow: 0 16px 48px rgba(0,0,0,.6);
   backdrop-filter: blur(16px); margin-top: 8px;
 }
 .org-tooltip::before {
@@ -1274,7 +1274,7 @@ function pgOrganigram(){
   var personen = {
     rutte: {
       naam: 'Mark Rutte', functie: 'Minister-president (2010–2024)', korte_functie: 'Premier', partij: 'VVD', partij_kleur: '#FF6600',
-      foto: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/Portret_Mark_Rutte.jpg/220px-Portret_Mark_Rutte.jpg',
+      foto: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Voorafgaand_aan_de_APB_%286171973430%29.jpg/220px-Voorafgaand_aan_de_APB_%286171973430%29.jpg',
       nu: 'Secretaris-generaal NAVO',
       dossier: '<strong>2003 — Somaliërs-affaire:</strong> Als staatssecretaris SZW schreef Rutte een brief aan alle gemeenten om Somalische Nederlanders te traceren via geboorteplaats Mogadishu voor extra fraudecontroles. De rechtbank Haarlem oordeelde (2007) dat dit rassendiscriminatie was.<br><br>' +
         '<strong>2013 — Ministeriële Commissie Fraude:</strong> Richtte als premier persoonlijk de commissie op die de keiharde fraudeaanpak lanceerde. Zat erbij, leidde het, wist ervan. De toon werd gezet: burgers zijn verdacht.<br><br>' +
@@ -1291,7 +1291,7 @@ function pgOrganigram(){
     },
     wiebes: {
       naam: 'Eric Wiebes', functie: 'Staatssecretaris Financiën (2014–2017)', korte_functie: 'Stss. Financiën', partij: 'VVD', partij_kleur: '#FF6600',
-      foto: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Eric_Wiebes.jpg/220px-Eric_Wiebes.jpg',
+      foto: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Eric_Wiebes_op_Prinsjesdag_2014.jpg/220px-Eric_Wiebes_op_Prinsjesdag_2014.jpg',
       nu: 'McKinsey partner + Staatsraad Raad van State',
       dossier: '<strong>2014–2017 — Direct verantwoordelijk:</strong> Als staatssecretaris van Financiën had Wiebes directe verantwoordelijkheid over de Belastingdienst/Toeslagen. Onder zijn bewind bereikten de CAF-teams hun hoogtepunt en werden duizenden ouders als fraudeur bestempeld zonder bewijs.<br><br>' +
         '<strong>Bagatellisering:</strong> Deed de toeslagenaffaire af als "een emotionele discussie." Weigerde de ernst te erkennen ondanks signalen van advocaten en ouders.<br><br>' +
@@ -1306,7 +1306,7 @@ function pgOrganigram(){
     },
     weekers: {
       naam: 'Frans Weekers', functie: 'Staatssecretaris Financiën (2010–2014)', korte_functie: 'Stss. Financiën', partij: 'VVD', partij_kleur: '#FF6600',
-      foto: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/Persfoto_Frans_Weekers_2013.jpg/220px-Persfoto_Frans_Weekers_2013.jpg',
+      foto: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/bf/Frans_Weekers%2C_State_Secretary_for_Finance%2C_The_Netherlands%2C_at_the_Horasis_Global_China_Business_Meeting_2013_%2810865757393%29.jpg/220px-Frans_Weekers%2C_State_Secretary_for_Finance%2C_The_Netherlands%2C_at_the_Horasis_Global_China_Business_Meeting_2013_%2810865757393%29.jpg',
       nu: 'Secretaris-generaal Benelux Unie',
       dossier: '<strong>2013 — Architect fraudeaanpak:</strong> Na de "Bulgarenfraude" voerde Weekers de Fraudewet Toeslagen in. De bewijslast werd omgedraaid: niet de overheid moest fraude bewijzen, maar de burger moest zijn onschuld aantonen.<br><br>' +
         '<strong>CAF-teams opgericht:</strong> Onder Weekers werden de Combiteams Aanpak Facilitators (CAF) opgericht die massaal toeslagen stopzetten bij hele kinderdagverblijven — alle ouders gestraft voor verdenking bij één instelling.<br><br>' +
@@ -1320,7 +1320,7 @@ function pgOrganigram(){
     },
     snel: {
       naam: 'Menno Snel', functie: 'Staatssecretaris Financiën (2017–2019)', korte_functie: 'Stss. Financiën', partij: 'D66', partij_kleur: '#01AF36',
-      foto: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/Menno_Snel_2018_%281%29.jpg/220px-Menno_Snel_2018_%281%29.jpg',
+      foto: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b9/Menno_snel-1536227731.jpg/220px-Menno_snel-1536227731.jpg',
       nu: 'Voorzitter RvC Alliander (april 2026)',
       dossier: '<strong>2017–2019 — Nalatigheid:</strong> Volgde Wiebes op en kreeg de toeslagenaffaire op zijn bord. Noemde het handelen "beschamend" maar greep maandenlang niet in terwijl gezinnen bleven lijden.<br><br>' +
         '<strong>Gebroken beloftes:</strong> Beloofde de Kamer transparantie en informatie, maar leverde die niet of onvolledig. Stukken werden niet gedeeld, vragen werden ontwijkend beantwoord.<br><br>' +
@@ -1333,7 +1333,7 @@ function pgOrganigram(){
     },
     asscher: {
       naam: 'Lodewijk Asscher', functie: 'Vicepremier, Minister SZW (2012–2017)', korte_functie: 'Vicepremier', partij: 'PvdA', partij_kleur: '#E12B1A',
-      foto: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/Lodewijk_Asscher_2013-1.jpg/220px-Lodewijk_Asscher_2013-1.jpg',
+      foto: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/Flickr_-_NewsPhoto%21_-_politici_in_zwart-wit%2C_Lodewijk_Asscher_%28PvdA%29.jpg/220px-Flickr_-_NewsPhoto%21_-_politici_in_zwart-wit%2C_Lodewijk_Asscher_%28PvdA%29.jpg',
       nu: 'Voorzitter RvT FNV + diverse voorzitterschappen',
       dossier: '<strong>2012–2017 — Medeverantwoordelijk:</strong> Vicepremier in het kabinet dat de Ministeriële Commissie Fraude oprichtte. Zat aan tafel toen de besluiten werden genomen. Als minister van Sociale Zaken medeverantwoordelijk voor het klimaat van fraudejacht.<br><br>' +
         '<strong>2020 — Ondervragingscommissie:</strong> Verscheen voor de parlementaire commissie. Erkende fouten maar wees ook naar anderen.<br><br>' +
@@ -1346,7 +1346,7 @@ function pgOrganigram(){
     },
     vanark: {
       naam: 'Tamara van Ark', functie: 'Staatssecretaris SZW (2017–2020)', korte_functie: 'Stss. SZW', partij: 'VVD', partij_kleur: '#FF6600',
-      foto: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/Tamara_van_ark-1536921456.jpg/220px-Tamara_van_ark-1536921456.jpg',
+      foto: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/77/Tamara_van_Ark%2C_April_2018.jpg/220px-Tamara_van_Ark%2C_April_2018.jpg',
       nu: 'Bestuurskamers: Oranje Fonds, Reclassering NL',
       dossier: '<strong>2017–2020 — In stand houden:</strong> Als staatssecretaris SZW betrokken bij het in stand houden van het harde toeslagenbeleid. Onder haar bewind bleef de Belastingdienst doorgaan met discriminerende werkwijzen.<br><br>' +
         '<strong>Periode van uithuisplaatsingen:</strong> Haar ambtsperiode viel samen met de jaren waarin de meeste kinderen uit huis werden geplaatst (2.090 kinderen).<br><br>' +
@@ -1358,7 +1358,7 @@ function pgOrganigram(){
     },
     vanhuffelen: {
       naam: 'Alexandra van Huffelen', functie: 'Staatssecretaris Toeslagen (2020–2022)', korte_functie: 'Stss. Toeslagen', partij: 'D66', partij_kleur: '#01AF36',
-      foto: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/43/Alexandra_van_Huffelen%2C_wethouder_in_Rotterdam_%28D66%29_bij_de_nieuwjaarsborrel_van_D66_Utrecht_%2812036482523%29.jpg/220px-Alexandra_van_Huffelen%2C_wethouder_in_Rotterdam_%28D66%29_bij_de_nieuwjaarsborrel_van_D66_Utrecht_%2812036482523%29.jpg',
+      foto: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/220107Alexandra_van_Huffelen34.jpg/220px-220107Alexandra_van_Huffelen34.jpg',
       nu: 'Collegevoorzitter Radboud Uni + voorzitter D66',
       dossier: '<strong>2020–2022 — Mislukt herstel:</strong> Aangesteld om de schade te herstellen. Beloofde iedere gedupeerde €30.000. Maar de hersteloperatie werd een tweede schandaal: tergend langzaam, bureaucratisch, opnieuw traumatiserend.<br><br>' +
         '<strong>Nieuw BSN geweigerd:</strong> Weigerde een nieuw BSN voor slachtoffers. Argument: "het lost niks op" en "het geeft regeldruk." De juridische basis bestaat — ze koos ervoor het niet te doen.<br><br>' +
@@ -1427,25 +1427,97 @@ function pgOrganigram(){
 
     // INSTITUTIONEEL
     '<div style="margin-top:28px">' +
-      '<h2 style="font-size:16px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:6px"><span class="mi mi-sm" style="color:var(--yellow)">domain</span> Institutioneel verantwoordelijk</h2>' +
-      '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px">' +
-        '<div class="card" style="padding:16px;border-left:4px solid var(--accent)">' +
-          '<div style="font-size:15px;font-weight:700"><span class="mi mi-sm" style="color:var(--accent)">business</span> Belastingdienst / Toeslagen</div>' +
-          '<div style="font-size:12px;color:var(--tx2);line-height:1.7;margin-top:4px">Discriminerende algoritmes (FSV-lijsten met 180.000 namen). Dubbele nationaliteit als selectiecriterium. CAF-teams die massaal toeslagen stopzetten zonder individueel bewijs. Beboet door AP: €2,75 miljoen.</div>' +
+      '<h2 style="font-size:16px;font-weight:700;margin-bottom:4px;display:flex;align-items:center;gap:6px"><span class="mi mi-sm" style="color:var(--yellow)">domain</span> Institutioneel verantwoordelijk</h2>' +
+      '<p style="font-size:12px;color:var(--tx3);margin-bottom:14px">Elke instelling had een eigen rol in het in stand houden van het onrecht. Per instelling: hun rol, overtreden wetsartikelen en de maximale sancties die er staan — en of die zijn opgelegd.</p>' +
+
+      // --- BELASTINGDIENST ---
+      '<div class="card" style="padding:18px;margin-bottom:12px;border-left:4px solid var(--accent)">' +
+        '<div style="font-size:15px;font-weight:700;margin-bottom:8px"><span class="mi mi-sm" style="color:var(--accent)">business</span> Belastingdienst / Toeslagen</div>' +
+        '<div style="font-size:12px;color:var(--tx2);line-height:1.7;margin-bottom:10px"><strong style="color:var(--tx)">Rol:</strong> Uitvoerder van de discriminerende fraudejacht. Beheerde de FSV-zwarte lijst (270.000 burgers). Gebruikte dubbele nationaliteit als risicofactor. CAF-teams stopzetten toeslagen bij hele kinderdagverblijven zonder individueel bewijs. Bij één ontbrekend bonnetje van €230: volledige terugvordering van €8.300+.</div>' +
+        '<div class="wet" style="margin-top:0">' +
+          '<div class="wet-title"><span class="mi mi-sm">gavel</span> Overtreden wetsartikelen &amp; sancties</div>' +
+          '<div class="wet-item"><div class="wet-art">Art. 5 + 6 AVG — Rechtmatigheid verwerking</div><div class="wet-desc">Geen wettelijke grondslag voor FSV. Verwerking dubbele nationaliteit was onrechtmatig en discriminerend.<br><strong style="color:var(--yellow)">Max. sanctie: €20.000.000 of 4% jaaromzet. Opgelegd: €3,7 miljoen (AP, 2022).</strong></div></div>' +
+          '<div class="wet-item"><div class="wet-art">Art. 9 AVG — Verbod verwerking bijzondere categorieën</div><div class="wet-desc">Verwerking van ras/etnische afkomst via nationaliteitsgegevens als risicofactor.<br><strong style="color:var(--yellow)">Max. sanctie: €20.000.000. Opgelegd: €2,75 miljoen (AP, 2021).</strong></div></div>' +
+          '<div class="wet-item"><div class="wet-art">Art. 22 AVG — Geautomatiseerde besluitvorming</div><div class="wet-desc">Zelflerend algoritme nam besluiten over gezinnen zonder menselijke tussenkomst of waarborgen.<br><strong style="color:var(--yellow)">Max. sanctie: €20.000.000. Opgelegd: nee.</strong></div></div>' +
+          '<div class="wet-item"><div class="wet-art">Art. 1 Grondwet — Discriminatieverbod</div><div class="wet-desc">Etnisch profileren via dubbele nationaliteit. College voor de Rechten van de Mens bevestigde discriminatie op grond van ras.<br><strong style="color:var(--yellow)">Sanctie: nvt (Grondwet kent geen directe sanctie, art. 120 Gw toetsingsverbod).</strong></div></div>' +
+          '<div class="wet-item"><div class="wet-art">Art. 137g Sr — Ambtelijke discriminatie</div><div class="wet-desc">Discriminatie bij uitoefening van ambt/beroep.<br><strong style="color:var(--yellow)">Max. sanctie: 6 maanden gevangenisstraf + geldboete 3e cat. (€10.300). Opgelegd: nee — feiten verjaard (verjaringstermijn 6 jaar, art. 70 Sr).</strong></div></div>' +
+          '<div class="wet-item"><div class="wet-art">Art. 366 Sr — Knevelarij</div><div class="wet-desc">Ambtenaar die vordert wat hij weet dat niet verschuldigd is.<br><strong style="color:var(--yellow)">Max. sanctie: 6 jaar gevangenisstraf. Opgelegd: nee — Hof oordeelde "onvoldoende bewijs van opzet."</strong></div></div>' +
         '</div>' +
-        '<div class="card" style="padding:16px;border-left:4px solid var(--yellow)">' +
-          '<div style="font-size:15px;font-weight:700"><span class="mi mi-sm" style="color:var(--yellow)">balance</span> Raad van State</div>' +
-          '<div style="font-size:12px;color:var(--tx2);line-height:1.7;margin-top:4px">Handhaafde jarenlang de alles-of-niets benadering. Ouders moesten alles terugbetalen, ook bij kleine fouten. Draaide pas in 2019 om. Bood in 2024 excuses aan — 10 jaar te laat.</div>' +
+        '<div style="font-size:11px;color:var(--accent);font-weight:700;margin-top:8px;padding:8px;background:var(--accent-soft);border-radius:var(--rs)"><span class="mi mi-sm">shield</span> Blokkade: strafrechtelijke immuniteit van de Staat (Volkel-arrest HR 1994, Pikmeer-arresten HR 1996/1998). De Belastingdienst als overheidsorgaan kan niet worden vervolgd.</div>' +
+      '</div>' +
+
+      // --- RECHTSPRAAK ---
+      '<div class="card" style="padding:18px;margin-bottom:12px;border-left:4px solid var(--accent)">' +
+        '<div style="font-size:15px;font-weight:700;margin-bottom:8px"><span class="mi mi-sm" style="color:var(--accent)">gavel</span> De Rechtspraak — Rechtbanken &amp; Raad van State</div>' +
+        '<div style="font-size:12px;color:var(--tx2);line-height:1.7;margin-bottom:10px"><strong style="color:var(--tx)">Rol:</strong> Systematisch tegen ouders geoordeeld. Jarenlang de "alles-of-niets" lijn gevolgd: ook bij kleine fouten volledige terugvordering. Ouders kregen <strong style="color:var(--accent)">geen inzage in hun eigen dossiers</strong> — de Belastingdienst weigerde stukken en rechters lieten dat toe. Zonder dossier kun je je niet verdedigen. De rechter had moeten ingrijpen maar koos voor rechtseenheid boven rechtsbescherming. De Raad van State draaide pas in oktober 2019 om — na 8 jaar lang ouders af te wijzen.</div>' +
+        '<div class="wet" style="margin-top:0">' +
+          '<div class="wet-title"><span class="mi mi-sm">gavel</span> Overtreden wetsartikelen &amp; sancties</div>' +
+          '<div class="wet-item"><div class="wet-art">Art. 8:42 Awb — Indiening processtukken</div><div class="wet-desc">De Belastingdienst moet <strong>alle</strong> op de zaak betrekking hebbende stukken overleggen aan de rechter. In de praktijk was de dienst selectief: ontlastende verslagen werden als "niet relevant" bestempeld. <strong style="color:var(--accent)">Rechters grepen onvoldoende in.</strong><br><strong style="color:var(--yellow)">Sanctie rechter: geen. Art. 117 Gw (rechterlijke onafhankelijkheid) voorkomt externe sancties.</strong></div></div>' +
+          '<div class="wet-item"><div class="wet-art">Art. 8:29 Awb — Geheimhouding stukken</div><div class="wet-desc">Geheimhouding mag alleen bij "gewichtige redenen." De Belastingdienst beriep zich op "intern beraad" — rechters accepteerden dit te gemakkelijk. Ouders konden niet zien welk bewijs tegen hen werd gebruikt.<br><strong style="color:var(--yellow)">Sanctie: geen opgelegd.</strong></div></div>' +
+          '<div class="wet-item"><div class="wet-art">Art. 8:31 Awb — Gevolgen niet-overleggen stukken</div><div class="wet-desc">De rechter kan gevolgen verbinden aan het niet-overleggen van stukken (bijv. de overheid in het ongelijk stellen). Rechters deden dit vrijwel nooit — ze gaven de Belastingdienst het voordeel van de twijfel.<br><strong style="color:var(--yellow)">Beschikbaar instrument: niet gebruikt.</strong></div></div>' +
+          '<div class="wet-item"><div class="wet-art">Art. 7:4 Awb — Inzagerecht in bezwaarfase</div><div class="wet-desc">Ouders hebben recht op inzage in hun dossier vóór de bezwaarprocedure. Dit werd structureel geweigerd of beperkt. Zonder je dossier te kennen kun je geen effectief bezwaar maken.<br><strong style="color:var(--yellow)">Sanctie: geen opgelegd.</strong></div></div>' +
+          '<div class="wet-item"><div class="wet-art">Art. 6 EVRM — Recht op eerlijk proces (equality of arms)</div><div class="wet-desc">De informatie-ongelijkheid tussen Belastingdienst en ouders was structureel. De dienst had alle stukken, de ouder had niets. Geen eerlijk proces zonder gelijke wapens.<br><strong style="color:var(--yellow)">Max. sanctie: schadevergoeding via EHRM. Opgelegd door NL rechter: nee.</strong></div></div>' +
+          '<div class="wet-item"><div class="wet-art">Art. 13 EVRM — Recht op effectief rechtsmiddel</div><div class="wet-desc">Geen dossierinzage + geen evenredigheidstoets + alles-of-niets lijn = geen effectieve rechtsbescherming. Het rechtsmiddel was een lege huls.<br><strong style="color:var(--yellow)">Max. sanctie: schadevergoeding via EHRM. Opgelegd: nee.</strong></div></div>' +
+          '<div class="wet-item"><div class="wet-art">Art. 3:4 lid 2 Awb — Evenredigheidsbeginsel</div><div class="wet-desc">De nadelen van een besluit mogen niet onevenredig zijn. De Raad van State oordeelde jarenlang dat dit beginsel <strong>niet van toepassing</strong> was op toeslagenterugvorderingen. Een onbegrijpelijke redenering waarmee 26.000 gezinnen werden geruïneerd.<br><strong style="color:var(--yellow)">Sanctie rechterlijke macht: geen — rechterlijke onafhankelijkheid art. 117 Gw.</strong></div></div>' +
         '</div>' +
-        '<div class="card" style="padding:16px;border-left:4px solid var(--yellow)">' +
-          '<div style="font-size:15px;font-weight:700"><span class="mi mi-sm" style="color:var(--yellow)">groups</span> Tweede Kamer</div>' +
-          '<div style="font-size:12px;color:var(--tx2);line-height:1.7;margin-top:4px">Keurde de harde fraudewetgeving goed. Keek jarenlang weg ondanks signalen. Pas na Omtzigt en Leijten kwam het op de agenda. De meerderheid beschermde het kabinet in plaats van de burgers.</div>' +
+        '<div style="font-size:11px;color:var(--accent);font-weight:700;margin-top:8px;padding:8px;background:var(--accent-soft);border-radius:var(--rs)"><span class="mi mi-sm">shield</span> Blokkade: rechterlijke onafhankelijkheid (art. 117 Grondwet). Er bestaat geen extern disciplinair mechanisme voor inhoudelijke rechterlijke beslissingen. Zelfreflectie-rapport "Recht vinden bij de rechtbank" erkende dat rechtsbescherming zwaarder had moeten wegen.</div>' +
+      '</div>' +
+
+      // --- OPENBAAR MINISTERIE ---
+      '<div class="card" style="padding:18px;margin-bottom:12px;border-left:4px solid var(--accent)">' +
+        '<div style="font-size:15px;font-weight:700;margin-bottom:8px"><span class="mi mi-sm" style="color:var(--accent)">policy</span> Openbaar Ministerie</div>' +
+        '<div style="font-size:12px;color:var(--tx2);line-height:1.7;margin-bottom:10px"><strong style="color:var(--tx)">Rol:</strong> 80+ ouders deden strafrechtelijke aangifte. 20 ouders deden aangifte tegen bewindslieden. 152 gedupeerden probeerden via art. 12 Sv vervolging af te dwingen. Resultaat: <strong style="color:var(--accent)">nul vervolgingen</strong>. Niet één politicus, niet één ambtenaar. Het OM oordeelde dat "verantwoording in het politieke domein thuishoort." Het Hof Den Haag erkende dat de Belastingdienst "grondbeginselen van de rechtsstaat heeft geschonden" — maar vervolgde toch niet.</div>' +
+        '<div class="wet" style="margin-top:0">' +
+          '<div class="wet-title"><span class="mi mi-sm">gavel</span> Wetsartikelen &amp; blokkades</div>' +
+          '<div class="wet-item"><div class="wet-art">Art. 167 lid 2 Sv — Opportuniteitsbeginsel</div><div class="wet-desc">Het OM beslist of vervolging "in het algemeen belang" is. Gebruikt als reden om <strong>niet</strong> te vervolgen: "dit hoort in het politieke domein."<br><strong style="color:var(--yellow)">Gevolg: geen vervolging ondanks erkend onrecht.</strong></div></div>' +
+          '<div class="wet-item"><div class="wet-art">Art. 12 Sv — Beklag niet-vervolging</div><div class="wet-desc">152 gedupeerden vroegen het Hof Den Haag om vervolging te bevelen. Het Hof erkende "schending grondbeginselen rechtsstaat" maar wees het verzoek af wegens staatsimmuniteit en verjaring.<br><strong style="color:var(--yellow)">Laatste correctiemechanisme: uitgeput zonder resultaat.</strong></div></div>' +
+          '<div class="wet-item"><div class="wet-art">Art. 119 Grondwet — Vervolging bewindslieden</div><div class="wet-desc">Vervolging van ministers/staatssecretarissen loopt via de Hoge Raad, op last van de Tweede Kamer. 5 Kamerleden moeten een aanklacht ondertekenen. De Kamer verwierp het verzoek met 97 tegen 34 stemmen.<br><strong style="color:var(--yellow)">Gevolg: het parlement beschermde zichzelf.</strong></div></div>' +
+          '<div class="wet-item"><div class="wet-art">Art. 355 Sr — Ambtsmisdrijven bewindslieden</div><div class="wet-desc">Opzettelijk handelen in strijd met de Grondwet door ministers/staatssecretarissen.<br><strong style="color:var(--yellow)">Max. sanctie: 3 jaar gevangenisstraf + €25.750 boete. Opgelegd: nee — PG Jos Silvis adviseerde niet te vervolgen.</strong></div></div>' +
+          '<div class="wet-item"><div class="wet-art">Volkel-arrest + Pikmeer-arresten — Staatsimmuniteit</div><div class="wet-desc">De Staat en zijn organen (Belastingdienst) genieten volledige strafrechtelijke immuniteit. Ambtenaren die uitvoering geven aan publiekrechtelijk beleid zijn ook beschermd. Wetsvoorstel 30538 tot opheffing is sinds 2006 aanhangig — nooit aangenomen.<br><strong style="color:var(--yellow)">Gevolg: het systeem beschermt zichzelf. Niemand is strafbaar.</strong></div></div>' +
         '</div>' +
-        '<div class="card" style="padding:16px;border-left:4px solid var(--accent)">' +
-          '<div style="font-size:15px;font-weight:700"><span class="mi mi-sm" style="color:var(--accent)">domain</span> Ministerie van Financiën</div>' +
-          '<div style="font-size:12px;color:var(--tx2);line-height:1.7;margin-top:4px">Hield informatie achter voor de Kamer. Interne cultuur van wegkijken en afdekken. Ambtenaren die wisten van de discriminatie maar zwegen. De Rutte Doctrine in de praktijk.</div>' +
+        '<div style="font-size:11px;color:var(--accent);font-weight:700;margin-top:8px;padding:8px;background:var(--accent-soft);border-radius:var(--rs)"><span class="mi mi-sm">block</span> Drie pijlers van straffeloosheid: (1) Staatsimmuniteit — overheid kan niet worden vervolgd. (2) Verjaring — discriminatie-feiten verjaard na 6 jaar. (3) Opportuniteitsbeginsel — OM kiest zelf om niet te vervolgen. Het systeem beschermt het systeem.</div>' +
+      '</div>' +
+
+      // --- MINISTERIE VAN FINANCIËN ---
+      '<div class="card" style="padding:18px;margin-bottom:12px;border-left:4px solid var(--yellow)">' +
+        '<div style="font-size:15px;font-weight:700;margin-bottom:8px"><span class="mi mi-sm" style="color:var(--yellow)">domain</span> Ministerie van Financiën</div>' +
+        '<div style="font-size:12px;color:var(--tx2);line-height:1.7;margin-bottom:10px"><strong style="color:var(--tx)">Rol:</strong> Hield structureel informatie achter voor het parlement. Creëerde een cultuur van afdekken. Staatssecretaris Snel vroeg in de ministerraad letterlijk "of de raad gezamenlijk kan vaststellen tot hoe ver de inlichtingenplicht aan de Tweede Kamer reikt" — een poging om de Grondwet te herinterpreteren om informatie te weigeren.</div>' +
+        '<div class="wet" style="margin-top:0">' +
+          '<div class="wet-title"><span class="mi mi-sm">gavel</span> Overtreden wetsartikelen &amp; sancties</div>' +
+          '<div class="wet-item"><div class="wet-art">Art. 68 Grondwet — Inlichtingenplicht</div><div class="wet-desc">Ministers geven de Kamers de verlangde inlichtingen. Structureel onjuiste, ontijdige en onvolledige informatieverstrekking. De "Rutte Doctrine" in de praktijk.<br><strong style="color:var(--yellow)">Sanctie: politieke verantwoordelijkheid. Opgelegd: kabinet trad af jan 2021.</strong></div></div>' +
+          '<div class="wet-item"><div class="wet-art">Art. 42 lid 2 Grondwet — Ministeriële verantwoordelijkheid</div><div class="wet-desc">Ministers namen geen persoonlijke verantwoordelijkheid voor het handelen van hun ambtenaren.<br><strong style="color:var(--yellow)">Sanctie: geen mechanisme buiten politiek. Opgelegd: nee.</strong></div></div>' +
+          '<div class="wet-item"><div class="wet-art">Art. 355 Sr — Ambtsmisdrijf bewindslieden</div><div class="wet-desc">Opzettelijk handelen in strijd met de Grondwet (informatie achterhouden = schending art. 68 Gw).<br><strong style="color:var(--yellow)">Max. sanctie: 3 jaar gevangenisstraf. Opgelegd: nee.</strong></div></div>' +
         '</div>' +
       '</div>' +
+
+      // --- TWEEDE KAMER ---
+      '<div class="card" style="padding:18px;margin-bottom:12px;border-left:4px solid var(--yellow)">' +
+        '<div style="font-size:15px;font-weight:700;margin-bottom:8px"><span class="mi mi-sm" style="color:var(--yellow)">groups</span> Tweede Kamer</div>' +
+        '<div style="font-size:12px;color:var(--tx2);line-height:1.7;margin-bottom:10px"><strong style="color:var(--tx)">Rol:</strong> Keurde de harde fraudewetgeving goed. Keek jarenlang weg ondanks signalen. De coalitiemeerderheid beschermde het kabinet tegen informatieverzoeken. Verwierp met 97 tegen 34 stemmen het verzoek tot strafrechtelijke vervolging van bewindslieden. De parlementaire enquêtecommissie concludeerde zelf: "De Tweede Kamer heeft gefaald in haar controlerende taak."</div>' +
+        '<div class="wet" style="margin-top:0">' +
+          '<div class="wet-title"><span class="mi mi-sm">gavel</span> Geschonden normen</div>' +
+          '<div class="wet-item"><div class="wet-art">Art. 50 Grondwet — Volksvertegenwoordiging</div><div class="wet-desc">De Staten-Generaal vertegenwoordigen het gehele Nederlandse volk. Het parlement faalde: het keurde wetgeving goed die burgers vernietigde en beschermde het kabinet dat dit veroorzaakte.<br><strong style="color:var(--yellow)">Sanctie: alleen via verkiezingen. Geen juridisch mechanisme.</strong></div></div>' +
+          '<div class="wet-item"><div class="wet-art">Art. 68 Grondwet — Controlefunctie</div><div class="wet-desc">De Kamer maakte onvoldoende gebruik van haar controle-instrumenten. De coalitiemeerderheid steunde moties om informatie op te vragen niet.<br><strong style="color:var(--yellow)">Sanctie: geen. Politieke verantwoordelijkheid via verkiezingen.</strong></div></div>' +
+          '<div class="wet-item"><div class="wet-art">Art. 70 Grondwet — Recht van enquête</div><div class="wet-desc">Werd pas jaren na de eerste signalen ingezet. Pas na aandringen van Omtzigt en Leijten.<br><strong style="color:var(--yellow)">Beschikbaar instrument: te laat gebruikt.</strong></div></div>' +
+        '</div>' +
+      '</div>' +
+
+      // --- SANCTIE-OVERZICHT ---
+      '<div class="card" style="padding:18px;margin-bottom:12px;background:var(--accent-soft);border:1px solid rgba(239,68,68,.3)">' +
+        '<div style="font-size:14px;font-weight:700;color:var(--accent);margin-bottom:8px"><span class="mi mi-sm">assessment</span> Sanctie-overzicht: wat is er daadwerkelijk opgelegd?</div>' +
+        '<div style="display:grid;grid-template-columns:1fr auto;gap:4px 16px;font-size:12px;line-height:1.8">' +
+          '<div>Belastingdienst (AP-boetes)</div><div style="color:var(--yellow);font-weight:700">€6,45 miljoen</div>' +
+          '<div>Raad van State</div><div style="color:var(--accent);font-weight:700">Nee — excuses</div>' +
+          '<div>Rechtbanken</div><div style="color:var(--accent);font-weight:700">Nee — zelfreflectie</div>' +
+          '<div>Openbaar Ministerie</div><div style="color:var(--accent);font-weight:700">Nee — weigert vervolging</div>' +
+          '<div>Ministerie van Financiën</div><div style="color:var(--accent);font-weight:700">Nee — kabinet trad af</div>' +
+          '<div>Tweede Kamer</div><div style="color:var(--accent);font-weight:700">Nee — geen mechanisme</div>' +
+          '<div style="border-top:1px solid rgba(239,68,68,.2);padding-top:4px">Individuele ambtenaren vervolgd</div><div style="border-top:1px solid rgba(239,68,68,.2);padding-top:4px;color:var(--accent);font-weight:700">0</div>' +
+          '<div>Individuele bewindslieden vervolgd</div><div style="color:var(--accent);font-weight:700">0</div>' +
+        '</div>' +
+        '<div style="font-size:11px;color:var(--tx2);margin-top:8px;padding-top:8px;border-top:1px solid rgba(239,68,68,.15)">Totaal maximaal mogelijk per overtreding: tot €20 miljoen (AVG) + tot 6 jaar cel (knevelarij). Daadwerkelijk: €6,45 miljoen boete aan een organisatie. Nul euro aan individuen. Nul dagen cel.</div>' +
+      '</div>' +
+
     '</div>' +
 
     // HELDEN
