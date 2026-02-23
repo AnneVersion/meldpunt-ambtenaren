@@ -3765,25 +3765,100 @@ function pgOplossing(){
         '</table>' +
       '</div>' +
 
-      // Waar gaat het geld heen
+      // Waar gaat het geld heen — gedetailleerde breakdown
       '<div style="background:var(--bg2);border-radius:var(--rs);padding:16px;margin-bottom:14px">' +
-        '<div style="font-size:12px;font-weight:700;color:var(--blue);text-transform:uppercase;margin-bottom:10px"><span class="mi mi-sm">pie_chart</span> Waar gaat het geld heen?</div>' +
+        '<div style="font-size:12px;font-weight:700;color:var(--blue);text-transform:uppercase;margin-bottom:10px"><span class="mi mi-sm">pie_chart</span> Waar gaat de €11,7 miljard heen?</div>' +
+        '<div style="font-size:13px;color:var(--tx);line-height:1.8;margin-bottom:12px">' +
+          'In 2020 schatte het kabinet de kosten op <strong>€310 miljoen</strong>. In 2025 is de meerjarenraming <strong>€11,7 miljard</strong>' + bron('Voorjaarsnota 2025', 'https://www.rijksfinancien.nl/voorjaarsnota/2025/7815799') + ' — een stijging met <strong>factor 37,7</strong>. Het slechtste scenario: <strong>€14 miljard</strong>.' + bron('NOS', 'https://nos.nl/artikel/2520340-herstel-toeslagenaffaire-dreigt-ongekende-strop-te-worden-nog-5-miljard-extra') +
+        '</div>' +
+
+        // Breakdown tabel
+        '<table style="width:100%;border-collapse:collapse;font-size:12px;margin-bottom:12px">' +
+          '<tr style="border-bottom:2px solid var(--glass-bd);font-weight:700"><td style="padding:6px">Categorie</td><td style="padding:6px;text-align:right">Begroot</td><td style="padding:6px;text-align:right">Naar slachtoffers?</td></tr>' +
+          '<tr style="border-bottom:1px solid var(--glass-bd)"><td style="padding:6px"><span style="color:var(--green)">&#9679;</span> Compensatie (€30.000 + integrale beoordeling)</td><td style="padding:6px;text-align:right">€2,19 mrd</td><td style="padding:6px;text-align:right;color:var(--green)">Ja</td></tr>' +
+          '<tr style="border-bottom:1px solid var(--glass-bd)"><td style="padding:6px"><span style="color:var(--green)">&#9679;</span> Aanvullende schadevergoeding</td><td style="padding:6px;text-align:right">€2,66 mrd</td><td style="padding:6px;text-align:right;color:var(--green)">Ja</td></tr>' +
+          '<tr style="border-bottom:1px solid var(--glass-bd)"><td style="padding:6px"><span style="color:var(--green)">&#9679;</span> Kindregeling (91.911 kinderen)</td><td style="padding:6px;text-align:right">€857 mln</td><td style="padding:6px;text-align:right;color:var(--green)">Ja</td></tr>' +
+          '<tr style="border-bottom:1px solid var(--glass-bd)"><td style="padding:6px"><span style="color:var(--yellow)">&#9679;</span> Kwijtschelding publieke schulden</td><td style="padding:6px;text-align:right">€1,15 mrd</td><td style="padding:6px;text-align:right;color:var(--yellow)">Indirect</td></tr>' +
+          '<tr style="border-bottom:1px solid var(--glass-bd)"><td style="padding:6px"><span style="color:var(--yellow)">&#9679;</span> Aflossing private schulden</td><td style="padding:6px;text-align:right">€529 mln</td><td style="padding:6px;text-align:right;color:var(--yellow)">Indirect</td></tr>' +
+          '<tr style="border-bottom:1px solid var(--glass-bd)"><td style="padding:6px"><span style="color:var(--yellow)">&#9679;</span> Gemeentelijke brede ondersteuning</td><td style="padding:6px;text-align:right">€401 mln</td><td style="padding:6px;text-align:right;color:var(--yellow)">Deels</td></tr>' +
+          '<tr style="border-bottom:1px solid var(--glass-bd)"><td style="padding:6px"><span style="color:var(--yellow)">&#9679;</span> Rechtsbijstand + overig</td><td style="padding:6px;text-align:right">€773 mln</td><td style="padding:6px;text-align:right;color:var(--yellow)">Deels</td></tr>' +
+          '<tr style="border-bottom:2px solid var(--glass-bd);background:var(--bg2)"><td style="padding:6px;font-weight:700">Subtotaal programma-uitgaven</td><td style="padding:6px;text-align:right;font-weight:700">€8,34 mrd</td><td style="padding:6px;text-align:right"></td></tr>' +
+          '<tr style="border-bottom:1px solid var(--glass-bd)"><td style="padding:6px"><span style="color:var(--accent)">&#9679;</span> <strong>Uitvoeringskosten</strong> (UHT, ICT, kantoren)</td><td style="padding:6px;text-align:right;color:var(--accent);font-weight:700">€2,35 mrd</td><td style="padding:6px;text-align:right;color:var(--accent)">Nee</td></tr>' +
+          '<tr style="border-bottom:1px solid var(--glass-bd)"><td style="padding:6px"><span style="color:var(--accent)">&#9679;</span> Reservering Aanvullende Post</td><td style="padding:6px;text-align:right;color:var(--accent)">€966 mln</td><td style="padding:6px;text-align:right;color:var(--accent)">Nee</td></tr>' +
+          '<tr style="background:var(--accent-soft)"><td style="padding:8px 6px;font-weight:800">TOTAAL meerjarenraming</td><td style="padding:8px 6px;text-align:right;font-weight:800;color:var(--accent)">€11,7 mrd</td><td style="padding:8px 6px;text-align:right"></td></tr>' +
+        '</table>' +
+
         '<div style="font-size:13px;color:var(--tx);line-height:1.8">' +
-          '<strong style="color:var(--accent)">~30%</strong> gaat naar <strong>uitvoeringskosten</strong> — ambtenaren, systemen, kantoren. Circa <strong>€1,4 miljard</strong> voor het apparaat.' + bron('Algemene Rekenkamer 2024', 'https://www.rekenkamer.nl/actueel/nieuws/2024/05/15/helft-van-de-ouders-wacht-nog-maar-hersteloperatie-toeslagen-wel-op-gang') + '<br>' +
-          '<strong>Driekwart van UHT-personeel is extern ingehuurd</strong>, tegen gemiddeld het dubbele van de kosten van vast personeel.<br><br>' +
-          '<strong>Uitbetaald aan ouders (begin 2025):</strong> ~€1,8 miljard aan 43.000+ erkende gedupeerden.<br>' +
-          '<strong>Gemiddeld per ouder:</strong> €40.700 (eerste toets + integrale beoordeling).' + bron('Herstel Toeslagen — cijfers', 'https://herstel.toeslagen.nl/feiten-en-cijfers-de-hersteloperatie-in-beeld-2/') + '<br><br>' +
-          '<strong>Consultancybureaus</strong> — PwC, KPMG, Accenture, McKinsey, BCG, Deloitte, EY, Capgemini — dezelfde bureaus die betrokken waren bij de systemen die de affaire veroorzaakten, verdienen nu aan het "herstel."' +
+          '<strong style="color:var(--accent)">Daadwerkelijk uitbetaald aan ouders tot nu toe: ~€3,4 miljard</strong>' + bron('Herstel Toeslagen dashboard', 'https://herstel.toeslagen.nl/feiten-en-cijfers-43-056-erkend-gedupeerden/') + ' aan <strong>43.056 erkende gedupeerden</strong>. Gemiddeld <strong>€117.500 per gezin</strong> (incl. alle regelingen) of <strong>€40.700 per ouder</strong> (alleen integrale beoordeling).' + bron('Rijksoverheid feb 2025', 'https://www.rijksoverheid.nl/actueel/nieuws/2025/02/21/ruim-90-procent-gedupeerde-ouders-klaar-met-integrale-beoordeling') + '<br><br>' +
+          '<strong style="color:var(--accent)">Uitvoeringskosten: €1,41 miljard gerealiseerd</strong> (24% van gemaakte kosten).' + bron('Kamerstuk 36725-IX', 'https://www.tweedekamer.nl/downloads/document?id=2025D26418') + ' <strong>75% van UHT-personeel is extern ingehuurd.</strong> In 2024 gaf het ministerie van Financien <strong>€882 miljoen</strong> uit aan externe inhuur.' + bron('Rekenkamer VO 2024', 'https://www.rekenkamer.nl/publicaties/rapporten/2025/05/21/vo-2024-fin') + ' De Rekenkamer stelde vast dat <strong>€353 miljoen</strong> aan inkopen onrechtmatig was en dat er <strong>739 schijnzelfstandigen</strong> werkten bij de UHT.' + bron('Rekenkamer 2025', 'https://www.rekenkamer.nl/documenten/2025/05/21/hersteloperatie-toeslagen') +
+        '</div>' +
+
+        // Visual bar
+        '<div style="margin-top:12px">' +
+          '<div style="font-size:11px;color:var(--tx3);margin-bottom:4px">Van elke euro die is uitgegeven:</div>' +
+          '<div style="display:flex;height:28px;border-radius:12px;overflow:hidden">' +
+            '<div style="width:29%;background:var(--green);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff">29% ouders</div>' +
+            '<div style="width:10%;background:var(--yellow);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#fff">schulden</div>' +
+            '<div style="width:10%;background:#666;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#fff">gemeenten</div>' +
+            '<div style="width:24%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff">24% overhead</div>' +
+            '<div style="width:27%;background:#8b0000;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#fff">reserve + overig</div>' +
+          '</div>' +
         '</div>' +
       '</div>' +
 
-      // De paradox
-      '<div style="background:var(--bg2);border-radius:var(--rs);padding:16px;margin-bottom:0">' +
-        '<div style="font-size:12px;font-weight:700;color:var(--accent);text-transform:uppercase;margin-bottom:10px"><span class="mi mi-sm">sync_problem</span> De paradox van overheidsboetes</div>' +
+      // Wat als het geld direct naar slachtoffers ging?
+      '<div style="background:var(--bg2);border-radius:var(--rs);padding:16px;margin-bottom:14px;border-left:3px solid var(--green)">' +
+        '<div style="font-size:12px;font-weight:700;color:var(--green);text-transform:uppercase;margin-bottom:10px"><span class="mi mi-sm">lightbulb</span> Wat als het geld direct naar slachtoffers was gegaan?</div>' +
+        '<div style="font-size:13px;color:var(--tx);line-height:1.8;margin-bottom:12px">' +
+          'Stel dat de overheid in 2020 direct <strong>forfaitair</strong> had uitgekeerd — zonder jarenlange beoordelingsprocedures, zonder duizenden consultants, zonder €2,35 miljard aan uitvoeringskosten:' +
+        '</div>' +
+        '<table style="width:100%;border-collapse:collapse;font-size:12px;margin-bottom:12px">' +
+          '<tr style="border-bottom:2px solid var(--glass-bd);font-weight:700"><td style="padding:6px">Scenario</td><td style="padding:6px;text-align:right">Per gezin</td><td style="padding:6px;text-align:right">Totaal (43.056)</td></tr>' +
+          '<tr style="border-bottom:1px solid var(--glass-bd)"><td style="padding:6px">Werkelijk gemiddeld uitgekeerd (2025)</td><td style="padding:6px;text-align:right">€117.500</td><td style="padding:6px;text-align:right;font-weight:700">€5,1 mrd</td></tr>' +
+          '<tr style="border-bottom:1px solid var(--glass-bd)"><td style="padding:6px">Alleen de €30.000 forfaitair (2020)</td><td style="padding:6px;text-align:right">€30.000</td><td style="padding:6px;text-align:right">€1,3 mrd</td></tr>' +
+          '<tr style="border-bottom:1px solid var(--glass-bd);background:var(--bg2)"><td style="padding:6px;font-weight:700;color:var(--green)">Forfaitair €117.500 direct in 2020</td><td style="padding:6px;text-align:right;font-weight:700">€117.500</td><td style="padding:6px;text-align:right;font-weight:700;color:var(--green)">€5,1 mrd</td></tr>' +
+          '<tr style="border-bottom:1px solid var(--glass-bd)"><td style="padding:6px;font-weight:700;color:var(--yellow)">LOVS-tarief (onze oplossing: €105/dag, 10 jaar)</td><td style="padding:6px;text-align:right;font-weight:700">€383.250</td><td style="padding:6px;text-align:right;font-weight:700;color:var(--yellow)">€16,5 mrd</td></tr>' +
+          '<tr style="background:var(--accent-soft)"><td style="padding:6px;font-weight:800">Werkelijke kosten hersteloperatie (incl. overhead)</td><td style="padding:6px;text-align:right;font-weight:800;color:var(--accent)">€271.700</td><td style="padding:6px;text-align:right;font-weight:800;color:var(--accent)">€11,7 mrd</td></tr>' +
+        '</table>' +
         '<div style="font-size:13px;color:var(--tx);line-height:1.8">' +
-          'AVG-boetes aan de overheid zijn <strong>belastinggeld dat van het ene potje naar het andere schuift</strong>. De €6,45 miljoen die de AP aan de Belastingdienst oplegde, werd betaald door de belastingbetaler — inclusief de slachtoffers zelf. Het geld gaat naar de staatskas, niet naar de gedupeerden.<br><br>' +
-          'Om alle 43.000+ gedupeerden te compenseren met het LOVS-tarief (€105/dag voor 20 jaar), zou <strong>€33 miljard</strong> nodig zijn. Dat is <strong>5.100 keer</strong> meer dan de daadwerkelijk opgelegde boetes. Of anders: er zouden <strong>580 overtredingen van elk €20 miljoen</strong> nodig zijn om de huidige raming van €11,6 miljard te dekken.<br><br>' +
-          '<strong style="color:var(--accent)">Het wettelijke boetesysteem is niet ontworpen voor schade van deze omvang.</strong> De AVG-maxima van €20 miljoen per overtreding zijn bedoeld om bedrijven af te schrikken — niet om 240.000 slachtoffers van institutioneel racisme te compenseren. Dat vraagt om een ander instrument: directe, forfaitaire compensatie vanuit de staat.' +
+          '<strong style="color:var(--green)">Het punt:</strong> de overheid geeft <strong>€11,7 miljard</strong> uit, maar slechts <strong>€5,1 miljard</strong> bereikt de gezinnen. De rest — <strong>€6,6 miljard</strong> — gaat naar uitvoering, consultants, gemeenten, reserves en schuldsanering. Had het kabinet in 2020 direct <strong>€117.500 per gezin</strong> overgemaakt, dan was de totale rekening €5,1 miljard geweest. Dat is <strong>€6,6 miljard goedkoper</strong> dan de huidige aanpak — en de ouders hadden hun geld <strong>vijf jaar eerder</strong> gehad.<br><br>' +
+          'Zelfs met het LOVS-tarief van €383.250 per gezin (onze oplossing) zou het totaal <strong>€16,5 miljard</strong> kosten — duurder, maar wél eerlijk. En het had in <strong>maanden</strong> afgehandeld kunnen zijn in plaats van 15-20 jaar.' +
+        '</div>' +
+      '</div>' +
+
+      // Boetes vs. wat slachtoffers kregen
+      '<div style="background:var(--bg2);border-radius:var(--rs);padding:16px;margin-bottom:14px;border-left:3px solid var(--yellow)">' +
+        '<div style="font-size:12px;font-weight:700;color:var(--yellow);text-transform:uppercase;margin-bottom:10px"><span class="mi mi-sm">balance</span> Boetes vs. wat slachtoffers echt kregen</div>' +
+        '<div style="font-size:13px;color:var(--tx);line-height:1.8;margin-bottom:12px">' +
+          'De kernvraag: hadden de AVG-boetes de slachtoffers kunnen betalen?' +
+        '</div>' +
+        '<table style="width:100%;border-collapse:collapse;font-size:12px;margin-bottom:12px">' +
+          '<tr style="border-bottom:2px solid var(--glass-bd);font-weight:700"><td style="padding:6px">Boete-scenario</td><td style="padding:6px;text-align:right">Totaal</td><td style="padding:6px;text-align:right">Per gedupeerde</td></tr>' +
+          '<tr style="border-bottom:1px solid var(--glass-bd)"><td style="padding:6px">Daadwerkelijk opgelegd door AP</td><td style="padding:6px;text-align:right">€6,45 mln</td><td style="padding:6px;text-align:right;color:var(--accent);font-weight:700">€150</td></tr>' +
+          '<tr style="border-bottom:1px solid var(--glass-bd)"><td style="padding:6px">Maximum voor 9 vastgestelde overtredingen</td><td style="padding:6px;text-align:right">€170 mln</td><td style="padding:6px;text-align:right">€3.950</td></tr>' +
+          '<tr style="border-bottom:1px solid var(--glass-bd)"><td style="padding:6px">+ 50 illegale algoritmes (€20 mln p/st)</td><td style="padding:6px;text-align:right">€1,17 mrd</td><td style="padding:6px;text-align:right">€27.200</td></tr>' +
+          '<tr style="border-bottom:1px solid var(--glass-bd);background:var(--bg2)"><td style="padding:6px;font-weight:700">4% van belastingopbrengsten (€263 mrd)</td><td style="padding:6px;text-align:right;font-weight:700;color:var(--yellow)">€10,5 mrd</td><td style="padding:6px;text-align:right;font-weight:700;color:var(--yellow)">€243.900</td></tr>' +
+          '<tr style="border-bottom:1px solid var(--glass-bd)"><td style="padding:6px;font-style:italic;color:var(--tx2)">Gemiddeld daadwerkelijk uitgekeerd per gezin</td><td style="padding:6px;text-align:right;font-style:italic">—</td><td style="padding:6px;text-align:right;font-weight:700;color:var(--green)">€117.500</td></tr>' +
+          '<tr style="background:var(--accent-soft)"><td style="padding:6px;font-weight:700">LOVS-tarief (onze oplossing, 10 jaar)</td><td style="padding:6px;text-align:right;font-weight:800;color:var(--accent)">€16,5 mrd</td><td style="padding:6px;text-align:right;font-weight:800;color:var(--accent)">€383.250</td></tr>' +
+        '</table>' +
+        '<div style="font-size:13px;color:var(--tx);line-height:1.8">' +
+          '<strong style="color:var(--accent)">€150 per slachtoffer.</strong> Dat is wat de AP-boetes opleveren als je ze eerlijk verdeelt over 43.056 gedupeerden. Geen tikfout: <strong>honderdvijftig euro</strong> voor jarenlange discriminatie, vernietigde gezinnen en uit huis geplaatste kinderen.<br><br>' +
+          'Zelfs als de AP het wettelijk maximum had opgelegd voor alle vastgestelde overtredingen (€170 mln), was dat <strong>€3.950 per persoon</strong>. Tel de 50+ illegale algoritmes erbij: €27.200 — nog altijd <strong>minder dan de €30.000</strong> die ouders als "beginbedrag" kregen.<br><br>' +
+          'De enige boete die in de buurt komt is <strong>4% van de belastingopbrengsten</strong> (€10,5 mrd). Maar de AP hanteert voor overheden het vaste plafond van €20 miljoen per overtreding — de 4%-regel geldt in de praktijk alleen voor bedrijven. En zelfs die €10,5 miljard zou <strong>vestzak-broekzak</strong> zijn: belastinggeld dat via de AP weer terugvloeit naar de schatkist.' +
+        '</div>' +
+      '</div>' +
+
+      // De paradox — bijgewerkt
+      '<div style="background:var(--accent-soft);border:1px solid rgba(239,68,68,.2);border-radius:var(--rs);padding:16px;margin-bottom:0">' +
+        '<div style="font-size:12px;font-weight:700;color:var(--accent);text-transform:uppercase;margin-bottom:10px"><span class="mi mi-sm">sync_problem</span> De conclusie: het boetesysteem beschermt de dader</div>' +
+        '<div style="font-size:13px;color:var(--tx);line-height:1.8">' +
+          'De feiten op een rij:<br>' +
+          '<strong>1.</strong> De hersteloperatie kost <strong>€11,7 miljard</strong>. Daarvan komt <strong>minder dan de helft</strong> bij gedupeerden terecht.<br>' +
+          '<strong>2.</strong> De uitvoering kostte tot nu toe <strong>€1,41 miljard</strong> — <strong>220 keer meer</strong> dan alle AVG-boetes bij elkaar (€6,45 mln).<br>' +
+          '<strong>3.</strong> De consultancybureaus die de systemen bouwden die de affaire veroorzaakten (PwC, KPMG, Accenture, McKinsey), verdienen nu <strong>honderden miljoenen</strong> aan het "herstel."<br>' +
+          '<strong>4.</strong> De AP beboet de overheid met <strong>overheidsgeld</strong>. Het slachtoffer betaalt de boete via de belasting en ziet er <strong>geen cent</strong> van terug.<br>' +
+          '<strong>5.</strong> Had de overheid in 2020 direct €117.500 per gezin overgemaakt, was de totale rekening <strong>€6,6 miljard lager</strong> geweest.<br><br>' +
+          '<strong style="color:var(--accent);font-size:14px">Het AVG-boetesysteem is niet ontworpen om slachtoffers te compenseren. Het is ontworpen om organisaties af te schrikken. Maar je kunt een overheid niet afschrikken met haar eigen geld. Dat vraagt om een ander instrument: directe, forfaitaire compensatie — per schadecategorie, per jaar onrecht, uitbetaald in maanden in plaats van decennia.</strong>' +
         '</div>' +
       '</div>' +
     '</div>' +
@@ -3900,7 +3975,7 @@ function pgGeld(){
     '<div style="text-align:center;padding:28px 0 20px">' +
       '<span class="mi" style="font-size:48px;color:var(--accent);display:block;margin-bottom:8px">payments</span>' +
       '<h1 style="font-size:clamp(22px,4vw,32px);font-weight:800;line-height:1.2">De crisis als<br><span style="color:var(--accent)">verdienmodel</span></h1>' +
-      '<p style="font-size:14px;color:var(--tx2);max-width:600px;margin:10px auto 0">€7,1 miljard aan "herstel." Hoeveel daarvan bereikt de slachtoffers? En wie verdient er wél aan?</p>' +
+      '<p style="font-size:14px;color:var(--tx2);max-width:600px;margin:10px auto 0">€11,7 miljard aan "herstel." Hoeveel daarvan bereikt de slachtoffers? En wie verdient er wél aan?</p>' +
     '</div>' +
 
     // ==========================================
@@ -3915,16 +3990,16 @@ function pgGeld(){
     // STATS GRID
     '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px">' +
       '<div class="card" style="text-align:center;padding:16px">' +
-        '<div style="font-size:28px;font-weight:800;color:var(--accent)">€7,1 mrd</div>' +
-        '<div style="font-size:11px;color:var(--tx3);text-transform:uppercase">Totaal besteed' + bron('Rekenkamer 2025', 'https://www.rekenkamer.nl/publicaties/rapporten/2025/05/21/hersteloperatie-toeslagen') + '</div>' +
+        '<div style="font-size:28px;font-weight:800;color:var(--accent)">€11,7 mrd</div>' +
+        '<div style="font-size:11px;color:var(--tx3);text-transform:uppercase">Meerjarenraming' + bron('Voorjaarsnota 2025', 'https://www.rijksfinancien.nl/voorjaarsnota/2025/7815799') + '</div>' +
       '</div>' +
       '<div class="card" style="text-align:center;padding:16px">' +
-        '<div style="font-size:28px;font-weight:800;color:var(--green)">~€1,5 mrd</div>' +
+        '<div style="font-size:28px;font-weight:800;color:var(--green)">~€3,4 mrd</div>' +
         '<div style="font-size:11px;color:var(--tx3);text-transform:uppercase">Uitbetaald aan ouders</div>' +
       '</div>' +
       '<div class="card" style="text-align:center;padding:16px">' +
-        '<div style="font-size:28px;font-weight:800;color:var(--yellow)">~€5,6 mrd</div>' +
-        '<div style="font-size:11px;color:var(--tx3);text-transform:uppercase">Naar systeem & consultants</div>' +
+        '<div style="font-size:28px;font-weight:800;color:var(--yellow)">€2,35 mrd</div>' +
+        '<div style="font-size:11px;color:var(--tx3);text-transform:uppercase">Uitvoeringskosten (overhead)</div>' +
       '</div>' +
     '</div>' +
 
@@ -3932,42 +4007,44 @@ function pgGeld(){
     '<div class="card" style="padding:24px;margin-bottom:16px;border-left:4px solid var(--accent)">' +
       '<h2 style="font-size:19px;margin-bottom:12px"><span class="mi mi-sm" style="color:var(--accent)">pie_chart</span> Waar gaat het geld heen?</h2>' +
       '<p style="font-size:14px;line-height:1.8;color:var(--tx);margin-bottom:14px">' +
-        'De Algemene Rekenkamer concludeerde in mei 2025: de hersteloperatie is "duur, langzaam en bureaucratisch."' + bron('Rekenkamer, mei 2025', 'https://www.rekenkamer.nl/publicaties/rapporten/2025/05/21/hersteloperatie-toeslagen') + ' Voor elke euro die bij een gedupeerde terechtkomt, gaat meer dan <strong>drie euro naar het systeem zelf</strong>.' +
+        'Oorspronkelijke raming (2020): <strong>€310 miljoen</strong>. Huidige meerjarenraming: <strong>€11,7 miljard</strong> — een stijging met <strong>factor 37,7</strong>.' + bron('Voorjaarsnota 2025', 'https://www.rijksfinancien.nl/voorjaarsnota/2025/7815799') + ' De Algemene Rekenkamer stelde vast dat €353 miljoen aan inkopen onrechtmatig was.' + bron('Rekenkamer 2025', 'https://www.rekenkamer.nl/documenten/2025/05/21/hersteloperatie-toeslagen') +
       '</p>' +
 
       '<div style="display:grid;gap:8px;margin-bottom:12px">' +
         '<div style="display:flex;justify-content:space-between;align-items:center;padding:12px;background:var(--bg2);border-radius:var(--rs)">' +
-          '<div style="font-size:13px;color:var(--tx)"><span class="mi mi-sm" style="color:var(--green)">person</span> <strong>Forfaitaire regeling</strong> — €30.000 per ouder</div>' +
-          '<div style="font-size:14px;font-weight:800;color:var(--green)">~€1,1 mrd</div>' +
+          '<div style="font-size:13px;color:var(--tx)"><span class="mi mi-sm" style="color:var(--green)">person</span> <strong>Compensatie</strong> — €30.000 + integrale beoordeling</div>' +
+          '<div style="font-size:14px;font-weight:800;color:var(--green)">€2,19 mrd</div>' +
         '</div>' +
         '<div style="display:flex;justify-content:space-between;align-items:center;padding:12px;background:var(--bg2);border-radius:var(--rs)">' +
-          '<div style="font-size:13px;color:var(--tx)"><span class="mi mi-sm" style="color:var(--green)">family_restroom</span> <strong>Aanvullende schade</strong> — individuele beoordeling</div>' +
-          '<div style="font-size:14px;font-weight:800;color:var(--green)">~€400 mln</div>' +
+          '<div style="font-size:13px;color:var(--tx)"><span class="mi mi-sm" style="color:var(--green)">family_restroom</span> <strong>Aanvullende schadevergoeding + kindregeling</strong></div>' +
+          '<div style="font-size:14px;font-weight:800;color:var(--green)">€3,52 mrd</div>' +
         '</div>' +
         '<div style="display:flex;justify-content:space-between;align-items:center;padding:12px;background:var(--bg2);border-radius:var(--rs);border-left:3px solid var(--yellow)">' +
-          '<div style="font-size:13px;color:var(--tx)"><span class="mi mi-sm" style="color:var(--yellow)">apartment</span> <strong>UHT personeelskosten</strong> — 2.500+ medewerkers</div>' +
-          '<div style="font-size:14px;font-weight:800;color:var(--yellow)">~€2,0 mrd</div>' +
+          '<div style="font-size:13px;color:var(--tx)"><span class="mi mi-sm" style="color:var(--yellow)">apartment</span> <strong>Kwijtschelding schulden</strong> — publiek + privaat</div>' +
+          '<div style="font-size:14px;font-weight:800;color:var(--yellow)">€1,68 mrd</div>' +
         '</div>' +
         '<div style="display:flex;justify-content:space-between;align-items:center;padding:12px;background:var(--bg2);border-radius:var(--rs);border-left:3px solid var(--yellow)">' +
-          '<div style="font-size:13px;color:var(--tx)"><span class="mi mi-sm" style="color:var(--yellow)">location_city</span> <strong>Gemeentelijke ondersteuning</strong> — 342 gemeenten</div>' +
-          '<div style="font-size:14px;font-weight:800;color:var(--yellow)">~€800 mln</div>' +
+          '<div style="font-size:13px;color:var(--tx)"><span class="mi mi-sm" style="color:var(--yellow)">location_city</span> <strong>Gemeenten + rechtsbijstand + overig</strong></div>' +
+          '<div style="font-size:14px;font-weight:800;color:var(--yellow)">€1,17 mrd</div>' +
         '</div>' +
         '<div style="display:flex;justify-content:space-between;align-items:center;padding:12px;background:var(--bg2);border-radius:var(--rs);border-left:3px solid var(--accent)">' +
-          '<div style="font-size:13px;color:var(--tx)"><span class="mi mi-sm" style="color:var(--accent)">business</span> <strong>Externe consultants & advies</strong></div>' +
-          '<div style="font-size:14px;font-weight:800;color:var(--accent)">~€1,5 mrd</div>' +
+          '<div style="font-size:13px;color:var(--tx)"><span class="mi mi-sm" style="color:var(--accent)">business</span> <strong>Uitvoeringskosten</strong> — 75% extern ingehuurd</div>' +
+          '<div style="font-size:14px;font-weight:800;color:var(--accent)">€2,35 mrd</div>' +
         '</div>' +
         '<div style="display:flex;justify-content:space-between;align-items:center;padding:12px;background:var(--bg2);border-radius:var(--rs);border-left:3px solid var(--accent)">' +
-          '<div style="font-size:13px;color:var(--tx)"><span class="mi mi-sm" style="color:var(--accent)">computer</span> <strong>IT-systemen, commissies, juridisch</strong></div>' +
-          '<div style="font-size:14px;font-weight:800;color:var(--accent)">~€1,3 mrd</div>' +
+          '<div style="font-size:13px;color:var(--tx)"><span class="mi mi-sm" style="color:var(--accent)">computer</span> <strong>Reservering Aanvullende Post</strong></div>' +
+          '<div style="font-size:14px;font-weight:800;color:var(--accent)">€966 mln</div>' +
         '</div>' +
       '</div>' +
 
       // VISUAL: verdeling
       '<div style="margin-top:12px">' +
-        '<div style="font-size:11px;color:var(--tx3);margin-bottom:4px">Verdeling: naar ouders vs. naar systeem</div>' +
-        '<div style="display:flex;height:24px;border-radius:12px;overflow:hidden">' +
-          '<div style="width:21%;background:var(--green);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff">21%</div>' +
-          '<div style="width:79%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff">79% → systeem</div>' +
+        '<div style="font-size:11px;color:var(--tx3);margin-bottom:4px">Verdeling meerjarenraming €11,7 mrd:</div>' +
+        '<div style="display:flex;height:28px;border-radius:12px;overflow:hidden">' +
+          '<div style="width:29%;background:var(--green);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff">29% uitbetaald</div>' +
+          '<div style="width:20%;background:var(--yellow);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#fff">schulden + gem.</div>' +
+          '<div style="width:28%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff">28% overhead</div>' +
+          '<div style="width:23%;background:#8b0000;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#fff">reserve</div>' +
         '</div>' +
       '</div>' +
     '</div>' +
