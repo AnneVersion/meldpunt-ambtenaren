@@ -551,7 +551,7 @@ function bronnenContext(m){
     items.push({t:'AP-boete discriminatie dubbele nationaliteit (€2,75 mln)',u:'https://www.autoriteitpersoonsgegevens.nl/documenten/boete-belastingdienst-kinderopvangtoeslag'});
     items.push({t:'AP-boete FSV zwarte lijst (€3,7 mln)',u:'https://autoriteitpersoonsgegevens.nl/actueel/boete-belastingdienst-voor-zwarte-lijst-fsv'});
     items.push({t:'College Rechten van de Mens — discriminatie-oordelen',u:'https://oordelen.mensenrechten.nl/oordeel/2023-103'});
-    items.push({t:'Amnesty International "Xenofobe machines"',u:'https://www.amnesty.nl/content/uploads/2021/10/Amnesty-International-rapport-Xenofobe-machines.pdf'});
+    items.push({t:'Amnesty International "Xenofobe machines"',u:'https://www.amnesty.nl/content/uploads/2021/10/NL_Xenophobe-Machines_Amnesty-International_EUR-35_4686_2021.pdf'});
     items.push({t:'Follow the Money — 50+ illegale algoritmes',u:'https://www.ftm.nl/artikelen/meer-dan-50-algoritmes-van-de-belasting-dienst-zijn-onrechtmatig'});
     items.push({t:'Commissie-Van Dam — hersteloperatie, 2025',u:'https://www.rijksoverheid.nl/documenten/kamerstukken/2025/01/23/minder-beloven-meer-doen-lr'});
     items.push({t:'NOS — Dienst Toeslagen geeft bewust geen informatie',u:'https://nos.nl/artikel/2599959'});
@@ -579,7 +579,7 @@ function bronnenContext(m){
   // Discriminatie
   if(inst.indexOf('discriminat')>-1 || inst.indexOf('racis')>-1){
     items.push({t:'College voor de Rechten van de Mens — oordelen',u:'https://oordelen.mensenrechten.nl/oordeel/2023-103'});
-    items.push({t:'Amnesty International "Xenofobe machines"',u:'https://www.amnesty.nl/content/uploads/2021/10/Amnesty-International-rapport-Xenofobe-machines.pdf'});
+    items.push({t:'Amnesty International "Xenofobe machines"',u:'https://www.amnesty.nl/content/uploads/2021/10/NL_Xenophobe-Machines_Amnesty-International_EUR-35_4686_2021.pdf'});
     items.push({t:'CERD — VN-comité rassendiscriminatie, 2021',u:'https://www.ohchr.org/en/documents/concluding-observations/cerdcnldco22-24-concluding-observations-combined-twenty-second'});
   }
   // Algemene juridische routes — altijd tonen
@@ -2275,7 +2275,7 @@ function pgMissie(){
 
         '<div style="font-size:13px;color:var(--tx);line-height:1.8;margin-bottom:0">' +
           '<strong style="color:var(--yellow)">4. Identiteitsfraude-precedent.</strong><br>' +
-          'Bij identiteitsfraude kan een BSN wél worden gewijzigd. Advocaat Khadija Bozia stelde: een besmet BSN door etnisch profileren is vergelijkbaar met identiteitsfraude' + bron('NRC, 2021') + ' — je nummer is gekaapt, niet door een crimineel, maar door de overheid zelf. Amnesty International classificeerde de toeslagenaffaire als een <strong>mensenrechtenschending</strong>.' + bron('Amnesty "Xenofobe machines", okt 2021', 'https://www.amnesty.nl/content/uploads/2021/10/Amnesty-International-rapport-Xenofobe-machines.pdf') + '' +
+          'Bij identiteitsfraude kan een BSN wél worden gewijzigd. Advocaat Khadija Bozia stelde: een besmet BSN door etnisch profileren is vergelijkbaar met identiteitsfraude' + bron('NRC, 2021') + ' — je nummer is gekaapt, niet door een crimineel, maar door de overheid zelf. Amnesty International classificeerde de toeslagenaffaire als een <strong>mensenrechtenschending</strong>.' + bron('Amnesty "Xenofobe machines", okt 2021', 'https://www.amnesty.nl/content/uploads/2021/10/NL_Xenophobe-Machines_Amnesty-International_EUR-35_4686_2021.pdf') + '' +
         '</div>' +
       '</div>' +
 
@@ -2740,7 +2740,7 @@ function pgTijdlijn(){
     { jaar: 'Dec 2020', titel: 'Rapport "Ongekend Onrecht"', tekst: 'De parlementaire commissie concludeert: de grondbeginselen van de rechtsstaat zijn geschonden. 25.000+ ouders hebben "ongekend onrecht" geleden. De term "Rutte Doctrine" wordt officieel vastgelegd — de weigering om informatie aan de Kamer te verstrekken.' + bron('Rapport "Ongekend Onrecht", dec 2020', 'https://www.parlement.com/parlementaire-ondervraging-kinderopvangtoeslag') + '', kleur: 'var(--accent)' },
     { jaar: 'Jan 2021', titel: 'Kabinet Rutte III valt', tekst: 'Het kabinet biedt collectief ontslag aan. Maar Rutte blijft zitten als demissionair premier. Asscher trekt zich terug als PvdA-lijsttrekker. Eric Wiebes is de enige die daadwerkelijk opstapt. 80 ouders doen aangifte tegen Rutte — het OM vervolgt niet.' + bron('BijzonderStrafrecht.nl', 'https://www.bijzonderstrafrecht.nl/home/geen-vervolging-van-individuele-ambtenaren-van-de-belastingdienst-uit-de-toeslagenaffaire-voor-beroepsmatige-discriminatie') + '', kleur: 'var(--accent)' },
     { jaar: '2021–2023', titel: 'Hersteloperatie mislukt', tekst: 'Staatssecretaris Van Huffelen belooft iedere gedupeerde €30.000. Maar de uitvoering is tergend langzaam. In 2023 wachten nog duizenden ouders. Van Huffelen weigert een nieuw BSN. Het FSV-systeem met 180.000 namen wordt stilgelegd' + bron('AP-rapport FSV, 2022', 'https://autoriteitpersoonsgegevens.nl/actueel/boete-belastingdienst-voor-zwarte-lijst-fsv') + ' — maar de schade is al aangericht.', kleur: 'var(--yellow)' },
-    { jaar: 'Okt 2023', titel: 'College voor de Rechten van de Mens: discriminatie', tekst: 'Het College oordeelt in drie zaken dat er sprake was van indirecte discriminatie door de Belastingdienst/Toeslagen. Amnesty International had de affaire eerder al als mensenrechtenschending geclassificeerd.' + bron('Amnesty "Xenofobe machines", 2021', 'https://www.amnesty.nl/content/uploads/2021/10/Amnesty-International-rapport-Xenofobe-machines.pdf') + '', kleur: 'var(--accent)' },
+    { jaar: 'Okt 2023', titel: 'College voor de Rechten van de Mens: discriminatie', tekst: 'Het College oordeelt in drie zaken dat er sprake was van indirecte discriminatie door de Belastingdienst/Toeslagen. Amnesty International had de affaire eerder al als mensenrechtenschending geclassificeerd.' + bron('Amnesty "Xenofobe machines", 2021', 'https://www.amnesty.nl/content/uploads/2021/10/NL_Xenophobe-Machines_Amnesty-International_EUR-35_4686_2021.pdf') + '', kleur: 'var(--accent)' },
     { jaar: '2024', titel: 'Raad van State biedt excuses aan', tekst: 'De Raad van State erkent dat zij jarenlang een te strikte lijn hanteerde en biedt excuses aan toeslagenouders. Te laat, te weinig — maar een erkenning.' + bron('RvS zelfreflectie', 'https://www.raadvanstate.nl/lessen-uit-de-kinderopvangtoeslagzaken/') + '', kleur: 'var(--yellow)' },
     { jaar: 'Feb 2024', titel: 'Parlementaire enquête: "Blind voor mens en recht"', tekst: 'De enquêtecommissie onder voorzitter Michiel van Nispen (SP) concludeert: "In een verhard politiek en maatschappelijk klimaat zijn de drie staatsmachten blind geweest voor mens en recht, waardoor levens zijn vermorzeld." De commissie beveelt aan om bestuursrechtspraak weg te halen bij de Raad van State. De Raad van State weigert schuld te erkennen.' + bron('Enquêtecommissie 2024', 'https://www.tweedekamer.nl/kamerstukken/detail?id=2024Z02942&did=2024D06757') + '', kleur: 'var(--accent)' },
     { jaar: 'Okt 2024', titel: 'Rutte wordt NAVO-baas', tekst: 'Mark Rutte wordt de 14e secretaris-generaal van de NAVO. Jaarsalaris ~€270.000 belastingvrij. 26.000 gezinnen kapot. 2.090 kinderen uit huis. Nul consequenties. Karim Aachboun dagvaardt Rutte voor het Brusselse Hof van Cassatie.' + bron('DutchEcho, mrt 2025', 'https://dutchecho.com/2025/03/30/aachboun-vs-rutte-the-legal-showdown/') + '', kleur: 'var(--accent)' },
@@ -3325,7 +3325,7 @@ function pgDocumentatie(){
       { titel: 'Boete Belastingdienst — FSV zwarte lijst (€3,7 mln)', bron: 'Autoriteit Persoonsgegevens', jaar: '2022', url: 'https://autoriteitpersoonsgegevens.nl/actueel/boete-belastingdienst-voor-zwarte-lijst-fsv' },
       { titel: 'Informatiehuishouding Toeslagen voldoet niet', bron: 'Inspectie Overheidsinformatie en Erfgoed', jaar: '2024', url: 'https://www.inspectie-oe.nl/actueel/nieuws/2024/04/26/informatiehuishouding-toeslagen' },
       { titel: 'Hersteloperatie Toeslagen — verantwoording', bron: 'Algemene Rekenkamer', jaar: '2025', url: 'https://www.rekenkamer.nl/publicaties/rapporten/2025/05/21/hersteloperatie-toeslagen' },
-      { titel: '"Xenofobe machines" — mensenrechtenschending', bron: 'Amnesty International', jaar: '2021', url: 'https://www.amnesty.nl/content/uploads/2021/10/Amnesty-International-rapport-Xenofobe-machines.pdf' }
+      { titel: '"Xenofobe machines" — mensenrechtenschending', bron: 'Amnesty International', jaar: '2021', url: 'https://www.amnesty.nl/content/uploads/2021/10/NL_Xenophobe-Machines_Amnesty-International_EUR-35_4686_2021.pdf' }
     ],
     journalistiek: [
       { titel: 'Dienst Toeslagen geeft bewust geen informatie aan slachtoffers', bron: 'NOS', jaar: '2025', url: 'https://nos.nl/artikel/2599959' },
@@ -3574,7 +3574,7 @@ function pgOplossing(){
         '</div>' +
         '<div style="font-size:13px;color:var(--tx);line-height:1.8">' +
           '<strong style="color:var(--green)">Feit:</strong> De <strong>bedoelde</strong> gevolgen van niets doen zijn erger. Elke dag dat het BSN besmet blijft, worden mensen benadeeld bij hypotheekaanvragen, verzekeringen, huurwoningen en schuldsanering. De "onbedoelde gevolgen" van een nieuw BSN zijn administratief. De bedoelde gevolgen van het huidige beleid zijn <strong>mensenlevens die verwoest blijven</strong>.<br><br>' +
-          'Bij identiteitsfraude kan een BSN wél worden gewijzigd. Advocaat Khadija Bozia stelde: een besmet BSN door etnisch profileren is vergelijkbaar met identiteitsfraude.' + bron('NRC, 2021') + ' Je nummer is gekaapt — niet door een crimineel, maar door de overheid zelf. Amnesty International classificeerde de toeslagenaffaire als een <strong>mensenrechtenschending</strong>.' + bron('Amnesty "Xenofobe machines", okt 2021', 'https://www.amnesty.nl/content/uploads/2021/10/Amnesty-International-rapport-Xenofobe-machines.pdf') +
+          'Bij identiteitsfraude kan een BSN wél worden gewijzigd. Advocaat Khadija Bozia stelde: een besmet BSN door etnisch profileren is vergelijkbaar met identiteitsfraude.' + bron('NRC, 2021') + ' Je nummer is gekaapt — niet door een crimineel, maar door de overheid zelf. Amnesty International classificeerde de toeslagenaffaire als een <strong>mensenrechtenschending</strong>.' + bron('Amnesty "Xenofobe machines", okt 2021', 'https://www.amnesty.nl/content/uploads/2021/10/NL_Xenophobe-Machines_Amnesty-International_EUR-35_4686_2021.pdf') +
         '</div>' +
       '</div>' +
     '</div>' +
@@ -3716,7 +3716,8 @@ function pgOplossing(){
           '<div style="font-size:18px;font-weight:800;color:var(--accent)">€3,7 mln</div>' +
         '</div>' +
         '<div style="font-size:13px;color:var(--tx);line-height:1.7;margin-bottom:10px">' +
-          'April 2022. De Fraude Signalering Voorziening (FSV) was een illegale zwarte lijst waarop <strong>270.000 personen</strong> stonden geregistreerd als mogelijke fraudeurs, vaak zonder enige grondslag. Mensen kwamen op basis van een anonieme tip op de lijst en konden er nooit meer af.' + bron('AP-boetebesluit FSV', 'https://autoriteitpersoonsgegevens.nl/actueel/boete-belastingdienst-voor-zwarte-lijst-fsv') +
+          'April 2022. De Fraude Signalering Voorziening (FSV) was een illegale zwarte lijst waarop <strong>270.000 personen</strong> stonden geregistreerd als mogelijke fraudeurs, vaak zonder enige grondslag. Mensen kwamen op basis van een anonieme tip op de lijst en konden er nooit meer af.' + bron('AP-boetebesluit FSV', 'https://autoriteitpersoonsgegevens.nl/actueel/boete-belastingdienst-voor-zwarte-lijst-fsv') + '<br><br>' +
+          '<strong style="color:var(--yellow)">Vestzak, broekzak:</strong> deze €3,7 miljoen werd betaald door de Belastingdienst — dus door de belastingbetaler. Het geld ging van de ene overheidskas naar de andere. De 270.000 mensen op de zwarte lijst zagen er <strong>geen cent</strong> van terug. De AP beboet de overheid met overheidsgeld. Dat is geen straf — dat is boekhouding.' +
         '</div>' +
 
         '<div style="font-size:12px;color:var(--tx2);margin-bottom:4px"><strong>6 afzonderlijke overtredingen:</strong></div>' +
