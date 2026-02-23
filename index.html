@@ -369,24 +369,58 @@ sup a[title], sup[title] { border-bottom: 1px dotted var(--blue); }
    ============================================================ */
 
 // ============ DATASTORE ============
+// ============ API CLIENT ============
+var API_BASE = '/api';
+var _adminLoggedIn = false;
+
+function apiFetch(url, opts, cb) {
+  if(typeof opts === 'function'){ cb = opts; opts = {}; }
+  opts = opts || {};
+  opts.credentials = 'include';
+  if(opts.body && typeof opts.body === 'object' && !(opts.body instanceof FormData)){
+    opts.headers = Object.assign({'Content-Type':'application/json'}, opts.headers||{});
+    opts.body = JSON.stringify(opts.body);
+  }
+  fetch(API_BASE + url, opts)
+    .then(function(r){ return r.json().then(function(d){ return {ok:r.ok, status:r.status, data:d}; }); })
+    .then(function(res){ cb(res.ok ? null : (res.data.error||'Fout'), res.data, res.status); })
+    .catch(function(e){ cb('Verbinding mislukt: ' + e.message, null, 0); });
+}
+
+var API = {
+  getMeldingen: function(cb){ apiFetch('/meldingen', cb); },
+  getMelding: function(id, cb){ apiFetch('/meldingen/' + id, cb); },
+  submitMelding: function(data, cb){ apiFetch('/meldingen', {method:'POST', body:data}, cb); },
+
+  getClaim: function(code, cb){ apiFetch('/claim/' + encodeURIComponent(code), cb); },
+  updateClaim: function(code, data, cb){ apiFetch('/claim/' + encodeURIComponent(code), {method:'PUT', body:data}, cb); },
+
+  getReacties: function(mid, cb){ apiFetch('/reacties/' + mid, cb); },
+  submitReactie: function(data, cb){ apiFetch('/reacties', {method:'POST', body:data}, cb); },
+
+  adminLogin: function(user, pass, cb){ apiFetch('/admin/login', {method:'POST', body:{username:user,password:pass}}, function(err,d,s){ if(!err) _adminLoggedIn=true; cb(err,d,s); }); },
+  adminLogout: function(cb){ apiFetch('/admin/logout', {method:'POST'}, function(err,d){ _adminLoggedIn=false; cb(err,d); }); },
+  adminCheck: function(cb){ apiFetch('/admin/check', function(err,d){ _adminLoggedIn=!err; cb(err,d); }); },
+  adminMeldingen: function(status, cb){ apiFetch('/admin/meldingen' + (status ? '?status='+status : ''), cb); },
+  adminApprove: function(id, cb){ apiFetch('/admin/meldingen/'+id+'/approve', {method:'PUT'}, cb); },
+  adminReject: function(id, cb){ apiFetch('/admin/meldingen/'+id+'/reject', {method:'PUT'}, cb); },
+  adminDelete: function(id, cb){ apiFetch('/admin/meldingen/'+id, {method:'DELETE'}, cb); },
+  adminStats: function(cb){ apiFetch('/admin/stats', cb); },
+  adminExport: function(cb){ apiFetch('/admin/export', cb); }
+};
+
+// ============ DS — LOKALE CACHE (backward compatible) ============
 var DS = {
-  _k: function(c){ return 'ma_' + c; },
-  all: function(c){ try { return JSON.parse(localStorage.getItem(this._k(c)) || '[]'); } catch(e){ return []; } },
+  _c: { meldingen: [], reacties: [], ambtenaren: [] },
+  all: function(c){ return this._c[c] || []; },
   get: function(c, id){ var a = this.all(c); for(var i=0;i<a.length;i++){ if(a[i].id===id) return a[i]; } return null; },
-  add: function(c, item){
-    var a = this.all(c);
-    if(!item.id) item.id = 'id_' + Date.now() + '_' + Math.random().toString(36).substr(2,6);
-    a.push(item);
-    localStorage.setItem(this._k(c), JSON.stringify(a));
-    return item;
-  },
-  update: function(c, id, u){
-    var a = this.all(c);
-    for(var i=0;i<a.length;i++){ if(a[i].id===id){ for(var k in u) a[i][k]=u[k]; localStorage.setItem(this._k(c),JSON.stringify(a)); return a[i]; } }
-    return null;
-  },
   count: function(c){ return this.all(c).length; },
-  query: function(c, fn){ return this.all(c).filter(fn); }
+  query: function(c, fn){ return this.all(c).filter(fn); },
+  // Laad data van API in cache
+  load: function(c, data){ this._c[c] = data || []; },
+  // Voeg lokaal toe aan cache (na succesvolle API call)
+  push: function(c, item){ this._c[c].push(item); },
+  del: function(c, id){ this._c[c] = this._c[c].filter(function(x){ return x.id !== id; }); }
 };
 
 // ============ ROUTER ============
@@ -412,6 +446,8 @@ function parseRoute(){
   else if(h === '/documentatie') _route = '/documentatie';
   else if(h === '/oplossing') _route = '/oplossing';
   else if(h === '/geld') _route = '/geld';
+  else if(h === '/admin') _route = '/admin';
+  else if(h.indexOf('/claim/') === 0){ _route = '/claim'; _params.code = h.replace('/claim/','').toUpperCase(); }
   else _route = '/';
   render();
   updateNav();
@@ -425,15 +461,49 @@ function updateNav(){
   });
 }
 
+var _loadingHtml = '<div style="display:flex;justify-content:center;padding:60px 0"><div style="width:28px;height:28px;border:3px solid var(--glass-bd);border-top-color:var(--accent);border-radius:50%;animation:spin .6s linear infinite"></div></div><style>@keyframes spin{to{transform:rotate(360deg)}}</style>';
+
 function render(){
   var app = document.getElementById('app');
+
+  // Pagina's die API-data nodig hebben → eerst laden, dan renderen
+  var asyncPages = ['/', '/meldingen', '/melding', '/namen', '/admin', '/claim'];
+  if(asyncPages.indexOf(_route) > -1){
+    app.innerHTML = _loadingHtml;
+  }
+
   switch(_route){
-    case '/': app.innerHTML = pgHome(); break;
-    case '/meldingen': app.innerHTML = pgMelden(); initMeldListeners(); break;
-    case '/melding': app.innerHTML = pgMelding(); break;
+    case '/':
+      API.getMeldingen(function(err, data){
+        if(!err) DS.load('meldingen', data);
+        app.innerHTML = pgHome();
+      });
+      break;
+    case '/meldingen':
+      API.getMeldingen(function(err, data){
+        if(!err) DS.load('meldingen', data);
+        app.innerHTML = pgMeldingen();
+      });
+      break;
+    case '/melding':
+      API.getMelding(_params.id, function(err, data){
+        if(err){ _currentMelding = null; app.innerHTML = pgMelding(); return; }
+        _currentMelding = data;
+        // Laad ook reacties
+        API.getReacties(_params.id, function(err2, reacties){
+          _currentMelding._reacties = err2 ? [] : reacties;
+          app.innerHTML = pgMelding();
+        });
+      });
+      break;
     case '/melden': app.innerHTML = pgMelden(); initMeldListeners(); break;
     case '/melden-ai': app.innerHTML = pgMeldenAI(); initAI(); break;
-    case '/namen': app.innerHTML = pgNamen(); break;
+    case '/namen':
+      API.getMeldingen(function(err, data){
+        if(!err) DS.load('meldingen', data);
+        app.innerHTML = pgNamen();
+      });
+      break;
     case '/missie': app.innerHTML = pgMissie(); break;
     case '/klokkenluider': app.innerHTML = pgKlokkenluider(); break;
     case '/organigram': app.innerHTML = pgOrganigram(); break;
@@ -442,9 +512,17 @@ function render(){
     case '/documentatie': app.innerHTML = pgDocumentatie(); break;
     case '/oplossing': app.innerHTML = pgOplossing(); break;
     case '/geld': app.innerHTML = pgGeld(); break;
-    default: app.innerHTML = pgHome();
+    case '/admin': renderAdmin(); break;
+    case '/claim': renderClaim(); break;
+    default:
+      API.getMeldingen(function(err, data){
+        if(!err) DS.load('meldingen', data);
+        app.innerHTML = pgHome();
+      });
   }
 }
+
+var _currentMelding = null; // voor pgMelding async
 
 window.addEventListener('hashchange', parseRoute);
 
@@ -768,8 +846,10 @@ function registreerAmbtenaar(){
   var org = (document.getElementById('ambtenaarOrg').value||'').trim();
   if(!email || email.indexOf('@') < 0){ toast('Vul een geldig e-mailadres in'); return; }
   if(!naam){ toast('Vul je naam in'); return; }
-  DS.add('ambtenaren', { email: email, naam: naam, organisatie: org, ts: Date.now() });
-  toast('Bedankt ' + naam + '. Wij sturen je de meldingen.');
+  apiFetch('/ambtenaren', {method:'POST', body:{email:email, naam:naam, organisatie:org}}, function(err){
+    if(err){ toast('Fout: ' + err); return; }
+    toast('Bedankt ' + naam + '. Wij sturen je de meldingen.');
+  });
   document.getElementById('ambtenaarEmail').value = '';
   document.getElementById('ambtenaarNaam').value = '';
   document.getElementById('ambtenaarOrg').value = '';
@@ -787,10 +867,8 @@ function zoekMeldingen(val){
 
 // ============ PAGE: MELDING DETAIL ============
 function pgMelding(){
-  var m = DS.get('meldingen', _params.id);
+  var m = _currentMelding;
   if(!m) return '<div class="page"><div class="empty"><span class="mi">error</span><p>Melding niet gevonden.</p></div></div>';
-
-  DS.update('meldingen', m.id, { views: (m.views||0)+1 });
 
   var namenHtml = '';
   (m.namen || []).forEach(function(n){
@@ -807,8 +885,8 @@ function pgMelding(){
 
   var verhaalHtml = (m.verhaal||'').split('\n').filter(function(p){return p.trim();}).map(function(p){return '<p style="margin-bottom:10px">' + esc(p) + '</p>';}).join('');
 
-  // Reacties
-  var reacties = DS.query('reacties', function(r){ return r.mid === m.id; }).sort(function(a,b){ return (a.ts||0)-(b.ts||0); });
+  // Reacties worden apart geladen
+  var reacties = m._reacties || [];
   var reactieHtml = '';
   reacties.forEach(function(r){
     reactieHtml += '<div class="card" style="padding:12px;margin-bottom:6px">' +
@@ -883,13 +961,16 @@ function pgMelding(){
 function plaatsReactie(mid){
   var t = (document.getElementById('rTekst')||{}).value;
   if(!t || !t.trim()){ toast('Schrijf eerst iets'); return; }
-  DS.add('reacties', { mid: mid, naam: ((document.getElementById('rNaam')||{}).value||'').trim() || 'Anoniem', tekst: t.trim(), ts: Date.now() });
-  toast('Reactie geplaatst!');
-  render();
+  var naam = ((document.getElementById('rNaam')||{}).value||'').trim() || 'Anoniem';
+  API.submitReactie({ mid: mid, naam: naam, tekst: t.trim() }, function(err, data){
+    if(err){ toast('Fout: ' + err); return; }
+    toast('Reactie geplaatst!');
+    render();
+  });
 }
 
 function deel(id, platform){
-  var m = DS.get('meldingen', id); if(!m) return;
+  var m = _currentMelding || DS.get('meldingen', id); if(!m) return;
   var url = location.origin + location.pathname + '#/melding/' + id;
   var txt = 'Lees dit op Meldpunt Ambtenaren: "' + (m.titel||'') + '"';
   if(platform==='x') window.open('https://twitter.com/intent/tweet?text='+encodeURIComponent(txt)+'&url='+encodeURIComponent(url),'_blank');
@@ -1350,16 +1431,44 @@ function submitMelding(){
     views: 0
   };
 
-  var saved = DS.add('meldingen', melding);
-  toast('Melding gepubliceerd! Samen bouwen we het dossier op.');
-  // Reset
-  _namen = [{naam:'',functie:''}];
-  _meldStap = 1;
-  _meldFotos = {};
-  _meldInstantie = '';
-  _meldVerhaal = '';
-  _meldTitel = '';
-  go('/melding/' + saved.id);
+  API.submitMelding(melding, function(err, data){
+    if(err){ toast('Fout bij indienen: ' + err); return; }
+    // Toon claimCode popup met status
+    toonClaimCode(data.claimCode, data.id, data.status);
+    // Reset
+    _namen = [{naam:'',functie:''}];
+    _meldStap = 1;
+    _meldFotos = {};
+    _meldInstantie = '';
+    _meldVerhaal = '';
+    _meldTitel = '';
+  });
+}
+
+function toonClaimCode(code, meldingId, status){
+  var isReview = status === 'review';
+  var overlay = document.createElement('div');
+  overlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.7);z-index:10000;display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px)';
+  overlay.innerHTML = '<div style="background:var(--bg2);border:1px solid var(--glass-bd);border-radius:var(--r);padding:32px;max-width:440px;width:100%;text-align:center;box-shadow:0 24px 64px rgba(0,0,0,.5)">' +
+    '<span class="mi" style="font-size:48px;color:var(--green);display:block;margin-bottom:12px">check_circle</span>' +
+    '<h2 style="font-size:20px;font-weight:800;margin-bottom:8px">Melding ingediend!</h2>' +
+    (isReview ?
+      '<div style="background:var(--yellow-soft,rgba(250,204,21,.1));border:1px solid var(--yellow);border-radius:var(--rs);padding:10px;margin-bottom:16px;font-size:13px;color:var(--yellow)"><span class="mi mi-sm">hourglass_top</span> Je melding wordt eerst beoordeeld voordat deze zichtbaar wordt.</div>' :
+      '<p style="font-size:14px;color:var(--tx2);margin-bottom:16px">Je melding is direct gepubliceerd.</p>') +
+    '<p style="font-size:14px;color:var(--tx2);margin-bottom:20px">Bewaar deze code om je melding later aan te vullen:</p>' +
+    '<div style="background:var(--bg);border:2px dashed var(--green);border-radius:var(--rs);padding:16px;margin-bottom:16px">' +
+      '<div style="font-size:28px;font-weight:800;letter-spacing:3px;font-family:monospace;color:var(--green)">' + esc(code) + '</div>' +
+    '</div>' +
+    '<p style="font-size:12px;color:var(--tx3);margin-bottom:16px">Met deze code kun je altijd terugkomen om details, bewijs of foto\'s toe te voegen.<br>Geen account nodig — de code is je sleutel.</p>' +
+    '<div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">' +
+      '<button class="btn btn-ghost btn-sm" onclick="navigator.clipboard.writeText(\'' + esc(code) + '\');toast(\'Code gekopieerd!\')"><span class="mi mi-sm">content_copy</span> Kopieer code</button>' +
+      (isReview ?
+        '<button class="btn btn-blue btn-sm" onclick="this.closest(\'div\').closest(\'div\').closest(\'div\').remove();go(\'/claim/' + esc(code) + '\')"><span class="mi mi-sm">key</span> Bekijk status</button>' :
+        '<button class="btn btn-green btn-sm" style="background:var(--green);color:#fff" onclick="this.closest(\'div\').closest(\'div\').closest(\'div\').remove();go(\'/melding/' + esc(meldingId) + '\')"><span class="mi mi-sm">visibility</span> Bekijk melding</button>') +
+    '</div>' +
+  '</div>';
+  document.body.appendChild(overlay);
+  overlay.addEventListener('click', function(e){ if(e.target === overlay){ overlay.remove(); go('/melding/' + meldingId); } });
 }
 
 // Toggle anoniem
@@ -1813,10 +1922,11 @@ function aiSubmit(){
     views: 0
   };
 
-  var saved = DS.add('meldingen', melding);
-  toast('Melding gepubliceerd!');
-  _aiChat = []; _aiStep = 0; _aiData = {};
-  go('/melding/' + saved.id);
+  API.submitMelding(melding, function(err, data){
+    if(err){ toast('Fout bij indienen: ' + err); return; }
+    toonClaimCode(data.claimCode, data.id, data.status);
+    _aiChat = []; _aiStep = 0; _aiData = {};
+  });
 }
 
 // ============ PAGE: NAMEN OVERZICHT ============
@@ -1950,10 +2060,11 @@ function submitKlokkenluider(){
     views: 0
   };
 
-  var saved = DS.add('meldingen', melding);
-  toast('Klokkenluider-melding gepubliceerd!');
-  _klNaamCount = 1;
-  go('/melding/' + saved.id);
+  API.submitMelding(melding, function(err, data){
+    if(err){ toast('Fout bij indienen: ' + err); return; }
+    toonClaimCode(data.claimCode, data.id, data.status);
+    _klNaamCount = 1;
+  });
 }
 
 // ============ PAGE: MISSIE ============
@@ -3569,13 +3680,177 @@ function pgOplossing(){
       '</div>' +
     '</div>' +
 
-    // SAMENVATTING
+    // ==========================================
+    // SECTIE 3: AVG-BOETES VS. HERSTELKOSTEN
+    // ==========================================
+    '<div style="margin:28px 0 10px;display:flex;align-items:center;gap:10px">' +
+      '<div style="height:2px;flex:1;background:linear-gradient(90deg,transparent,var(--blue))"></div>' +
+      '<span style="font-size:12px;font-weight:700;color:var(--blue);text-transform:uppercase;letter-spacing:1px;white-space:nowrap">Deel 3 — AVG-boetes vs. herstelkosten</span>' +
+      '<div style="height:2px;flex:1;background:linear-gradient(90deg,var(--blue),transparent)"></div>' +
+    '</div>' +
+
+    '<div class="card" style="padding:24px;margin-bottom:16px;border-left:4px solid var(--blue)">' +
+      '<h2 style="font-size:19px;margin-bottom:10px"><span class="mi mi-sm" style="color:var(--blue)">gavel</span> De boetes die de Belastingdienst had moeten krijgen</h2>' +
+      '<p style="font-size:14px;line-height:1.8;color:var(--tx);margin-bottom:14px">' +
+        'De Autoriteit Persoonsgegevens (AP) legde in totaal <strong>€6,45 miljoen</strong> aan AVG-boetes op aan de Belastingdienst. Klinkt veel? Het is <strong>0,056%</strong> van wat de hersteloperatie kost. De AP had wettelijk tot <strong>€170 miljoen</strong> kunnen opleggen voor dezelfde overtredingen. Dat deed ze niet.' +
+      '</p>' +
+
+      // Boete 1
+      '<div style="background:var(--bg2);border-radius:var(--rs);padding:16px;margin-bottom:12px">' +
+        '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:6px">' +
+          '<div style="font-size:14px;font-weight:700;color:var(--blue)"><span class="mi mi-sm">receipt_long</span> Boete 1 — Discriminatie op nationaliteit</div>' +
+          '<div style="font-size:18px;font-weight:800;color:var(--accent)">€2,75 mln</div>' +
+        '</div>' +
+        '<div style="font-size:13px;color:var(--tx);line-height:1.7;margin-bottom:10px">' +
+          'December 2021. De Belastingdienst/Toeslagen verwerkte jarenlang de dubbele nationaliteit van ouders op discriminerende en onrechtmatige wijze. Van <strong>1,4 miljoen mensen</strong> stond de dubbele nationaliteit nog geregistreerd in mei 2018, terwijl dit in januari 2014 al gewist had moeten zijn.' + bron('AP-boetebesluit discriminatie', 'https://www.autoriteitpersoonsgegevens.nl/documenten/boete-belastingdienst-kinderopvangtoeslag') +
+        '</div>' +
+        '<div style="font-size:12px;color:var(--tx2)">' +
+          '<strong>3 overtredingen:</strong> bewaren nationaliteit na wettelijke deadline (art. 5 AVG), gebruik bij fraudebestrijding (art. 6 AVG), gebruik als indicator in risicosysteem (art. 6 AVG)' +
+        '</div>' +
+      '</div>' +
+
+      // Boete 2
+      '<div style="background:var(--bg2);border-radius:var(--rs);padding:16px;margin-bottom:12px">' +
+        '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:6px">' +
+          '<div style="font-size:14px;font-weight:700;color:var(--blue)"><span class="mi mi-sm">receipt_long</span> Boete 2 — Zwarte lijst FSV</div>' +
+          '<div style="font-size:18px;font-weight:800;color:var(--accent)">€3,7 mln</div>' +
+        '</div>' +
+        '<div style="font-size:13px;color:var(--tx);line-height:1.7;margin-bottom:10px">' +
+          'April 2022. De Fraude Signalering Voorziening (FSV) was een illegale zwarte lijst waarop <strong>270.000 personen</strong> stonden geregistreerd als mogelijke fraudeurs, vaak zonder enige grondslag. Mensen kwamen op basis van een anonieme tip op de lijst en konden er nooit meer af.' + bron('AP-boetebesluit FSV', 'https://autoriteitpersoonsgegevens.nl/actueel/boete-belastingdienst-voor-zwarte-lijst-fsv') +
+        '</div>' +
+
+        '<div style="font-size:12px;color:var(--tx2);margin-bottom:4px"><strong>6 afzonderlijke overtredingen:</strong></div>' +
+        '<table style="width:100%;border-collapse:collapse;font-size:11px;margin-top:4px">' +
+          '<tr style="border-bottom:1px solid var(--glass-bd);text-align:left"><th style="padding:4px 6px">Overtreding</th><th style="padding:4px 6px">AVG-artikel</th><th style="padding:4px 6px;text-align:right">Boete</th><th style="padding:4px 6px;text-align:right;color:var(--accent)">Maximum</th></tr>' +
+          '<tr style="border-bottom:1px solid var(--glass-bd)"><td style="padding:4px 6px">Geen wettelijke grondslag</td><td style="padding:4px 6px">Art. 6(1)</td><td style="padding:4px 6px;text-align:right">€1.000.000</td><td style="padding:4px 6px;text-align:right;color:var(--accent)">€20.000.000</td></tr>' +
+          '<tr style="border-bottom:1px solid var(--glass-bd)"><td style="padding:4px 6px">Doel niet omschreven</td><td style="padding:4px 6px">Art. 5(1)(b)</td><td style="padding:4px 6px;text-align:right">€750.000</td><td style="padding:4px 6px;text-align:right;color:var(--accent)">€20.000.000</td></tr>' +
+          '<tr style="border-bottom:1px solid var(--glass-bd)"><td style="padding:4px 6px">Onjuiste gegevens</td><td style="padding:4px 6px">Art. 5(1)(d)</td><td style="padding:4px 6px;text-align:right">€750.000</td><td style="padding:4px 6px;text-align:right;color:var(--accent)">€20.000.000</td></tr>' +
+          '<tr style="border-bottom:1px solid var(--glass-bd)"><td style="padding:4px 6px">Te lang bewaard</td><td style="padding:4px 6px">Art. 5(1)(e)</td><td style="padding:4px 6px;text-align:right">€250.000</td><td style="padding:4px 6px;text-align:right;color:var(--accent)">€20.000.000</td></tr>' +
+          '<tr style="border-bottom:1px solid var(--glass-bd)"><td style="padding:4px 6px">Onvoldoende beveiliging</td><td style="padding:4px 6px">Art. 32(1)</td><td style="padding:4px 6px;text-align:right">€500.000</td><td style="padding:4px 6px;text-align:right;color:var(--accent)">€10.000.000</td></tr>' +
+          '<tr><td style="padding:4px 6px">DPIA/FG te laat</td><td style="padding:4px 6px">Art. 35/38</td><td style="padding:4px 6px;text-align:right">€450.000</td><td style="padding:4px 6px;text-align:right;color:var(--accent)">€10.000.000</td></tr>' +
+        '</table>' +
+      '</div>' +
+
+      // 50+ illegale algoritmes
+      '<div style="background:var(--bg2);border-radius:var(--rs);padding:16px;margin-bottom:12px">' +
+        '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:6px">' +
+          '<div style="font-size:14px;font-weight:700;color:var(--yellow)"><span class="mi mi-sm">warning</span> 50+ illegale algoritmes — nog niet beboet</div>' +
+          '<div style="font-size:14px;font-weight:700;color:var(--yellow)">potentieel €1+ miljard</div>' +
+        '</div>' +
+        '<div style="font-size:13px;color:var(--tx);line-height:1.7">' +
+          'In november 2025 stelde de AP vast dat <strong>meer dan 50 algoritmes</strong> van de Belastingdienst illegaal zijn — discriminerend en in strijd met art. 22 AVG (geautomatiseerde besluitvorming). De Belastingdienst staat sindsdien <strong>vijf jaar onder verscherpt toezicht</strong> van de AP.' + bron('FTM — 50+ illegale algoritmes', 'https://www.ftm.nl/artikelen/meer-dan-50-algoritmes-van-de-belasting-dienst-zijn-onrechtmatig') + '<br><br>' +
+          'Als elk illegaal algoritme als afzonderlijke art. 22 AVG-overtreding wordt beboet (maximum €20 miljoen per stuk), zou dat neerkomen op <strong>meer dan €1 miljard</strong> aan potentiele boetes. Tot nu toe: <strong>€0</strong>.' +
+        '</div>' +
+      '</div>' +
+    '</div>' +
+
+    // DE GROTE VERGELIJKING
+    '<div class="card" style="padding:24px;margin-bottom:16px;border-left:4px solid var(--accent)">' +
+      '<h2 style="font-size:19px;margin-bottom:10px"><span class="mi mi-sm" style="color:var(--accent)">compare_arrows</span> De grote vergelijking: boetes vs. herstelkosten</h2>' +
+      '<p style="font-size:14px;line-height:1.8;color:var(--tx);margin-bottom:14px">' +
+        'De hersteloperatie kost inmiddels <strong>€11,6 miljard</strong> (raming 2025). In het slechtste scenario: <strong>€14 miljard</strong>.' + bron('NOS — worst-case €14 mrd', 'https://nos.nl/artikel/2520340-herstel-toeslagenaffaire-dreigt-ongekende-strop-te-worden-nog-5-miljard-extra') + ' De Commissie Van Dam (januari 2025) concludeerde dat de operatie <strong>nog 15-20 jaar kan duren</strong>.' + bron('Rapport "Minder beloven, meer doen"', 'https://www.rijksoverheid.nl/documenten/kamerstukken/2025/01/23/minder-beloven-meer-doen-lr') +
+      '</p>' +
+
+      // Vergelijkingstabel
+      '<div style="background:var(--accent-soft);border:1px solid rgba(239,68,68,.2);border-radius:var(--rs);padding:16px;margin-bottom:14px">' +
+        '<div style="font-size:12px;font-weight:700;color:var(--accent);text-transform:uppercase;margin-bottom:10px"><span class="mi mi-sm">calculate</span> Boetes vs. schade — de absurde wanverhouding</div>' +
+        '<table style="width:100%;border-collapse:collapse;font-size:13px">' +
+          '<tr style="border-bottom:2px solid var(--glass-bd);font-weight:700"><td style="padding:8px 6px">Scenario</td><td style="padding:8px 6px;text-align:right">Bedrag</td><td style="padding:8px 6px;text-align:right">% van herstelkosten</td></tr>' +
+          '<tr style="border-bottom:1px solid var(--glass-bd)"><td style="padding:8px 6px">Daadwerkelijk opgelegde boetes</td><td style="padding:8px 6px;text-align:right;font-weight:700">€6,45 mln</td><td style="padding:8px 6px;text-align:right;color:var(--accent);font-weight:700">0,056%</td></tr>' +
+          '<tr style="border-bottom:1px solid var(--glass-bd)"><td style="padding:8px 6px">Maximum voor dezelfde 9 overtredingen</td><td style="padding:8px 6px;text-align:right">€170 mln</td><td style="padding:8px 6px;text-align:right;color:var(--yellow)">1,5%</td></tr>' +
+          '<tr style="border-bottom:1px solid var(--glass-bd)"><td style="padding:8px 6px">+ 50 illegale algoritmes (potentieel)</td><td style="padding:8px 6px;text-align:right">€1,18 mrd</td><td style="padding:8px 6px;text-align:right;color:var(--yellow)">10,2%</td></tr>' +
+          '<tr style="border-bottom:1px solid var(--glass-bd);background:var(--bg2)"><td style="padding:8px 6px;font-weight:700">Totale herstelkosten (raming 2025)</td><td style="padding:8px 6px;text-align:right;font-weight:800;color:var(--accent)">€11,6 mrd</td><td style="padding:8px 6px;text-align:right">100%</td></tr>' +
+          '<tr style="background:var(--bg2)"><td style="padding:8px 6px;font-weight:700">Worst-case scenario</td><td style="padding:8px 6px;text-align:right;font-weight:800;color:var(--accent)">€14 mrd</td><td style="padding:8px 6px;text-align:right">—</td></tr>' +
+        '</table>' +
+      '</div>' +
+
+      // Waar gaat het geld heen
+      '<div style="background:var(--bg2);border-radius:var(--rs);padding:16px;margin-bottom:14px">' +
+        '<div style="font-size:12px;font-weight:700;color:var(--blue);text-transform:uppercase;margin-bottom:10px"><span class="mi mi-sm">pie_chart</span> Waar gaat het geld heen?</div>' +
+        '<div style="font-size:13px;color:var(--tx);line-height:1.8">' +
+          '<strong style="color:var(--accent)">~30%</strong> gaat naar <strong>uitvoeringskosten</strong> — ambtenaren, systemen, kantoren. Circa <strong>€1,4 miljard</strong> voor het apparaat.' + bron('Algemene Rekenkamer 2024', 'https://www.rekenkamer.nl/actueel/nieuws/2024/05/15/helft-van-de-ouders-wacht-nog-maar-hersteloperatie-toeslagen-wel-op-gang') + '<br>' +
+          '<strong>Driekwart van UHT-personeel is extern ingehuurd</strong>, tegen gemiddeld het dubbele van de kosten van vast personeel.<br><br>' +
+          '<strong>Uitbetaald aan ouders (begin 2025):</strong> ~€1,8 miljard aan 43.000+ erkende gedupeerden.<br>' +
+          '<strong>Gemiddeld per ouder:</strong> €40.700 (eerste toets + integrale beoordeling).' + bron('Herstel Toeslagen — cijfers', 'https://herstel.toeslagen.nl/feiten-en-cijfers-de-hersteloperatie-in-beeld-2/') + '<br><br>' +
+          '<strong>Consultancybureaus</strong> — PwC, KPMG, Accenture, McKinsey, BCG, Deloitte, EY, Capgemini — dezelfde bureaus die betrokken waren bij de systemen die de affaire veroorzaakten, verdienen nu aan het "herstel."' +
+        '</div>' +
+      '</div>' +
+
+      // De paradox
+      '<div style="background:var(--bg2);border-radius:var(--rs);padding:16px;margin-bottom:0">' +
+        '<div style="font-size:12px;font-weight:700;color:var(--accent);text-transform:uppercase;margin-bottom:10px"><span class="mi mi-sm">sync_problem</span> De paradox van overheidsboetes</div>' +
+        '<div style="font-size:13px;color:var(--tx);line-height:1.8">' +
+          'AVG-boetes aan de overheid zijn <strong>belastinggeld dat van het ene potje naar het andere schuift</strong>. De €6,45 miljoen die de AP aan de Belastingdienst oplegde, werd betaald door de belastingbetaler — inclusief de slachtoffers zelf. Het geld gaat naar de staatskas, niet naar de gedupeerden.<br><br>' +
+          'Om alle 43.000+ gedupeerden te compenseren met het LOVS-tarief (€105/dag voor 20 jaar), zou <strong>€33 miljard</strong> nodig zijn. Dat is <strong>5.100 keer</strong> meer dan de daadwerkelijk opgelegde boetes. Of anders: er zouden <strong>580 overtredingen van elk €20 miljoen</strong> nodig zijn om de huidige raming van €11,6 miljard te dekken.<br><br>' +
+          '<strong style="color:var(--accent)">Het wettelijke boetesysteem is niet ontworpen voor schade van deze omvang.</strong> De AVG-maxima van €20 miljoen per overtreding zijn bedoeld om bedrijven af te schrikken — niet om 240.000 slachtoffers van institutioneel racisme te compenseren. Dat vraagt om een ander instrument: directe, forfaitaire compensatie vanuit de staat.' +
+        '</div>' +
+      '</div>' +
+    '</div>' +
+
+    // Geschonden wetten overzicht
+    '<div class="card" style="padding:24px;margin-bottom:16px;border-left:4px solid var(--purple)">' +
+      '<h2 style="font-size:19px;margin-bottom:10px"><span class="mi mi-sm" style="color:var(--purple)">menu_book</span> Alle geschonden wetten en artikelen</h2>' +
+      '<p style="font-size:14px;line-height:1.8;color:var(--tx);margin-bottom:14px">' +
+        'De Belastingdienst schond niet alleen de AVG. Dit is het volledige overzicht van geschonden wet- en regelgeving:' +
+      '</p>' +
+
+      '<div style="display:grid;gap:8px">' +
+
+        // AVG
+        '<div style="padding:12px;background:var(--bg2);border-radius:var(--rs);border-left:3px solid var(--blue)">' +
+          '<div style="font-size:12px;font-weight:700;color:var(--blue);margin-bottom:6px">AVG / GDPR (Europese privacywet)</div>' +
+          '<div style="font-size:12px;color:var(--tx);line-height:1.8">' +
+            '<strong>Art. 5(1)(a)</strong> — Rechtmatigheid, behoorlijkheid, transparantie<br>' +
+            '<strong>Art. 5(1)(b)</strong> — Doelbinding (FSV-doel niet omschreven)<br>' +
+            '<strong>Art. 5(1)(d)</strong> — Juistheid (onjuiste gegevens op FSV)<br>' +
+            '<strong>Art. 5(1)(e)</strong> — Opslagbeperking (data te lang bewaard)<br>' +
+            '<strong>Art. 6</strong> — Grondslag verwerking (geen grondslag voor FSV en nationaliteitsgebruik)<br>' +
+            '<strong>Art. 22</strong> — Geautomatiseerde besluitvorming (50+ illegale algoritmes)<br>' +
+            '<strong>Art. 32</strong> — Beveiliging van verwerking<br>' +
+            '<strong>Art. 35/38</strong> — DPIA niet tijdig, FG te laat betrokken' +
+          '</div>' +
+        '</div>' +
+
+        // EVRM
+        '<div style="padding:12px;background:var(--bg2);border-radius:var(--rs);border-left:3px solid var(--green)">' +
+          '<div style="font-size:12px;font-weight:700;color:var(--green);margin-bottom:6px">EVRM (Europees Verdrag Rechten van de Mens)</div>' +
+          '<div style="font-size:12px;color:var(--tx);line-height:1.8">' +
+            '<strong>Art. 8 EVRM</strong> — Recht op prive- en familieleven (massale profilering, FSV, algoritmische discriminatie). De rechtbank Den Haag verklaarde SyRI al in strijd met dit artikel.' + bron('Rechtbank Den Haag — SyRI, 2020', 'https://www.rechtspraak.nl/Organisatie-en-contact/Organisatie/Rechtbanken/Rechtbank-Den-Haag/Nieuws/Paginas/SyRI-wetgeving-in-strijd-met-het-Europees-Verdrag-voor-de-Rechten-voor-de-Mens.aspx') + '<br>' +
+            '<strong>Art. 14 EVRM</strong> — Discriminatieverbod (etnisch profileren, nationaliteit als selectiecriterium)<br>' +
+            '<strong>Art. 1 Protocol 1 EVRM</strong> — Bescherming eigendom (terugvordering toeslagen als eigendomsinbreuk)<br>' +
+            '<strong>Art. 13 EVRM</strong> — Recht op effectief rechtsmiddel (geen adequate rechtsbescherming)' +
+          '</div>' +
+        '</div>' +
+
+        // Grondwet
+        '<div style="padding:12px;background:var(--bg2);border-radius:var(--rs);border-left:3px solid var(--yellow)">' +
+          '<div style="font-size:12px;font-weight:700;color:var(--yellow);margin-bottom:6px">Nederlandse Grondwet en gelijke behandeling</div>' +
+          '<div style="font-size:12px;color:var(--tx);line-height:1.8">' +
+            '<strong>Art. 1 Grondwet</strong> — Discriminatieverbod (door het kabinet erkend als geschonden: institutioneel racisme)' + bron('Rijksoverheid, 2022', 'https://www.rijksoverheid.nl/actueel/nieuws/2022/05/30/aandacht-voor-institutioneel-racisme-binnen-toezicht-belastingdienst-en-toeslagen') + '<br>' +
+            '<strong>Awgb</strong> — Algemene wet gelijke behandeling (College Rechten van de Mens: indirecte discriminatie op ras/afkomst vastgesteld)' + bron('College Rechten van de Mens, 2024', 'https://oordelen.mensenrechten.nl/oordeel/2023-103') + '<br>' +
+            '<strong>Strafrechtelijke vervolging:</strong> het OM besloot individuele ambtenaren niet te vervolgen — ondanks bewezen discriminatie' + bron('BijzonderStrafrecht.nl', 'https://www.bijzonderstrafrecht.nl/home/geen-vervolging-van-individuele-ambtenaren-van-de-belastingdienst-uit-de-toeslagenaffaire-voor-beroepsmatige-discriminatie') +
+          '</div>' +
+        '</div>' +
+
+        // Venice Commission
+        '<div style="padding:12px;background:var(--bg2);border-radius:var(--rs);border-left:3px solid var(--tx3)">' +
+          '<div style="font-size:12px;font-weight:700;color:var(--tx2);margin-bottom:6px">Venice Commission — Raad van Europa (oktober 2021)</div>' +
+          '<div style="font-size:12px;color:var(--tx);line-height:1.8">' +
+            'De Venice Commission publiceerde een opinie over de toeslagenaffaire en wees op de gebrekkige constitutionele toetsing in Nederland: art. 120 Grondwet verbiedt toetsing van wetten aan de Grondwet. Die beperking maakte het onmogelijk om de discriminerende wetgeving eerder te corrigeren.' + bron('Verfassungsblog', 'https://verfassungsblog.de/constitutional-review-in-sight/') +
+          '</div>' +
+        '</div>' +
+
+      '</div>' +
+    '</div>' +
+
+    // SAMENVATTING (bijgewerkt)
     '<div class="card" style="padding:24px;margin-bottom:16px;background:var(--yellow-soft);border:1px solid rgba(234,179,8,.25)">' +
       '<h2 style="font-size:17px;margin-bottom:10px;color:var(--yellow)">Samengevat</h2>' +
       '<div style="font-size:14px;line-height:1.8;color:var(--tx)">' +
         '<strong>Nieuw BSN:</strong> De juridische basis bestaat (Wabb, AVG, getuigenbescherming). De infrastructuur bestaat. Van Huffelens argumenten zijn stuk voor stuk weerlegd. Het enige wat ontbreekt is politieke wil.<br><br>' +
         '<strong>Eerlijke vergoeding:</strong> €30.000 is een belediging. Onterecht veroordeelden krijgen €105/dag — dat is bijna €1 miljoen voor 25 jaar. Toeslagenslachtoffers verloren niet alleen hun vrijheid maar ook hun kinderen, hun huis en hun gezondheid. Een forfaitaire regeling per schadecategorie is de enige werkbare oplossing.<br><br>' +
-        '<strong>De kern:</strong> De overheid vernietigt het bewijs en eist vervolgens dat het slachtoffer het bewijs levert. De overheid besmet het BSN en zegt vervolgens dat een nieuw BSN "te ingewikkeld" is. <strong>Het is geen onvermogen — het is onwil.</strong>' +
+        '<strong>AVG-boetes:</strong> De Belastingdienst kreeg €6,45 miljoen boete — <strong>0,056%</strong> van de €11,6 miljard herstelkosten. Het wettelijk maximum voor de vastgestelde overtredingen was €170 miljoen. Met de 50+ illegale algoritmes erbij: potentieel €1+ miljard. Maar zelfs dat dekt <strong>nog geen tiende</strong> van de schade. Boetes aan de overheid zijn belastinggeld dat van het ene potje naar het andere schuift — de slachtoffers zien er niets van terug.<br><br>' +
+        '<strong>De kern:</strong> De overheid vernietigt het bewijs en eist vervolgens dat het slachtoffer het bewijs levert. De overheid besmet het BSN en zegt vervolgens dat een nieuw BSN "te ingewikkeld" is. De overheid schendt de AVG en betaalt de boete uit de staatskas. <strong>Het is geen onvermogen — het is een systeem dat zichzelf beschermt.</strong>' +
       '</div>' +
     '</div>' +
 
@@ -3834,6 +4109,324 @@ function pgGeld(){
   '</div>';
 }
 
+// ============ PAGE: CLAIM (melding bewerken met code) ============
+var _claimMelding = null;
+
+function renderClaim(){
+  var app = document.getElementById('app');
+  var code = _params.code || '';
+
+  if(!code){
+    app.innerHTML = pgClaimSearch();
+    return;
+  }
+
+  app.innerHTML = _loadingHtml;
+  API.getClaim(code, function(err, data){
+    if(err){ _claimMelding = null; }
+    else { _claimMelding = data; }
+    app.innerHTML = pgClaim();
+  });
+}
+
+function pgClaimSearch(){
+  return '<div class="page">' +
+    '<h2 style="font-size:20px;font-weight:700;margin-bottom:8px"><span class="mi">key</span> Melding opzoeken</h2>' +
+    '<p style="font-size:14px;color:var(--tx2);margin-bottom:20px">Vul je claim-code in om je melding terug te vinden en aan te vullen.</p>' +
+    '<div class="card" style="padding:24px;max-width:400px">' +
+      '<div class="fg">' +
+        '<label class="fl">Claim-code</label>' +
+        '<input class="fi" id="claimInput" placeholder="MLD-XXXXXX" style="font-size:18px;letter-spacing:2px;text-transform:uppercase;text-align:center" maxlength="10">' +
+      '</div>' +
+      '<button class="btn btn-blue btn-lg" onclick="var c=document.getElementById(\'claimInput\').value.trim().toUpperCase(); if(c) go(\'/claim/\'+c); else toast(\'Vul een code in\');" style="width:100%"><span class="mi mi-sm">search</span> Zoek melding</button>' +
+    '</div>' +
+  '</div>';
+}
+
+function pgClaim(){
+  var code = _params.code || '';
+  var m = _claimMelding;
+
+  if(!m){
+    return '<div class="page"><div class="empty">' +
+      '<span class="mi">search_off</span>' +
+      '<p>Geen melding gevonden met code <strong>' + esc(code) + '</strong></p>' +
+      '<p style="font-size:13px;color:var(--tx3)">Controleer de code en probeer opnieuw.</p>' +
+      '<button class="btn btn-ghost" onclick="go(\'/claim/\')"><span class="mi mi-sm">arrow_back</span> Opnieuw zoeken</button>' +
+    '</div></div>';
+  }
+
+  // Status badge
+  var statusBadge = '';
+  if(m.status === 'review') statusBadge = '<span class="badge badge-yellow"><span class="mi mi-sm">hourglass_top</span> Wacht op beoordeling</span>';
+  else if(m.status === 'live') statusBadge = '<span class="badge badge-green"><span class="mi mi-sm">check_circle</span> Gepubliceerd</span>';
+  else if(m.status === 'rejected') statusBadge = '<span class="badge" style="background:rgba(239,68,68,.15);color:var(--accent)"><span class="mi mi-sm">block</span> Afgewezen</span>';
+
+  var namenHtml = '';
+  (m.namen || []).forEach(function(n, i){
+    namenHtml += '<div style="display:flex;gap:8px;margin-bottom:8px;align-items:center">' +
+      (n.foto ? '<img src="' + esc(n.foto) + '" style="width:36px;height:36px;border-radius:50%;object-fit:cover;border:2px solid var(--accent);filter:saturate(.4)" onerror="this.style.display=\'none\'">' : '') +
+      '<input class="fi" value="' + esc(n.naam) + '" id="clNaam' + i + '" placeholder="Naam">' +
+      '<input class="fi" value="' + esc(n.functie || '') + '" id="clFunc' + i + '" placeholder="Functie" style="max-width:180px">' +
+    '</div>';
+  });
+
+  return '<div class="page">' +
+    '<button class="btn btn-ghost btn-sm" onclick="go(\'/melden\')" style="margin-bottom:14px"><span class="mi mi-sm">arrow_back</span> Terug</button>' +
+    '<div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap">' +
+      '<span class="badge badge-green" style="font-family:monospace;letter-spacing:1px"><span class="mi mi-sm">key</span> ' + esc(code) + '</span>' +
+      '<span class="badge badge-blue"><span class="mi mi-sm">event</span> ' + fmtDate(m.ts) + '</span>' +
+      statusBadge +
+    '</div>' +
+
+    (m.status === 'review' ?
+      '<div class="card" style="padding:16px;margin-bottom:16px;border-left:3px solid var(--yellow);background:var(--yellow-soft,rgba(250,204,21,.08))">' +
+        '<div style="font-size:14px;font-weight:700;color:var(--yellow);margin-bottom:4px"><span class="mi mi-sm">info</span> In beoordeling</div>' +
+        '<div style="font-size:13px;color:var(--tx2)">Je melding is ontvangen en wordt beoordeeld voordat deze publiek zichtbaar wordt. Je kunt in de tussentijd je melding aanvullen.</div>' +
+      '</div>' : '') +
+
+    (m.status === 'rejected' ?
+      '<div class="card" style="padding:16px;margin-bottom:16px;border-left:3px solid var(--accent);background:var(--accent-soft)">' +
+        '<div style="font-size:14px;font-weight:700;color:var(--accent);margin-bottom:4px"><span class="mi mi-sm">block</span> Afgewezen</div>' +
+        '<div style="font-size:13px;color:var(--tx2)">Deze melding is afgewezen. Neem contact op als je denkt dat dit onterecht is.</div>' +
+      '</div>' : '') +
+
+    '<h2 style="font-size:20px;font-weight:700;margin-bottom:16px"><span class="mi">edit</span> Melding aanvullen</h2>' +
+
+    '<div class="card" style="padding:24px">' +
+      '<div style="font-size:13px;font-weight:700;margin-bottom:8px;color:var(--accent)"><span class="mi mi-sm">person</span> Namen</div>' +
+      namenHtml +
+
+      '<div class="fg" style="margin-top:16px">' +
+        '<label class="fl">Instantie</label>' +
+        '<input class="fi" id="clInstantie" value="' + esc(m.instantie || '') + '" placeholder="Instantie / organisatie">' +
+      '</div>' +
+
+      '<div class="fg">' +
+        '<label class="fl">Titel</label>' +
+        '<input class="fi" id="clTitel" value="' + esc(m.titel || '') + '">' +
+      '</div>' +
+
+      '<div class="fg">' +
+        '<label class="fl">Wat is er gebeurd?</label>' +
+        '<textarea class="ft" id="clVerhaal" style="min-height:160px" placeholder="Vul je verhaal aan met nieuwe details, data, feiten...">' + esc(m.verhaal || '') + '</textarea>' +
+      '</div>' +
+
+      '<div style="display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap">' +
+        '<button class="btn btn-blue btn-lg" onclick="updateClaim(\'' + esc(code) + '\')"><span class="mi mi-sm">save</span> Opslaan</button>' +
+      '</div>' +
+    '</div>' +
+
+    '<div style="text-align:center;padding:16px 0;font-size:11px;color:var(--tx3)">' +
+      '<span class="mi mi-sm" style="color:var(--green)">lock</span> Alleen wie deze code heeft kan de melding bewerken.' +
+    '</div>' +
+  '</div>';
+}
+
+function updateClaim(code){
+  if(!_claimMelding){ toast('Melding niet gevonden'); return; }
+  var m = _claimMelding;
+
+  var namen = [];
+  (m.namen || []).forEach(function(n, i){
+    var nEl = document.getElementById('clNaam' + i);
+    var fEl = document.getElementById('clFunc' + i);
+    namen.push({
+      naam: nEl ? nEl.value.trim() : n.naam,
+      functie: fEl ? fEl.value.trim() : (n.functie || ''),
+      foto: n.foto || ''
+    });
+  });
+
+  var updates = {
+    namen: namen,
+    instantie: (document.getElementById('clInstantie') || {}).value || m.instantie || '',
+    titel: (document.getElementById('clTitel') || {}).value || m.titel || '',
+    verhaal: (document.getElementById('clVerhaal') || {}).value || m.verhaal || ''
+  };
+
+  API.updateClaim(code, updates, function(err, data){
+    if(err){ toast('Fout: ' + err); return; }
+    toast('Melding bijgewerkt!');
+    // Herlaad claim pagina
+    renderClaim();
+  });
+}
+
+// ============ PAGE: ADMIN (met login + moderatie) ============
+var _adminData = { stats: null, meldingen: [], filter: '' };
+
+function renderAdmin(){
+  var app = document.getElementById('app');
+  app.innerHTML = _loadingHtml;
+
+  API.adminCheck(function(err, data){
+    if(err || !data.loggedIn){
+      _adminLoggedIn = false;
+      app.innerHTML = pgAdminLogin();
+    } else {
+      _adminLoggedIn = true;
+      // Laad stats + meldingen parallel
+      var loaded = 0;
+      API.adminStats(function(e, stats){ _adminData.stats = stats; loaded++; if(loaded>=2) app.innerHTML = pgAdmin(); });
+      API.adminMeldingen(_adminData.filter, function(e, m){ _adminData.meldingen = m || []; loaded++; if(loaded>=2) app.innerHTML = pgAdmin(); });
+    }
+  });
+}
+
+function pgAdminLogin(){
+  return '<div class="page" style="display:flex;justify-content:center;align-items:center;min-height:60vh">' +
+    '<div class="card" style="padding:32px;max-width:380px;width:100%">' +
+      '<div style="text-align:center;margin-bottom:24px">' +
+        '<span class="mi" style="font-size:48px;color:var(--accent);display:block;margin-bottom:8px">admin_panel_settings</span>' +
+        '<h2 style="font-size:20px;font-weight:800">Admin Login</h2>' +
+        '<p style="font-size:13px;color:var(--tx3)">Log in om meldingen te beoordelen</p>' +
+      '</div>' +
+      '<div class="fg">' +
+        '<label class="fl">Gebruikersnaam</label>' +
+        '<input class="fi" id="adminUser" placeholder="admin" autocomplete="username">' +
+      '</div>' +
+      '<div class="fg">' +
+        '<label class="fl">Wachtwoord</label>' +
+        '<input class="fi" id="adminPass" type="password" placeholder="Wachtwoord" autocomplete="current-password">' +
+      '</div>' +
+      '<div id="adminError" style="display:none;color:var(--accent);font-size:13px;margin-bottom:12px"></div>' +
+      '<button class="btn btn-red btn-lg" onclick="doAdminLogin()" style="width:100%"><span class="mi mi-sm">login</span> Inloggen</button>' +
+    '</div>' +
+  '</div>';
+}
+
+function doAdminLogin(){
+  var user = (document.getElementById('adminUser')||{}).value||'';
+  var pass = (document.getElementById('adminPass')||{}).value||'';
+  if(!user || !pass){ toast('Vul gebruikersnaam en wachtwoord in'); return; }
+
+  var errEl = document.getElementById('adminError');
+  API.adminLogin(user, pass, function(err, data){
+    if(err){
+      if(errEl){ errEl.style.display='block'; errEl.textContent=err; }
+      return;
+    }
+    toast('Welkom, ' + data.username + '!');
+    renderAdmin();
+  });
+}
+
+function pgAdmin(){
+  var stats = _adminData.stats || {};
+  var meldingen = _adminData.meldingen || [];
+  var filter = _adminData.filter || '';
+
+  var statusKleuren = { review: 'var(--yellow)', live: 'var(--green)', rejected: 'var(--accent)' };
+  var statusLabels = { review: 'In review', live: 'Gepubliceerd', rejected: 'Afgewezen' };
+  var statusIcons = { review: 'hourglass_top', live: 'check_circle', rejected: 'block' };
+
+  return '<div class="page">' +
+    '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:10px">' +
+      '<div>' +
+        '<h2 style="font-size:22px;font-weight:800;margin-bottom:2px"><span class="mi">admin_panel_settings</span> Admin</h2>' +
+        '<p style="font-size:13px;color:var(--tx3)">Beheer en beoordeel meldingen</p>' +
+      '</div>' +
+      '<button class="btn btn-ghost btn-sm" onclick="API.adminLogout(function(){ toast(\'Uitgelogd\'); renderAdmin(); })"><span class="mi mi-sm">logout</span> Uitloggen</button>' +
+    '</div>' +
+
+    // Stats
+    '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:20px">' +
+      '<div class="card" style="text-align:center;padding:14px"><div style="font-size:24px;font-weight:800">' + (stats.meldingen_total||0) + '</div><div style="font-size:10px;color:var(--tx3);text-transform:uppercase">Totaal</div></div>' +
+      '<div class="card" style="text-align:center;padding:14px;border-bottom:3px solid var(--yellow)"><div style="font-size:24px;font-weight:800;color:var(--yellow)">' + (stats.meldingen_review||0) + '</div><div style="font-size:10px;color:var(--tx3);text-transform:uppercase">Wacht op review</div></div>' +
+      '<div class="card" style="text-align:center;padding:14px;border-bottom:3px solid var(--green)"><div style="font-size:24px;font-weight:800;color:var(--green)">' + (stats.meldingen_live||0) + '</div><div style="font-size:10px;color:var(--tx3);text-transform:uppercase">Gepubliceerd</div></div>' +
+      '<div class="card" style="text-align:center;padding:14px;border-bottom:3px solid var(--accent)"><div style="font-size:24px;font-weight:800;color:var(--accent)">' + (stats.meldingen_rejected||0) + '</div><div style="font-size:10px;color:var(--tx3);text-transform:uppercase">Afgewezen</div></div>' +
+    '</div>' +
+
+    // Filter tabs
+    '<div style="display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap">' +
+      '<button class="btn btn-sm ' + (!filter ? 'btn-blue' : 'btn-ghost') + '" onclick="adminFilter(\'\')">Alle</button>' +
+      '<button class="btn btn-sm ' + (filter==='review' ? 'btn-blue' : 'btn-ghost') + '" onclick="adminFilter(\'review\')"><span class="mi mi-sm">hourglass_top</span> Review (' + (stats.meldingen_review||0) + ')</button>' +
+      '<button class="btn btn-sm ' + (filter==='live' ? 'btn-blue' : 'btn-ghost') + '" onclick="adminFilter(\'live\')"><span class="mi mi-sm">check_circle</span> Live</button>' +
+      '<button class="btn btn-sm ' + (filter==='rejected' ? 'btn-blue' : 'btn-ghost') + '" onclick="adminFilter(\'rejected\')"><span class="mi mi-sm">block</span> Afgewezen</button>' +
+    '</div>' +
+
+    // Meldingen lijst
+    (function(){
+      if(meldingen.length === 0) return '<div class="empty" style="padding:40px 0"><span class="mi">inbox</span><p>Geen meldingen' + (filter ? ' met status "' + filter + '"' : '') + '</p></div>';
+
+      var h = '';
+      meldingen.forEach(function(m){
+        var nStr = (m.namen||[]).map(function(n){return n.naam;}).join(', ') || '-';
+        var statusColor = statusKleuren[m.status] || 'var(--tx3)';
+        var statusLabel = statusLabels[m.status] || m.status;
+        var statusIcon = statusIcons[m.status] || 'help';
+
+        h += '<div class="card" style="padding:16px;margin-bottom:10px;border-left:3px solid ' + statusColor + '">' +
+          '<div style="display:flex;justify-content:space-between;align-items:start;gap:10px;flex-wrap:wrap">' +
+            '<div style="flex:1;min-width:200px">' +
+              '<div style="display:flex;gap:6px;align-items:center;margin-bottom:4px">' +
+                '<span class="mi mi-sm" style="color:' + statusColor + '">' + statusIcon + '</span>' +
+                '<span style="font-size:11px;font-weight:700;color:' + statusColor + ';text-transform:uppercase">' + statusLabel + '</span>' +
+                (m.anoniem ? '<span class="badge" style="font-size:10px;padding:1px 6px"><span class="mi mi-sm" style="font-size:10px">visibility_off</span> Anoniem</span>' : '') +
+                (m.claimCode ? '<span style="font-size:10px;font-family:monospace;color:var(--tx3)">' + esc(m.claimCode) + '</span>' : '') +
+              '</div>' +
+              '<div style="font-size:15px;font-weight:700;margin-bottom:2px">' + esc(trunc(m.titel, 60)) + '</div>' +
+              '<div style="font-size:12px;color:var(--accent)">' + esc(trunc(nStr, 40)) + '</div>' +
+              (m.instantie ? '<div style="font-size:11px;color:var(--tx3)">' + esc(m.instantie) + ' &middot; ' + fmtDate(m.ts) + '</div>' : '<div style="font-size:11px;color:var(--tx3)">' + fmtDate(m.ts) + '</div>') +
+              (m.verhaal ? '<div style="font-size:12px;color:var(--tx2);margin-top:6px;line-height:1.5">' + esc(trunc(m.verhaal, 200)) + '</div>' : '') +
+            '</div>' +
+            '<div style="display:flex;gap:6px;flex-shrink:0;flex-wrap:wrap">' +
+              (m.status === 'review' ?
+                '<button class="btn btn-sm" style="background:var(--green);color:#fff" onclick="adminAction(\'approve\',\'' + esc(m.id) + '\')"><span class="mi mi-sm">check</span> Goedkeuren</button>' +
+                '<button class="btn btn-sm btn-ghost" style="color:var(--accent)" onclick="adminAction(\'reject\',\'' + esc(m.id) + '\')"><span class="mi mi-sm">close</span> Afwijzen</button>'
+              : m.status === 'rejected' ?
+                '<button class="btn btn-sm" style="background:var(--green);color:#fff" onclick="adminAction(\'approve\',\'' + esc(m.id) + '\')"><span class="mi mi-sm">check</span> Alsnog goedkeuren</button>'
+              : m.status === 'live' ?
+                '<button class="btn btn-sm btn-ghost" style="color:var(--accent)" onclick="adminAction(\'reject\',\'' + esc(m.id) + '\')"><span class="mi mi-sm">close</span> Intrekken</button>'
+              : '') +
+              '<button class="btn btn-sm btn-ghost" onclick="go(\'/claim/' + esc(m.claimCode||'') + '\')"><span class="mi mi-sm">edit</span></button>' +
+            '</div>' +
+          '</div>' +
+        '</div>';
+      });
+      return h;
+    })() +
+
+    // Export sectie
+    '<div class="card" style="padding:16px;margin-top:20px">' +
+      '<div style="font-size:13px;font-weight:700;margin-bottom:8px"><span class="mi mi-sm" style="color:var(--green)">download</span> Data exporteren</div>' +
+      '<div style="display:flex;gap:8px;flex-wrap:wrap">' +
+        '<button class="btn btn-green btn-sm" style="background:var(--green);color:#fff" onclick="adminExportJSON()"><span class="mi mi-sm">download</span> Download JSON</button>' +
+      '</div>' +
+    '</div>' +
+  '</div>';
+}
+
+function adminFilter(status){
+  _adminData.filter = status;
+  renderAdmin();
+}
+
+function adminAction(action, id){
+  var fn = action === 'approve' ? API.adminApprove : API.adminReject;
+  fn(id, function(err, data){
+    if(err){ toast('Fout: ' + err); return; }
+    toast(action === 'approve' ? 'Melding goedgekeurd!' : 'Melding afgewezen');
+    renderAdmin();
+  });
+}
+
+function adminExportJSON(){
+  API.adminExport(function(err, data){
+    if(err){ toast('Fout: ' + err); return; }
+    var blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = 'meldpunt_export_' + new Date().toISOString().slice(0,10) + '.json';
+    a.click();
+    URL.revokeObjectURL(url);
+    toast('Data geexporteerd!');
+  });
+}
+
+// ============ SEED DATA ============
 function seedDemo(){
   // Versie-check: als meldingen geen bronnen[] array hebben, wis en herseed
   var SEED_VERSION = 3;
@@ -3972,9 +4565,9 @@ function seedDemo(){
 }
 
 // ============ INIT ============
-seedDemo();
+// seedDemo() — seed data wordt nu server-side geladen via migrate.py
 parseRoute();
-console.log('Meldpunt Ambtenaren v2.0');
+console.log('Meldpunt Ambtenaren v3.0 — Flask + PostgreSQL backend');
 </script>
 </body>
 </html>
