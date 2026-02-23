@@ -3797,16 +3797,49 @@ function pgOplossing(){
         '<div style="font-size:12px;font-weight:700;color:var(--accent);text-transform:uppercase;margin-bottom:10px"><span class="mi mi-sm">functions</span> Wat de Belastingdienst had moeten betalen</div>' +
         '<table style="width:100%;border-collapse:collapse;font-size:12px;margin-bottom:12px">' +
           '<tr style="border-bottom:2px solid var(--glass-bd);font-weight:700"><td style="padding:6px">Overtreding</td><td style="padding:6px;text-align:right">Opgelegd</td><td style="padding:6px;text-align:right">Had moeten zijn</td></tr>' +
-          '<tr style="border-bottom:1px solid var(--glass-bd)"><td style="padding:6px">9 vastgestelde AVG-overtredingen</td><td style="padding:6px;text-align:right">€6,45 mln</td><td style="padding:6px;text-align:right">€170 mln (max)</td></tr>' +
-          '<tr style="border-bottom:1px solid var(--glass-bd)"><td style="padding:6px">Verzwaring voor duur (7 jaar i.p.v. eenmalig)</td><td style="padding:6px;text-align:right">—</td><td style="padding:6px;text-align:right">×3 tot ×5</td></tr>' +
+
+          // AVG-BOETES
+          '<tr style="border-bottom:1px solid var(--glass-bd);background:rgba(59,130,246,.08)"><td colspan="3" style="padding:6px;font-weight:700;color:var(--blue);font-size:11px;text-transform:uppercase">AVG/GDPR-boetes</td></tr>' +
+          '<tr style="border-bottom:1px solid var(--glass-bd)"><td style="padding:6px">9 vastgestelde overtredingen (art. 5, 6, 9, 32, 35)</td><td style="padding:6px;text-align:right">€6,45 mln</td><td style="padding:6px;text-align:right">€170 mln (max)</td></tr>' +
+          '<tr style="border-bottom:1px solid var(--glass-bd)"><td style="padding:6px">Verzwaring duur (7 jaar i.p.v. eenmalig, EDPB Stap 2+5)</td><td style="padding:6px;text-align:right">—</td><td style="padding:6px;text-align:right">×3 tot ×5</td></tr>' +
           '<tr style="border-bottom:1px solid var(--glass-bd)"><td style="padding:6px">Liegen tegen AP (art. 58/83(5)(e)) — min. 2 gevallen</td><td style="padding:6px;text-align:right">—</td><td style="padding:6px;text-align:right">€40 mln</td></tr>' +
           '<tr style="border-bottom:1px solid var(--glass-bd)"><td style="padding:6px">Niet-melden datalek 270.000 personen (art. 34)</td><td style="padding:6px;text-align:right">—</td><td style="padding:6px;text-align:right">€10 mln</td></tr>' +
+          '<tr style="border-bottom:1px solid var(--glass-bd)"><td style="padding:6px">Niet-informeren betrokkenen (art. 13/14) — jarenlang</td><td style="padding:6px;text-align:right">—</td><td style="padding:6px;text-align:right">€10 mln</td></tr>' +
+          '<tr style="border-bottom:1px solid var(--glass-bd)"><td style="padding:6px">Geen DPIA uitgevoerd op FSV en algoritmes (art. 35)</td><td style="padding:6px;text-align:right">—</td><td style="padding:6px;text-align:right">€10 mln</td></tr>' +
+          '<tr style="border-bottom:1px solid var(--glass-bd)"><td style="padding:6px">Geen privacy-by-design (art. 25) — systemen ontworpen om te discrimineren</td><td style="padding:6px;text-align:right">—</td><td style="padding:6px;text-align:right">€10 mln</td></tr>' +
           '<tr style="border-bottom:1px solid var(--glass-bd)"><td style="padding:6px">Vernietigen bewijs / obstructie onderzoek</td><td style="padding:6px;text-align:right">—</td><td style="padding:6px;text-align:right">€20 mln</td></tr>' +
-          '<tr style="border-bottom:1px solid var(--glass-bd)"><td style="padding:6px">Recidive-opslag (50% bij herhaling binnen 5 jaar)</td><td style="padding:6px;text-align:right">—</td><td style="padding:6px;text-align:right">×1,5</td></tr>' +
-          '<tr style="border-bottom:1px solid var(--glass-bd)"><td style="padding:6px">50+ illegale algoritmes (art. 22 AVG)</td><td style="padding:6px;text-align:right">—</td><td style="padding:6px;text-align:right">€1,0 mrd</td></tr>' +
-          '<tr style="border-bottom:2px solid var(--glass-bd);background:var(--bg2)"><td style="padding:6px;font-weight:700">Subtotaal conservatief (9 × max + verzwarend)</td><td style="padding:6px;text-align:right;font-weight:700;color:var(--accent)">€6,45 mln</td><td style="padding:6px;text-align:right;font-weight:700;color:var(--yellow)">€400–580 mln</td></tr>' +
-          '<tr style="background:var(--accent-soft)"><td style="padding:6px;font-weight:800">Totaal incl. 50+ algoritmes + alle verzwarende factoren</td><td style="padding:6px;text-align:right;font-weight:800;color:var(--accent)">€6,45 mln</td><td style="padding:6px;text-align:right;font-weight:800;color:var(--accent)">€1,4 – 1,6 mrd</td></tr>' +
+          '<tr style="border-bottom:1px solid var(--glass-bd)"><td style="padding:6px">Recidive-opslag AP-beleidsregels (50% bij herhaling)</td><td style="padding:6px;text-align:right">—</td><td style="padding:6px;text-align:right">×1,5</td></tr>' +
+          '<tr style="border-bottom:1px solid var(--glass-bd)"><td style="padding:6px">50+ illegale algoritmes (art. 22 — geautomatiseerde besluiten)</td><td style="padding:6px;text-align:right">—</td><td style="padding:6px;text-align:right">€1,0 mrd</td></tr>' +
+          '<tr style="border-bottom:2px solid var(--glass-bd);background:var(--bg2)"><td style="padding:6px;font-weight:700">Subtotaal AVG-boetes</td><td style="padding:6px;text-align:right;font-weight:700;color:var(--accent)">€6,45 mln</td><td style="padding:6px;text-align:right;font-weight:700;color:var(--accent)">€1,4 – 1,6 mrd</td></tr>' +
+
+          // SCHADEVERGOEDING ART. 82
+          '<tr style="border-bottom:1px solid var(--glass-bd);background:rgba(34,197,94,.08)"><td colspan="3" style="padding:6px;font-weight:700;color:var(--green);font-size:11px;text-transform:uppercase">Schadevergoeding (art. 82 AVG — recht van elk slachtoffer)</td></tr>' +
+          '<tr style="border-bottom:1px solid var(--glass-bd)"><td style="padding:6px">43.056 gedupeerden × gemiddeld €117.500 schade per gezin</td><td style="padding:6px;text-align:right">—</td><td style="padding:6px;text-align:right;font-weight:700">€5,1 mrd</td></tr>' +
+          '<tr style="border-bottom:1px solid var(--glass-bd)"><td style="padding:6px">270.000 FSV-geregistreerden × immateriele schadevergoeding</td><td style="padding:6px;text-align:right">—</td><td style="padding:6px;text-align:right">€500 mln – €2,7 mrd</td></tr>' +
+
+          // UITHUISPLAATSINGEN
+          '<tr style="border-bottom:1px solid var(--glass-bd);background:rgba(239,68,68,.08)"><td colspan="3" style="padding:6px;font-weight:700;color:var(--accent);font-size:11px;text-transform:uppercase">Staatsontvoeringen — 2.090+ kinderen uit huis</td></tr>' +
+          '<tr style="border-bottom:1px solid var(--glass-bd)"><td style="padding:6px">Art. 8 EVRM — schending recht op gezinsleven (2.090 gezinnen)</td><td style="padding:6px;text-align:right">—</td><td style="padding:6px;text-align:right">€42 – 105 mln</td></tr>' +
+          '<tr style="border-bottom:1px solid var(--glass-bd)"><td style="padding:6px">Schadevergoeding per kind (trauma, gemiste opleiding, breuk)</td><td style="padding:6px;text-align:right">—</td><td style="padding:6px;text-align:right">€209 – 523 mln</td></tr>' +
+          '<tr style="border-bottom:1px solid var(--glass-bd)"><td style="padding:6px;font-size:11px;color:var(--tx2)"><em>EHRM kent €20.000-€50.000 toe per onrechtmatige gezinsscheiding, plus €100.000-€250.000 schadevergoeding per kind</em></td><td style="padding:6px;text-align:right"></td><td style="padding:6px;text-align:right"></td></tr>' +
+
+          // DISCRIMINATIE
+          '<tr style="border-bottom:1px solid var(--glass-bd);background:rgba(168,85,247,.08)"><td colspan="3" style="padding:6px;font-weight:700;color:var(--purple);font-size:11px;text-transform:uppercase">Discriminatie (Awgb + EVRM art. 14)</td></tr>' +
+          '<tr style="border-bottom:1px solid var(--glass-bd)"><td style="padding:6px">College Rechten v/d Mens: discriminatie vastgesteld (3 zaken)</td><td style="padding:6px;text-align:right">—</td><td style="padding:6px;text-align:right">immaterieel</td></tr>' +
+          '<tr style="border-bottom:1px solid var(--glass-bd)"><td style="padding:6px">EVRM art. 14 + art. 8: discriminatie in gezinsleven — 43.056 gezinnen</td><td style="padding:6px;text-align:right">—</td><td style="padding:6px;text-align:right">€430 mln – €2,2 mrd</td></tr>' +
+
+          // OVERIG
+          '<tr style="border-bottom:1px solid var(--glass-bd);background:rgba(234,179,8,.08)"><td colspan="3" style="padding:6px;font-weight:700;color:var(--yellow);font-size:11px;text-transform:uppercase">Overige overtredingen</td></tr>' +
+          '<tr style="border-bottom:1px solid var(--glass-bd)"><td style="padding:6px">Archiefwet — vernietigen SMS\'jes, dossiers, bewijsstukken</td><td style="padding:6px;text-align:right">—</td><td style="padding:6px;text-align:right">dwangsommen</td></tr>' +
+          '<tr style="border-bottom:1px solid var(--glass-bd)"><td style="padding:6px">Onrechtmatige daad (art. 6:162 BW) — alle slachtoffers</td><td style="padding:6px;text-align:right">—</td><td style="padding:6px;text-align:right">civiele claims</td></tr>' +
+          '<tr style="border-bottom:1px solid var(--glass-bd)"><td style="padding:6px">Art. 44 UAVG — opzettelijke niet-naleving AVG (strafrechtelijk)</td><td style="padding:6px;text-align:right">—</td><td style="padding:6px;text-align:right">individuele strafvervolging</td></tr>' +
+
+          // EINDTOTAAL
+          '<tr style="background:var(--accent-soft);border-top:3px solid var(--accent)"><td style="padding:8px 6px;font-weight:800;font-size:13px">TOTAAL alle boetes + schadevergoedingen</td><td style="padding:8px 6px;text-align:right;font-weight:800;color:var(--accent);font-size:13px">€6,45 mln</td><td style="padding:8px 6px;text-align:right;font-weight:800;color:var(--accent);font-size:13px">€7,7 – 12,1 mrd</td></tr>' +
         '</table>' +
+        '<div style="font-size:13px;color:var(--tx);line-height:1.7;margin-bottom:12px">' +
+          '<strong style="color:var(--accent)">€6,45 miljoen opgelegd. €7,7 tot €12,1 miljard had het moeten zijn.</strong> Dat is het volledige plaatje: AVG-boetes met alle verzwarende factoren, schadevergoedingsrecht voor elk slachtoffer, EVRM-claims voor de uithuisplaatsingen, en discriminatieschadevergoeding. Tel alles bij elkaar op en je komt in de buurt van wat de hersteloperatie nu kost (€11,7 mrd) — maar dan zou het geld <strong>direct naar slachtoffers</strong> zijn gegaan in plaats van naar consultants en bureaucratie.' +
+        '</div>' +
 
         // Per slachtoffer berekening
         '<div style="background:var(--bg2);border-radius:var(--rs);padding:14px;margin-bottom:12px">' +
@@ -3814,13 +3847,13 @@ function pgOplossing(){
           '<table style="width:100%;border-collapse:collapse;font-size:12px">' +
             '<tr style="border-bottom:2px solid var(--glass-bd);font-weight:700"><td style="padding:6px">Boete-scenario</td><td style="padding:6px;text-align:right">Totaal</td><td style="padding:6px;text-align:right">Per gedupeerde (43.056)</td></tr>' +
             '<tr style="border-bottom:1px solid var(--glass-bd)"><td style="padding:6px">Daadwerkelijk opgelegd</td><td style="padding:6px;text-align:right">€6,45 mln</td><td style="padding:6px;text-align:right;color:var(--accent);font-weight:700">€150</td></tr>' +
-            '<tr style="border-bottom:1px solid var(--glass-bd)"><td style="padding:6px">Conservatief (met verzwarende factoren)</td><td style="padding:6px;text-align:right">€400–580 mln</td><td style="padding:6px;text-align:right;font-weight:700">€9.300 – €13.500</td></tr>' +
-            '<tr style="border-bottom:1px solid var(--glass-bd);background:var(--bg2)"><td style="padding:6px;font-weight:700">Volledig (incl. 50+ algoritmes)</td><td style="padding:6px;text-align:right;font-weight:700">€1,4 – 1,6 mrd</td><td style="padding:6px;text-align:right;font-weight:800;color:var(--green)">€32.500 – €37.200</td></tr>' +
+            '<tr style="border-bottom:1px solid var(--glass-bd)"><td style="padding:6px">Alleen AVG-boetes (volledig)</td><td style="padding:6px;text-align:right">€1,4 – 1,6 mrd</td><td style="padding:6px;text-align:right;font-weight:700">€32.500 – €37.200</td></tr>' +
+            '<tr style="border-bottom:1px solid var(--glass-bd);background:var(--bg2)"><td style="padding:6px;font-weight:700">Alle boetes + schadevergoedingen + EVRM</td><td style="padding:6px;text-align:right;font-weight:700">€7,7 – 12,1 mrd</td><td style="padding:6px;text-align:right;font-weight:800;color:var(--green)">€178.800 – €281.000</td></tr>' +
             '<tr style="border-bottom:1px solid var(--glass-bd)"><td style="padding:6px;font-style:italic;color:var(--tx2)">Ter vergelijking: startbedrag Catshuisregeling</td><td style="padding:6px;text-align:right;font-style:italic">—</td><td style="padding:6px;text-align:right;font-weight:700;color:var(--yellow)">€30.000</td></tr>' +
             '<tr style="background:var(--accent-soft)"><td style="padding:6px;font-style:italic;color:var(--tx2)">Ter vergelijking: gemiddeld werkelijk per gezin</td><td style="padding:6px;text-align:right;font-style:italic">—</td><td style="padding:6px;text-align:right;font-weight:700">€117.500</td></tr>' +
           '</table>' +
           '<div style="font-size:13px;color:var(--tx);line-height:1.7;margin-top:10px">' +
-            '<strong style="color:var(--green)">Had de AP de boetes correct opgelegd</strong>, dan had elke gedupeerde <strong>€32.500 – €37.200</strong> kunnen ontvangen — <strong>meer dan de €30.000</strong> van de Catshuisregeling. Direct, zonder vijf jaar wachten, zonder duizenden consultants, zonder €2,35 miljard aan uitvoeringskosten.' +
+            '<strong style="color:var(--green)">Had de staat alle wetten correct toegepast</strong>, dan had elke gedupeerde <strong>€178.800 – €281.000</strong> moeten ontvangen — AVG-boetes, EVRM-schadevergoeding voor staatsontvoeringen, en discriminatieschadevergoeding bij elkaar. Dat is <strong>meer dan het dubbele</strong> van wat ze nu gemiddeld krijgen (€117.500) — en het had <strong>direct</strong> uitgekeerd kunnen worden, zonder vijf jaar wachten en €2,35 miljard aan uitvoeringskosten.' +
           '</div>' +
         '</div>' +
 
