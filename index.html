@@ -269,6 +269,8 @@ sup a[title], sup[title] { border-bottom: 1px dotted var(--blue); }
         <button class="nav-btn" data-r="/rechtspraak" onclick="go('/rechtspraak')"><span class="mi mi-sm">gavel</span> Rechters</button>
         <button class="nav-btn" data-r="/tijdlijn" onclick="go('/tijdlijn')"><span class="mi mi-sm">timeline</span> Tijdlijn</button>
         <button class="nav-btn" data-r="/documentatie" onclick="go('/documentatie')"><span class="mi mi-sm">menu_book</span> Bronnen</button>
+        <button class="nav-btn" data-r="/oplossing" onclick="go('/oplossing')"><span class="mi mi-sm">verified</span> Oplossing</button>
+        <button class="nav-btn" data-r="/geld" onclick="go('/geld')"><span class="mi mi-sm">payments</span> Geld</button>
         <button class="nav-btn cta" data-r="/melden" onclick="go('/melden')"><span class="mi mi-sm">add_circle</span> Meld</button>
       </nav>
     </div>
@@ -331,6 +333,8 @@ function parseRoute(){
   else if(h === '/tijdlijn') _route = '/tijdlijn';
   else if(h === '/rechtspraak') _route = '/rechtspraak';
   else if(h === '/documentatie') _route = '/documentatie';
+  else if(h === '/oplossing') _route = '/oplossing';
+  else if(h === '/geld') _route = '/geld';
   else _route = '/';
   render();
   updateNav();
@@ -359,6 +363,8 @@ function render(){
     case '/tijdlijn': app.innerHTML = pgTijdlijn(); break;
     case '/rechtspraak': app.innerHTML = pgRechtspraak(); break;
     case '/documentatie': app.innerHTML = pgDocumentatie(); break;
+    case '/oplossing': app.innerHTML = pgOplossing(); break;
+    case '/geld': app.innerHTML = pgGeld(); break;
     default: app.innerHTML = pgHome();
   }
 }
@@ -385,41 +391,41 @@ function bronnenContext(m){
   var items = [];
   // Belastingdienst / Toeslagen
   if(inst.indexOf('belasting')>-1 || inst.indexOf('toeslag')>-1 || inst.indexOf('fsv')>-1){
-    items.push({t:'Rapport "Ongekend Onrecht" — Parlementaire commissie, 2020',u:'https://www.tweedekamer.nl/kamerstukken/detail?id=2020Z25198'});
-    items.push({t:'Enquêtecommissie "Blind voor mens en recht", 2024',u:'https://www.tweedekamer.nl/kamerstukken/detail?id=2024D07858'});
-    items.push({t:'AP-boete discriminatie dubbele nationaliteit (€2,75 mln)',u:'https://www.autoriteitpersoonsgegevens.nl/nl/nieuws/boete-belastingdienst-kinderopvangtoeslag'});
-    items.push({t:'AP-boete FSV zwarte lijst (€3,7 mln)',u:'https://www.autoriteitpersoonsgegevens.nl/nl/nieuws/boete-belastingdienst-voor-zwarte-lijst-fsv'});
+    items.push({t:'Rapport "Ongekend Onrecht" — Parlementaire commissie, 2020',u:'https://www.parlement.com/parlementaire-ondervraging-kinderopvangtoeslag'});
+    items.push({t:'Enquêtecommissie "Blind voor mens en recht", 2024',u:'https://www.tweedekamer.nl/kamerstukken/detail?id=2024Z02942&did=2024D06757'});
+    items.push({t:'AP-boete discriminatie dubbele nationaliteit (€2,75 mln)',u:'https://www.autoriteitpersoonsgegevens.nl/documenten/boete-belastingdienst-kinderopvangtoeslag'});
+    items.push({t:'AP-boete FSV zwarte lijst (€3,7 mln)',u:'https://autoriteitpersoonsgegevens.nl/actueel/boete-belastingdienst-voor-zwarte-lijst-fsv'});
     items.push({t:'College Rechten van de Mens — discriminatie-oordelen',u:'https://oordelen.mensenrechten.nl/oordeel/2023-103'});
     items.push({t:'Amnesty International "Xenofobe machines"',u:'https://www.amnesty.nl/content/uploads/2021/10/Amnesty-International-rapport-Xenofobe-machines.pdf'});
     items.push({t:'Follow the Money — 50+ illegale algoritmes',u:'https://www.ftm.nl/artikelen/meer-dan-50-algoritmes-van-de-belasting-dienst-zijn-onrechtmatig'});
-    items.push({t:'Commissie-Van Dam — hersteloperatie, 2025',u:'https://www.rijksoverheid.nl/documenten/rapporten/2025/02/13/rapport-commissie-van-dam'});
+    items.push({t:'Commissie-Van Dam — hersteloperatie, 2025',u:'https://www.rijksoverheid.nl/documenten/kamerstukken/2025/01/23/minder-beloven-meer-doen-lr'});
     items.push({t:'NOS — Dienst Toeslagen geeft bewust geen informatie',u:'https://nos.nl/artikel/2599959'});
   }
   // Jeugdbescherming / uithuisplaatsing
   if(inst.indexOf('jeugd')>-1 || inst.indexOf('uithuis')>-1 || inst.indexOf('gezinsvoogd')>-1 || inst.indexOf('veilig thuis')>-1){
-    items.push({t:'Commissie-Hamer — uithuisplaatsingen, mrt 2025',u:'https://www.rijksoverheid.nl/documenten/rapporten/2025/03/03/rapport-commissie-hamer'});
+    items.push({t:'Commissie-Hamer — uithuisplaatsingen, mrt 2025',u:'https://www.rijksoverheid.nl/documenten/rapporten/2025/03/27/tk-bijlage-1-rapportage-commissie-toeslagen-en-uithuisplaatsingen-erfenis-van-onrecht'});
     items.push({t:'NOS — toeslagenaffaire had grote rol bij uithuisplaatsingen',u:'https://nos.nl/artikel/2561277'});
-    items.push({t:'Enquêtecommissie "Blind voor mens en recht", 2024',u:'https://www.tweedekamer.nl/kamerstukken/detail?id=2024D07858'});
+    items.push({t:'Enquêtecommissie "Blind voor mens en recht", 2024',u:'https://www.tweedekamer.nl/kamerstukken/detail?id=2024Z02942&did=2024D06757'});
   }
   // UWV
   if(inst.indexOf('uwv')>-1){
-    items.push({t:'Enquêtecommissie "Blind voor mens en recht", 2024',u:'https://www.tweedekamer.nl/kamerstukken/detail?id=2024D07858'});
+    items.push({t:'Enquêtecommissie "Blind voor mens en recht", 2024',u:'https://www.tweedekamer.nl/kamerstukken/detail?id=2024Z02942&did=2024D06757'});
     items.push({t:'EenVandaag — medewerkers toeslagenaffaire werken nu aan compensatie',u:'https://eenvandaag.avrotros.nl/item/belastingmedewerkers-toeslagenaffaire-werken-nu-aan-compensatie-ouders-dit-kan-en-mag-helemaal-nie/'});
   }
   // Gemeente
   if(inst.indexOf('gemeente')>-1){
-    items.push({t:'Commissie-Van Dam 2025 — gemeentelijke hulp',u:'https://www.rijksoverheid.nl/documenten/rapporten/2025/02/13/rapport-commissie-van-dam'});
+    items.push({t:'Commissie-Van Dam 2025 — gemeentelijke hulp',u:'https://www.rijksoverheid.nl/documenten/kamerstukken/2025/01/23/minder-beloven-meer-doen-lr'});
   }
   // Groningen
   if(inst.indexOf('groningen')>-1 || inst.indexOf('ncg')>-1 || inst.indexOf('aardbev')>-1){
-    items.push({t:'Enquêtecommissie "Blind voor mens en recht", 2024',u:'https://www.tweedekamer.nl/kamerstukken/detail?id=2024D07858'});
+    items.push({t:'Enquêtecommissie "Blind voor mens en recht", 2024',u:'https://www.tweedekamer.nl/kamerstukken/detail?id=2024Z02942&did=2024D06757'});
     items.push({t:'Algemene Rekenkamer — Groningen',u:'https://www.rekenkamer.nl/'});
   }
   // Discriminatie
   if(inst.indexOf('discriminat')>-1 || inst.indexOf('racis')>-1){
     items.push({t:'College voor de Rechten van de Mens — oordelen',u:'https://oordelen.mensenrechten.nl/oordeel/2023-103'});
     items.push({t:'Amnesty International "Xenofobe machines"',u:'https://www.amnesty.nl/content/uploads/2021/10/Amnesty-International-rapport-Xenofobe-machines.pdf'});
-    items.push({t:'CERD — VN-comité rassendiscriminatie, 2021',u:'https://www.ohchr.org/en/documents/concluding-observations/cerdcnldco22-24'});
+    items.push({t:'CERD — VN-comité rassendiscriminatie, 2021',u:'https://www.ohchr.org/en/documents/concluding-observations/cerdcnldco22-24-concluding-observations-combined-twenty-second'});
   }
   // Algemene juridische routes — altijd tonen
   items.push({t:'BijzonderStrafrecht.nl — knevelarij toeslagenaffaire',u:'https://www.bijzonderstrafrecht.nl/home/artikel-knevelarij-in-de-toeslagenaffaire'});
@@ -1533,7 +1539,7 @@ function pgMissie(){
     '<div class="card" style="padding:24px;margin-bottom:16px;border-left:4px solid var(--accent)">' +
       '<h2 style="font-size:17px;margin-bottom:10px">Het probleem</h2>' +
       '<p style="font-size:14px;line-height:1.8;color:var(--tx);margin-bottom:10px">' +
-        'De toeslagenaffaire. Groningen. Jeugdzorg. UWV. Het zijn geen incidenten — het is een <strong>systeem zonder consequenties</strong>.' + bron('Enquêtecommissie "Blind voor mens en recht", feb 2024', 'https://www.tweedekamer.nl/kamerstukken/detail?id=2024D07858') + ' Ambtenaren verwoesten levens, en als het uitkomt? Worden ze overgeplaatst. Niet ontslagen. Niet vervolgd. Overgeplaatst.' +
+        'De toeslagenaffaire. Groningen. Jeugdzorg. UWV. Het zijn geen incidenten — het is een <strong>systeem zonder consequenties</strong>.' + bron('Enquêtecommissie "Blind voor mens en recht", feb 2024', 'https://www.tweedekamer.nl/kamerstukken/detail?id=2024Z02942&did=2024D06757') + ' Ambtenaren verwoesten levens, en als het uitkomt? Worden ze overgeplaatst. Niet ontslagen. Niet vervolgd. Overgeplaatst.' +
       '</p>' +
       '<p style="font-size:14px;line-height:1.8;color:var(--tx);margin-bottom:0">' +
         'Klachtcommissies werken niet — de slager keurt zijn eigen vlees. De Ombudsman schrijft rapporten die in laden verdwijnen.' + bron('Nationale Ombudsman jaarverslag 2023') + ' Bezwaarprocedures kosten jaren. <strong>Elke formele weg die de burger heeft, loopt dood.</strong>' +
@@ -1554,7 +1560,7 @@ function pgMissie(){
           'Jongste van zeven kinderen uit een hervormd gezin in Den Haag. Zijn vader Izaak zat in een Japans krijgsgevangenenkamp; zijn eerste vrouw stierf in kamp Tjideng. Na de oorlog herbegonnen in Indonesië, opnieuw alles kwijt toen Soekarno de Nederlanders verdreef in 1958. Mark groeide op in het Benoordenhout — "in de positieve zin beschaafd en glad, in de negatieve zin bekakt" aldus een medestudent.<br><br>' +
           'Wilde concertpianist worden, koos voor geschiedenis in Leiden. Werd voorzitter van de JOVD. Werkte 10 jaar bij <strong>Unilever</strong> op de HR-afdeling — reorganisaties doorvoeren en mensen ontslaan.' + bron('Mark Rutte — biografie, Petra de Koning, 2020') + ' Ging de politiek in. <strong>Nooit een relatie gehad. Nooit een maaltijd gekookt.</strong> Wel de langst zittende premier van Nederland (2010–2024).<br><br>' +
           'Persoonlijkheidsonderzoek VU Amsterdam/LTP (2017)' + bron('Mark Rutte — biografie, Petra de Koning, 2020') + ': scoort in het <strong>5e percentiel op integriteit</strong> — 95% van de bevolking scoort hoger. Bijnaam: <strong>Teflon Mark</strong> — er blijft nooit iets aan hem kleven. De biograaf Petra de Koning beschrijft een "obsessieve controledrift" en een man die geen vaste overtuigingen heeft, maar meebeweegt met de wind.<br><br>' +
-          'Zijn broer stierf aan aids. Zijn vader stierf jong.' + bron('Petra de Koning, 2020') + ' De enige plek waar Rutte empathie toonde was privé, nooit in beleid. 26.000 gezinnen kapot,' + bron('Rapport "Ongekend Onrecht", dec 2020', 'https://www.tweedekamer.nl/kamerstukken/detail?id=2020Z25198') + ' 2.090 kinderen uit huis' + bron('Commissie-Hamer, mrt 2025', 'https://www.rijksoverheid.nl/documenten/rapporten/2025/03/03/rapport-commissie-hamer') + ' — en Mark Rutte gaat op wintersport met Jort Kelder in Zermatt.' +
+          'Zijn broer stierf aan aids. Zijn vader stierf jong.' + bron('Petra de Koning, 2020') + ' De enige plek waar Rutte empathie toonde was privé, nooit in beleid. 26.000 gezinnen kapot,' + bron('Rapport "Ongekend Onrecht", dec 2020', 'https://www.parlement.com/parlementaire-ondervraging-kinderopvangtoeslag') + ' 2.090 kinderen uit huis' + bron('Commissie-Hamer, mrt 2025', 'https://www.rijksoverheid.nl/documenten/rapporten/2025/03/27/tk-bijlage-1-rapportage-commissie-toeslagen-en-uithuisplaatsingen-erfenis-van-onrecht') + ' — en Mark Rutte gaat op wintersport met Jort Kelder in Zermatt.' +
         '</div>' +
       '</div>' +
 
@@ -1564,32 +1570,32 @@ function pgMissie(){
 
         '<div style="border-left:2px solid var(--accent);padding-left:14px;margin-bottom:10px">' +
           '<div style="font-size:12px;font-weight:700;color:var(--accent)">2003</div>' +
-          '<div style="font-size:13px;color:var(--tx);line-height:1.7">Als <strong>staatssecretaris SZW</strong> schrijft Rutte een brief aan alle gemeenten om Somalische Nederlanders te traceren via geboorteplaats Mogadishu voor extra fraudecontroles. De rechtbank Haarlem oordeelt in 2007: <strong>rassendiscriminatie</strong>.' + bron('VN Speciaal Rapporteur 2019', 'https://www.ohchr.org/en/documents/country-reports/ahrc4457add2-visit-netherlands') + ' Ruttes eerste discriminatieschandaal — 20 jaar vóór het tweede.</div>' +
+          '<div style="font-size:13px;color:var(--tx);line-height:1.7">Als <strong>staatssecretaris SZW</strong> schrijft Rutte een brief aan alle gemeenten om Somalische Nederlanders te traceren via geboorteplaats Mogadishu voor extra fraudecontroles. De rechtbank Haarlem oordeelt in 2007: <strong>rassendiscriminatie</strong>.' + bron('VN Speciaal Rapporteur 2019', 'https://www.ohchr.org/en/press-releases/2019/10/netherlands-building-surveillance-state-poor-says-un-rights-expert') + ' Ruttes eerste discriminatieschandaal — 20 jaar vóór het tweede.</div>' +
         '</div>' +
 
         '<div style="border-left:2px solid var(--yellow);padding-left:14px;margin-bottom:10px">' +
           '<div style="font-size:12px;font-weight:700;color:var(--yellow)">2013</div>' +
-          '<div style="font-size:13px;color:var(--tx);line-height:1.7">Na de "Bulgarenfraude" richt Rutte een <strong>Ministeriële Commissie Fraude</strong> op. Hij is persoonlijk voorzitter. Het doel: keihard fraudeurs aanpakken. De toon wordt gezet: burgers zijn verdacht tot het tegendeel bewezen is.' + bron('Enquêtecommissie "Blind voor mens en recht", feb 2024', 'https://www.tweedekamer.nl/kamerstukken/detail?id=2024D07858') + '</div>' +
+          '<div style="font-size:13px;color:var(--tx);line-height:1.7">Na de "Bulgarenfraude" richt Rutte een <strong>Ministeriële Commissie Fraude</strong> op. Hij is persoonlijk voorzitter. Het doel: keihard fraudeurs aanpakken. De toon wordt gezet: burgers zijn verdacht tot het tegendeel bewezen is.' + bron('Enquêtecommissie "Blind voor mens en recht", feb 2024', 'https://www.tweedekamer.nl/kamerstukken/detail?id=2024Z02942&did=2024D06757') + '</div>' +
         '</div>' +
 
         '<div style="border-left:2px solid var(--yellow);padding-left:14px;margin-bottom:10px">' +
           '<div style="font-size:12px;font-weight:700;color:var(--yellow)">2014</div>' +
-          '<div style="font-size:13px;color:var(--tx);line-height:1.7">De Belastingdienst gebruikt <strong>dubbele nationaliteit als selectiecriterium</strong>. 11.236 aangiftes worden extra doorgelicht puur op basis van afkomst.' + bron('AP-rapport discriminatie, 2021', 'https://www.autoriteitpersoonsgegevens.nl/nl/nieuws/boete-belastingdienst-kinderopvangtoeslag') + ' De CAF-11 zaak begint: honderden ouders verliezen van de ene op de andere dag hun kinderopvangtoeslag. Gezinnen worden financieel geruïneerd.</div>' +
+          '<div style="font-size:13px;color:var(--tx);line-height:1.7">De Belastingdienst gebruikt <strong>dubbele nationaliteit als selectiecriterium</strong>. 11.236 aangiftes worden extra doorgelicht puur op basis van afkomst.' + bron('AP-rapport discriminatie, 2021', 'https://www.autoriteitpersoonsgegevens.nl/documenten/boete-belastingdienst-kinderopvangtoeslag') + ' De CAF-11 zaak begint: honderden ouders verliezen van de ene op de andere dag hun kinderopvangtoeslag. Gezinnen worden financieel geruïneerd.</div>' +
         '</div>' +
 
         '<div style="border-left:2px solid var(--yellow);padding-left:14px;margin-bottom:10px">' +
           '<div style="font-size:12px;font-weight:700;color:var(--yellow)">2014–2019</div>' +
-          '<div style="font-size:13px;color:var(--tx);line-height:1.7"><strong>26.000+ ouders</strong> worden slachtoffer van valse fraudeverdenkingen.' + bron('Rapport "Ongekend Onrecht", dec 2020', 'https://www.tweedekamer.nl/kamerstukken/detail?id=2020Z25198') + ' Ze moeten tienduizenden euro\'s terugbetalen die ze niet hebben. Gezinnen verliezen hun huis, hun huwelijk, hun gezondheid. <strong>2.090 kinderen</strong> worden uit huis geplaatst.' + bron('Commissie-Hamer, mrt 2025', 'https://www.rijksoverheid.nl/documenten/rapporten/2025/03/03/rapport-commissie-hamer') + ' Rutte weet ervan — hij zit in de commissie die het beleid vormgeeft.</div>' +
+          '<div style="font-size:13px;color:var(--tx);line-height:1.7"><strong>26.000+ ouders</strong> worden slachtoffer van valse fraudeverdenkingen.' + bron('Rapport "Ongekend Onrecht", dec 2020', 'https://www.parlement.com/parlementaire-ondervraging-kinderopvangtoeslag') + ' Ze moeten tienduizenden euro\'s terugbetalen die ze niet hebben. Gezinnen verliezen hun huis, hun huwelijk, hun gezondheid. <strong>2.090 kinderen</strong> worden uit huis geplaatst.' + bron('Commissie-Hamer, mrt 2025', 'https://www.rijksoverheid.nl/documenten/rapporten/2025/03/27/tk-bijlage-1-rapportage-commissie-toeslagen-en-uithuisplaatsingen-erfenis-van-onrecht') + ' Rutte weet ervan — hij zit in de commissie die het beleid vormgeeft.</div>' +
         '</div>' +
 
         '<div style="border-left:2px solid var(--yellow);padding-left:14px;margin-bottom:10px">' +
           '<div style="font-size:12px;font-weight:700;color:var(--yellow)">2019</div>' +
-          '<div style="font-size:13px;color:var(--tx);line-height:1.7">Pieter Omtzigt en Renske Leijten brengen het schandaal naar de Tweede Kamer.' + bron('Enquêtecommissie 2024', 'https://www.tweedekamer.nl/kamerstukken/detail?id=2024D07858') + ' Staatssecretaris Menno Snel noemt het handelen "beschamend" en <strong>treedt af</strong>.</div>' +
+          '<div style="font-size:13px;color:var(--tx);line-height:1.7">Pieter Omtzigt en Renske Leijten brengen het schandaal naar de Tweede Kamer.' + bron('Enquêtecommissie 2024', 'https://www.tweedekamer.nl/kamerstukken/detail?id=2024Z02942&did=2024D06757') + ' Staatssecretaris Menno Snel noemt het handelen "beschamend" en <strong>treedt af</strong>.</div>' +
         '</div>' +
 
         '<div style="border-left:2px solid var(--yellow);padding-left:14px;margin-bottom:10px">' +
           '<div style="font-size:12px;font-weight:700;color:var(--yellow)">2020</div>' +
-          '<div style="font-size:13px;color:var(--tx);line-height:1.7">De <strong>Autoriteit Persoonsgegevens</strong> oordeelt: de Belastingdienst discrimineerde jarenlang op nationaliteit. Boete: €2,75 miljoen.' + bron('AP-rapport discriminatie, 2021', 'https://www.autoriteitpersoonsgegevens.nl/nl/nieuws/boete-belastingdienst-kinderopvangtoeslag') + ' Rutte verschijnt voor de parlementaire ondervragingscommissie. Zijn verdediging? <strong>"Geen actieve herinnering."</strong> Het rapport <em>Ongekend Onrecht</em> concludeert: de grondbeginselen van de rechtsstaat zijn geschonden.' + bron('Rapport "Ongekend Onrecht", dec 2020', 'https://www.tweedekamer.nl/kamerstukken/detail?id=2020Z25198') + '</div>' +
+          '<div style="font-size:13px;color:var(--tx);line-height:1.7">De <strong>Autoriteit Persoonsgegevens</strong> oordeelt: de Belastingdienst discrimineerde jarenlang op nationaliteit. Boete: €2,75 miljoen.' + bron('AP-rapport discriminatie, 2021', 'https://www.autoriteitpersoonsgegevens.nl/documenten/boete-belastingdienst-kinderopvangtoeslag') + ' Rutte verschijnt voor de parlementaire ondervragingscommissie. Zijn verdediging? <strong>"Geen actieve herinnering."</strong> Het rapport <em>Ongekend Onrecht</em> concludeert: de grondbeginselen van de rechtsstaat zijn geschonden.' + bron('Rapport "Ongekend Onrecht", dec 2020', 'https://www.parlement.com/parlementaire-ondervraging-kinderopvangtoeslag') + '</div>' +
         '</div>' +
 
         '<div style="border-left:2px solid var(--yellow);padding-left:14px;margin-bottom:10px">' +
@@ -1599,16 +1605,16 @@ function pgMissie(){
 
         '<div style="border-left:2px solid var(--accent);padding-left:14px;margin-bottom:0">' +
           '<div style="font-size:12px;font-weight:700;color:var(--accent)">Oktober 2024 — NAVO</div>' +
-          '<div style="font-size:13px;color:var(--tx);line-height:1.7">Mark Rutte wordt <strong>secretaris-generaal van de NAVO</strong>. Jaarsalaris ~€270.000 belastingvrij. De man verantwoordelijk voor het grootste discriminatieschandaal in de naoorlogse Nederlandse geschiedenis, veroordeeld voor rassendiscriminatie, wiens kabinet viel vanwege het ruïneren van 26.000 gezinnen — beloond met de hoogste functie in het westerse militaire bondgenootschap. Terwijl slachtoffers wachten op compensatie en 23 van de 2.090 uithuisgeplaatste kinderen terug zijn.' + bron('Commissie-Hamer, mrt 2025', 'https://www.rijksoverheid.nl/documenten/rapporten/2025/03/03/rapport-commissie-hamer') + ' <strong>Karim Aachboun</strong>, toeslagenslachtoffer en belastingadviseur, dagvaardde Rutte voor het Brusselse Hof van Cassatie — een rechtszaak die nog loopt.' + bron('DutchEcho, mrt 2025', 'https://dutchecho.com/2025/03/30/aachboun-vs-rutte-the-legal-showdown/') + '</div>' +
+          '<div style="font-size:13px;color:var(--tx);line-height:1.7">Mark Rutte wordt <strong>secretaris-generaal van de NAVO</strong>. Jaarsalaris ~€270.000 belastingvrij. De man verantwoordelijk voor het grootste discriminatieschandaal in de naoorlogse Nederlandse geschiedenis, veroordeeld voor rassendiscriminatie, wiens kabinet viel vanwege het ruïneren van 26.000 gezinnen — beloond met de hoogste functie in het westerse militaire bondgenootschap. Terwijl slachtoffers wachten op compensatie en 23 van de 2.090 uithuisgeplaatste kinderen terug zijn.' + bron('Commissie-Hamer, mrt 2025', 'https://www.rijksoverheid.nl/documenten/rapporten/2025/03/27/tk-bijlage-1-rapportage-commissie-toeslagen-en-uithuisplaatsingen-erfenis-van-onrecht') + ' <strong>Karim Aachboun</strong>, toeslagenslachtoffer en belastingadviseur, dagvaardde Rutte voor het Brusselse Hof van Cassatie — een rechtszaak die nog loopt.' + bron('DutchEcho, mrt 2025', 'https://dutchecho.com/2025/03/30/aachboun-vs-rutte-the-legal-showdown/') + '</div>' +
         '</div>' +
       '</div>' +
 
       // DE DOCTRINE
       '<p style="font-size:14px;line-height:1.8;color:var(--tx);margin-bottom:10px">' +
-        'De <strong>Rutte Doctrine</strong> — zo noemde de parlementaire commissie het zelf' + bron('Rapport "Ongekend Onrecht", dec 2020', 'https://www.tweedekamer.nl/kamerstukken/detail?id=2020Z25198') + ': geen notulen bewaren, geen sms\'jes, "geen actieve herinnering", alles informeel zodat er geen papieren spoor is. De transparantie van het landsbestuur actief gesaboteerd.' +
+        'De <strong>Rutte Doctrine</strong> — zo noemde de parlementaire commissie het zelf' + bron('Rapport "Ongekend Onrecht", dec 2020', 'https://www.parlement.com/parlementaire-ondervraging-kinderopvangtoeslag') + ': geen notulen bewaren, geen sms\'jes, "geen actieve herinnering", alles informeel zodat er geen papieren spoor is. De transparantie van het landsbestuur actief gesaboteerd.' +
       '</p>' +
       '<p style="font-size:14px;line-height:1.8;color:var(--tx);margin-bottom:0">' +
-        'Dát is het signaal dat ambtenaren krijgen van bovenaf: <strong>je kunt levens verwoesten en er beter uitkomen dan je erin ging.</strong> 26.000 gezinnen kapot.' + bron('Rapport "Ongekend Onrecht", dec 2020', 'https://www.tweedekamer.nl/kamerstukken/detail?id=2020Z25198') + ' 2.090 kinderen uit huis geplaatst.' + bron('Commissie-Hamer, mrt 2025', 'https://www.rijksoverheid.nl/documenten/rapporten/2025/03/03/rapport-commissie-hamer') + ' Veroordeeld voor discriminatie. En de consequentie? Een promotie naar de NAVO. Als de premier wegkomt met het wissen van bewijsmateriaal en institutioneel racisme, waarom zou een teamleider bij het UWV zich dan wél verantwoordelijk voelen? De vis rot aan de kop.' +
+        'Dát is het signaal dat ambtenaren krijgen van bovenaf: <strong>je kunt levens verwoesten en er beter uitkomen dan je erin ging.</strong> 26.000 gezinnen kapot.' + bron('Rapport "Ongekend Onrecht", dec 2020', 'https://www.parlement.com/parlementaire-ondervraging-kinderopvangtoeslag') + ' 2.090 kinderen uit huis geplaatst.' + bron('Commissie-Hamer, mrt 2025', 'https://www.rijksoverheid.nl/documenten/rapporten/2025/03/27/tk-bijlage-1-rapportage-commissie-toeslagen-en-uithuisplaatsingen-erfenis-van-onrecht') + ' Veroordeeld voor discriminatie. En de consequentie? Een promotie naar de NAVO. Als de premier wegkomt met het wissen van bewijsmateriaal en institutioneel racisme, waarom zou een teamleider bij het UWV zich dan wél verantwoordelijk voelen? De vis rot aan de kop.' +
       '</p>' +
     '</div>' +
 
@@ -1641,7 +1647,7 @@ function pgMissie(){
         'In een gezonde organisatie spreken collega\'s elkaar aan op verkeerd gedrag. Dat is geen verraad — dat is <strong>professionaliteit</strong>. Een chirurg die een collega een fout ziet maken en niks zegt, is medeplichtig. Dat geldt voor elke professie. Behalve, blijkbaar, voor ambtenaren.' +
       '</p>' +
       '<p style="font-size:14px;line-height:1.8;color:var(--tx);margin-bottom:10px">' +
-        'In de ambtelijke cultuur heerst een <strong>zwijgcultuur</strong>.' + bron('Enquêtecommissie 2024', 'https://www.tweedekamer.nl/kamerstukken/detail?id=2024D07858') + ' "Zo doen we dat hier." "Dat is altijd zo geweest." "Bemoei je met je eigen werk." De groep beschermt zichzelf, dissenters worden uitgestoten, misstanden worden genormaliseerd.' +
+        'In de ambtelijke cultuur heerst een <strong>zwijgcultuur</strong>.' + bron('Enquêtecommissie 2024', 'https://www.tweedekamer.nl/kamerstukken/detail?id=2024Z02942&did=2024D06757') + ' "Zo doen we dat hier." "Dat is altijd zo geweest." "Bemoei je met je eigen werk." De groep beschermt zichzelf, dissenters worden uitgestoten, misstanden worden genormaliseerd.' +
       '</p>' +
       '<p style="font-size:14px;line-height:1.8;color:var(--tx);margin-bottom:10px">' +
         '<strong>Ambtenaren moeten zelf ook hun collega\'s aanspreken.</strong> Dat is hun professionele plicht. Als jij ziet dat je collega een burger onterecht afwijst, een dossier manipuleert of instructies geeft om "ze gewoon af te keuren" — dan ben je niet alleen getuige, dan ben je medeverantwoordelijk als je zwijgt.' +
@@ -1692,7 +1698,7 @@ function pgMissie(){
         'Een van onze concrete doelen: een <strong>nieuw BSN-nummer</strong> voor alle slachtoffers van overheidsonrecht. De toeslagenaffaire, de FSV-lijsten, etnisch profileren — al deze slachtoffers hebben een BSN dat besmet is.' +
       '</p>' +
       '<p style="font-size:14px;line-height:1.8;color:var(--tx);margin-bottom:10px">' +
-        'Hun nummer staat gemarkeerd in systemen van de Belastingdienst, banken, verzekeraars, woningcorporaties.' + bron('AP-rapport FSV, 2022', 'https://www.autoriteitpersoonsgegevens.nl/nl/nieuws/boete-belastingdienst-voor-zwarte-lijst-fsv') + ' Ze worden <em>nog steeds</em> gediscrimineerd en benadeeld op basis van een nummer dat gekoppeld is aan het onrecht dat <em>hen</em> is aangedaan.' +
+        'Hun nummer staat gemarkeerd in systemen van de Belastingdienst, banken, verzekeraars, woningcorporaties.' + bron('AP-rapport FSV, 2022', 'https://autoriteitpersoonsgegevens.nl/actueel/boete-belastingdienst-voor-zwarte-lijst-fsv') + ' Ze worden <em>nog steeds</em> gediscrimineerd en benadeeld op basis van een nummer dat gekoppeld is aan het onrecht dat <em>hen</em> is aangedaan.' +
       '</p>' +
       '<p style="font-size:14px;line-height:1.8;color:var(--tx);margin-bottom:0">' +
         'Een nieuw BSN is een schone lei. Geen vlaggetjes meer. Geen automatische verdachtmakingen. Het is het <strong>minimale</strong> wat de overheid kan doen.' +
@@ -1794,10 +1800,10 @@ function pgOrganigram(){
       naam: 'Mark Rutte', functie: 'Minister-president (2010–2024)', korte_functie: 'Premier', partij: 'VVD', partij_kleur: '#FF6600',
       foto: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9b/Mark_Rutte%2C_23.03.23_%28cropped%29.jpg/300px-Mark_Rutte%2C_23.03.23_%28cropped%29.jpg',
       nu: 'Secretaris-generaal NAVO',
-      dossier: '<strong>2003 — Somaliërs-affaire:</strong> Als staatssecretaris SZW schreef Rutte een brief aan alle gemeenten om Somalische Nederlanders te traceren via geboorteplaats Mogadishu voor extra fraudecontroles. De rechtbank Haarlem oordeelde (2007) dat dit rassendiscriminatie was.' + bron('VN Speciaal Rapporteur 2019', 'https://www.ohchr.org/en/documents/country-reports/ahrc4457add2-visit-netherlands') + '<br><br>' +
-        '<strong>2013 — Ministeriële Commissie Fraude:</strong> Richtte als premier persoonlijk de commissie op die de keiharde fraudeaanpak lanceerde. Zat erbij, leidde het, wist ervan. De toon werd gezet: burgers zijn verdacht.' + bron('Enquêtecommissie 2024', 'https://www.tweedekamer.nl/kamerstukken/detail?id=2024D07858') + '<br><br>' +
-        '<strong>2014–2019 — Wegkijken:</strong> Terwijl 26.000 gezinnen werden geruïneerd,' + bron('Rapport "Ongekend Onrecht"', 'https://www.tweedekamer.nl/kamerstukken/detail?id=2020Z25198') + ' 2.090 kinderen uit huis werden geplaatst' + bron('Commissie-Hamer 2025', 'https://www.rijksoverheid.nl/documenten/rapporten/2025/03/03/rapport-commissie-hamer') + ' en de Belastingdienst discrimineerde op nationaliteit, greep Rutte niet in.<br><br>' +
-        '<strong>2020 — "Geen actieve herinnering":</strong> Verklaarde voor de parlementaire commissie zich niets te herinneren. De Rutte Doctrine — geen notulen, geen sms\'jes, alles informeel — werd officieel vastgelegd als systematische informatieweigering.' + bron('Rapport "Ongekend Onrecht"', 'https://www.tweedekamer.nl/kamerstukken/detail?id=2020Z25198') + '<br><br>' +
+      dossier: '<strong>2003 — Somaliërs-affaire:</strong> Als staatssecretaris SZW schreef Rutte een brief aan alle gemeenten om Somalische Nederlanders te traceren via geboorteplaats Mogadishu voor extra fraudecontroles. De rechtbank Haarlem oordeelde (2007) dat dit rassendiscriminatie was.' + bron('VN Speciaal Rapporteur 2019', 'https://www.ohchr.org/en/press-releases/2019/10/netherlands-building-surveillance-state-poor-says-un-rights-expert') + '<br><br>' +
+        '<strong>2013 — Ministeriële Commissie Fraude:</strong> Richtte als premier persoonlijk de commissie op die de keiharde fraudeaanpak lanceerde. Zat erbij, leidde het, wist ervan. De toon werd gezet: burgers zijn verdacht.' + bron('Enquêtecommissie 2024', 'https://www.tweedekamer.nl/kamerstukken/detail?id=2024Z02942&did=2024D06757') + '<br><br>' +
+        '<strong>2014–2019 — Wegkijken:</strong> Terwijl 26.000 gezinnen werden geruïneerd,' + bron('Rapport "Ongekend Onrecht"', 'https://www.parlement.com/parlementaire-ondervraging-kinderopvangtoeslag') + ' 2.090 kinderen uit huis werden geplaatst' + bron('Commissie-Hamer 2025', 'https://www.rijksoverheid.nl/documenten/rapporten/2025/03/27/tk-bijlage-1-rapportage-commissie-toeslagen-en-uithuisplaatsingen-erfenis-van-onrecht') + ' en de Belastingdienst discrimineerde op nationaliteit, greep Rutte niet in.<br><br>' +
+        '<strong>2020 — "Geen actieve herinnering":</strong> Verklaarde voor de parlementaire commissie zich niets te herinneren. De Rutte Doctrine — geen notulen, geen sms\'jes, alles informeel — werd officieel vastgelegd als systematische informatieweigering.' + bron('Rapport "Ongekend Onrecht"', 'https://www.parlement.com/parlementaire-ondervraging-kinderopvangtoeslag') + '<br><br>' +
         '<strong>Jan 2021 — Kabinet valt:</strong> Trad af maar bleef demissionair premier. 80 ouders deden aangifte — OM vervolgde niet.<br><br>' +
         '<strong>Okt 2024 — NAVO:</strong> Werd secretaris-generaal van de NAVO. Jaarsalaris ~€270.000 belastingvrij.<br><br>' +
         '<strong style="color:var(--yellow)">Consequenties:</strong> Nul. Geen strafrechtelijke vervolging, geen tuchtzaak, geen persoonlijke aansprakelijkheid. Weggepromoveerd naar de hoogste internationale functie.' + bron('BijzonderStrafrecht.nl — geen vervolging', 'https://www.bijzonderstrafrecht.nl/home/geen-vervolging-van-individuele-ambtenaren-van-de-belastingdienst-uit-de-toeslagenaffaire-voor-beroepsmatige-discriminatie'),
@@ -1805,7 +1811,7 @@ function pgOrganigram(){
         '<div class="wet-item"><div class="wet-art">Art. 68 Grondwet — Inlichtingenplicht</div><div class="wet-desc">Ministers en staatssecretarissen geven de Kamers de inlichtingen die zij vragen. De "Rutte Doctrine" — geen notulen, geen sms\'jes, alles informeel — was een systematische schending van deze grondwettelijke plicht. De parlementaire commissie legde dit officieel vast.</div></div>' +
         '<div class="wet-item"><div class="wet-art">Art. 137g Wetboek van Strafrecht — Ambtelijke discriminatie</div><div class="wet-desc">Wie in de uitoefening van een ambt, beroep of bedrijf personen discrimineert, wordt gestraft. Rutte discrimineerde als staatssecretaris (Somaliërs) en faciliteerde als premier de discriminerende fraudeaanpak van de Belastingdienst.</div></div>' +
         '<div class="wet-item"><div class="wet-art">Art. 44 Wet BRP — Oneigenlijk gebruik persoonsgegevens</div><div class="wet-desc">Gegevens uit de basisregistratie personen mogen alleen voor het doel waarvoor ze zijn verzameld worden gebruikt. Rutte adviseerde gemeenten om geboorteplaats (Mogadishu) te gebruiken als etnisch selectiecriterium — een doelbinding die de wet niet toestaat.</div></div>' +
-        '<div class="wet-item"><div class="wet-art">Art. 6 AVG — Rechtmatigheid verwerking</div><div class="wet-desc">Persoonsgegevens mogen alleen verwerkt worden als daar een rechtmatige grondslag voor is. Selectie op etniciteit of nationaliteit is geen rechtmatige grondslag. De Autoriteit Persoonsgegevens bevestigde dit met een boete van €2,75 miljoen.' + bron('AP 2021', 'https://www.autoriteitpersoonsgegevens.nl/nl/nieuws/boete-belastingdienst-kinderopvangtoeslag') + '</div></div>',
+        '<div class="wet-item"><div class="wet-art">Art. 6 AVG — Rechtmatigheid verwerking</div><div class="wet-desc">Persoonsgegevens mogen alleen verwerkt worden als daar een rechtmatige grondslag voor is. Selectie op etniciteit of nationaliteit is geen rechtmatige grondslag. De Autoriteit Persoonsgegevens bevestigde dit met een boete van €2,75 miljoen.' + bron('AP 2021', 'https://www.autoriteitpersoonsgegevens.nl/documenten/boete-belastingdienst-kinderopvangtoeslag') + '</div></div>',
       straf: '<strong style="color:var(--accent)">Art. 137g Sr (ambtelijke discriminatie):</strong> max. 6 maanden gevangenisstraf — <em>verjaard</em>.<br>' +
         '<strong style="color:var(--accent)">Art. 355 Sr (ambtsmisdrijf):</strong> max. 3 jaar gevangenisstraf + €25.750 boete — vervolging geweigerd door Tweede Kamer (97 tegen 34).<br>' +
         '<strong style="color:var(--accent)">Art. 366 Sr (knevelarij):</strong> max. 6 jaar gevangenisstraf — Hof oordeelde "onvoldoende bewijs van opzet."' + bron('BijzonderStrafrecht.nl — knevelarij', 'https://www.bijzonderstrafrecht.nl/home/artikel-knevelarij-in-de-toeslagenaffaire') + '<br>' +
@@ -1816,8 +1822,8 @@ function pgOrganigram(){
       naam: 'Eric Wiebes', functie: 'Staatssecretaris Financiën (2014–2017)', korte_functie: 'Stss. Financiën', partij: 'VVD', partij_kleur: '#FF6600',
       foto: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/39/Eric_Wiebes.jpg/300px-Eric_Wiebes.jpg',
       nu: 'McKinsey partner + Staatsraad Raad van State',
-      dossier: '<strong>2014–2017 — Direct verantwoordelijk:</strong> Als staatssecretaris van Financiën had Wiebes directe verantwoordelijkheid over de Belastingdienst/Toeslagen. Onder zijn bewind bereikten de CAF-teams hun hoogtepunt en werden duizenden ouders als fraudeur bestempeld zonder bewijs.' + bron('Enquêtecommissie 2024', 'https://www.tweedekamer.nl/kamerstukken/detail?id=2024D07858') + '<br><br>' +
-        '<strong>Bagatellisering:</strong> Deed de toeslagenaffaire af als "een emotionele discussie."' + bron('Enquêtecommissie 2024', 'https://www.tweedekamer.nl/kamerstukken/detail?id=2024D07858') + ' Weigerde de ernst te erkennen ondanks signalen van advocaten en ouders.<br><br>' +
+      dossier: '<strong>2014–2017 — Direct verantwoordelijk:</strong> Als staatssecretaris van Financiën had Wiebes directe verantwoordelijkheid over de Belastingdienst/Toeslagen. Onder zijn bewind bereikten de CAF-teams hun hoogtepunt en werden duizenden ouders als fraudeur bestempeld zonder bewijs.' + bron('Enquêtecommissie 2024', 'https://www.tweedekamer.nl/kamerstukken/detail?id=2024Z02942&did=2024D06757') + '<br><br>' +
+        '<strong>Bagatellisering:</strong> Deed de toeslagenaffaire af als "een emotionele discussie."' + bron('Enquêtecommissie 2024', 'https://www.tweedekamer.nl/kamerstukken/detail?id=2024Z02942&did=2024D06757') + ' Weigerde de ernst te erkennen ondanks signalen van advocaten en ouders.<br><br>' +
         '<strong>Informatieweigering:</strong> Hield informatie achter voor de Tweede Kamer. Documenten die voor de Kamer relevant waren werden niet of te laat gedeeld.<br><br>' +
         '<strong>Jan 2021 — Enige die écht opstapte:</strong> Na de val van het kabinet stapte Wiebes als enige per direct op als minister. Maar het kwaad was al jaren geschied.<br><br>' +
         '<strong style="color:var(--yellow)">Consequenties:</strong> Geen. Opstappen was vrijwillig, niet afgedwongen. Geen strafrechtelijke vervolging.<br>' +
@@ -1825,7 +1831,7 @@ function pgOrganigram(){
       wetten: '<div class="wet-item"><div class="wet-art">Art. 68 Grondwet — Inlichtingenplicht</div><div class="wet-desc">Wiebes hield als staatssecretaris informatie achter voor de Tweede Kamer. Documenten over de discriminerende werkwijze van de Belastingdienst werden niet of vertraagd gedeeld.</div></div>' +
         '<div class="wet-item"><div class="wet-art">Art. 3:2 Awb — Zorgvuldigheidsbeginsel</div><div class="wet-desc">Een bestuursorgaan vergaart de nodige kennis omtrent relevante feiten. Onder Wiebes\' bewind nam de Belastingdienst besluiten zonder individueel onderzoek — hele kinderopvanglocaties werden als frauduleus bestempeld.</div></div>' +
         '<div class="wet-item"><div class="wet-art">Art. 3:4 Awb — Evenredigheidsbeginsel</div><div class="wet-desc">De gevolgen van een besluit mogen niet onevenredig zijn. Volledige terugvordering van tienduizenden euro\'s bij kleine administratieve fouten is disproportioneel. Gezinnen werden geruïneerd voor fouten die de overheid zelf maakte.</div></div>' +
-        '<div class="wet-item"><div class="wet-art">Art. 1 Grondwet — Discriminatieverbod</div><div class="wet-desc">De FSV-lijsten (Fraude Signalerings Voorziening) met 180.000 namen selecteerden disproportioneel op nationaliteit en afkomst.' + bron('AP-rapport FSV, 2022', 'https://www.autoriteitpersoonsgegevens.nl/nl/nieuws/boete-belastingdienst-voor-zwarte-lijst-fsv') + ' Dit systeem draaide onder Wiebes\' verantwoordelijkheid.</div></div>',
+        '<div class="wet-item"><div class="wet-art">Art. 1 Grondwet — Discriminatieverbod</div><div class="wet-desc">De FSV-lijsten (Fraude Signalerings Voorziening) met 180.000 namen selecteerden disproportioneel op nationaliteit en afkomst.' + bron('AP-rapport FSV, 2022', 'https://autoriteitpersoonsgegevens.nl/actueel/boete-belastingdienst-voor-zwarte-lijst-fsv') + ' Dit systeem draaide onder Wiebes\' verantwoordelijkheid.</div></div>',
       straf: '<strong style="color:var(--accent)">Art. 355 Sr (ambtsmisdrijf):</strong> max. 3 jaar gevangenisstraf — niet vervolgd.<br>' +
         '<strong style="color:var(--accent)">Art. 68 Gw (inlichtingenplicht):</strong> politieke consequentie — vrijwillig opgestapt, geen vervolging.<br>' +
         '<strong style="color:var(--accent)">Art. 137g Sr (ambtelijke discriminatie):</strong> max. 6 maanden cel — verjaard.<br><br>' +
@@ -1835,11 +1841,11 @@ function pgOrganigram(){
       naam: 'Frans Weekers', functie: 'Staatssecretaris Financiën (2010–2014)', korte_functie: 'Stss. Financiën', partij: 'VVD', partij_kleur: '#FF6600',
       foto: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Frans_Weekers_2011.jpg/300px-Frans_Weekers_2011.jpg',
       nu: 'Secretaris-generaal Benelux Unie',
-      dossier: '<strong>2013 — Architect fraudeaanpak:</strong> Na de "Bulgarenfraude" voerde Weekers de Fraudewet Toeslagen in.' + bron('Enquêtecommissie 2024', 'https://www.tweedekamer.nl/kamerstukken/detail?id=2024D07858') + ' De bewijslast werd omgedraaid: niet de overheid moest fraude bewijzen, maar de burger moest zijn onschuld aantonen.<br><br>' +
+      dossier: '<strong>2013 — Architect fraudeaanpak:</strong> Na de "Bulgarenfraude" voerde Weekers de Fraudewet Toeslagen in.' + bron('Enquêtecommissie 2024', 'https://www.tweedekamer.nl/kamerstukken/detail?id=2024Z02942&did=2024D06757') + ' De bewijslast werd omgedraaid: niet de overheid moest fraude bewijzen, maar de burger moest zijn onschuld aantonen.<br><br>' +
         '<strong>CAF-teams opgericht:</strong> Onder Weekers werden de Combiteams Aanpak Facilitators (CAF) opgericht die massaal toeslagen stopzetten bij hele kinderdagverblijven — alle ouders gestraft voor verdenking bij één instelling.<br><br>' +
-        '<strong>2014 — Afgetreden:</strong> Trad af wegens een ander schandaal, maar het beleid dat hij startte — de CAF-teams, de keiharde terugvorderingen, de alles-of-niets benadering — verwoestte 26.000 gezinnen.' + bron('Rapport "Ongekend Onrecht"', 'https://www.tweedekamer.nl/kamerstukken/detail?id=2020Z25198') + '<br><br>' +
+        '<strong>2014 — Afgetreden:</strong> Trad af wegens een ander schandaal, maar het beleid dat hij startte — de CAF-teams, de keiharde terugvorderingen, de alles-of-niets benadering — verwoestte 26.000 gezinnen.' + bron('Rapport "Ongekend Onrecht"', 'https://www.parlement.com/parlementaire-ondervraging-kinderopvangtoeslag') + '<br><br>' +
         '<strong style="color:var(--yellow)">Consequenties:</strong> Geen. Was al weg voordat het schandaal openbaar werd.<br>' +
-        '<strong style="color:var(--yellow)">Nu:</strong> <strong>Secretaris-generaal van de Benelux Unie</strong> (sinds 2023).' + bron('Benelux.int, 2023', 'https://www.benelux.int/nl/secretaris-generaal') + ' Daarvoor Executive Director bij de Europese Bank voor Wederopbouw en Ontwikkeling in Londen. Van fraudejacht op burgers naar internationale topposities.',
+        '<strong style="color:var(--yellow)">Nu:</strong> <strong>Secretaris-generaal van de Benelux Unie</strong> (sinds 2023).' + bron('Benelux.int, 2023', 'https://www.benelux.int/en/information-for-citizens/benelux-union/our-organisation/secretariat-general/') + ' Daarvoor Executive Director bij de Europese Bank voor Wederopbouw en Ontwikkeling in Londen. Van fraudejacht op burgers naar internationale topposities.',
       wetten: '<div class="wet-item"><div class="wet-art">Art. 3:4 Awb — Evenredigheidsbeginsel</div><div class="wet-desc">De gevolgen van een besluit mogen niet onevenredig zijn. Weekers\' Fraudewet introduceerde de alles-of-niets benadering: één kleine fout = volledige terugvordering van soms tienduizenden euro\'s. Gezinnen werden financieel vernietigd voor administratieve vergissingen.</div></div>' +
         '<div class="wet-item"><div class="wet-art">Art. 6 EVRM — Recht op eerlijk proces</div><div class="wet-desc">Eenieder heeft recht op een eerlijke behandeling. Weekers draaide de bewijslast om: niet de overheid moest fraude bewijzen, maar de burger moest zijn onschuld aantonen. Een fundamentele schending van het rechtsbeginsel "onschuldig tot het tegendeel is bewezen."</div></div>' +
         '<div class="wet-item"><div class="wet-art">Art. 1 Protocol 12 EVRM — Algemeen discriminatieverbod</div><div class="wet-desc">Het genot van elk in de wet neergelegd recht wordt verzekerd zonder discriminatie. De CAF-teams die Weekers oprichtte troffen disproportioneel ouders met een migratieachtergrond — structurele discriminatie ingebakken in het systeem.</div></div>' +
@@ -1852,7 +1858,7 @@ function pgOrganigram(){
       naam: 'Menno Snel', functie: 'Staatssecretaris Financiën (2017–2019)', korte_functie: 'Stss. Financiën', partij: 'D66', partij_kleur: '#01AF36',
       foto: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b9/Menno_snel-1536227731.jpg/220px-Menno_snel-1536227731.jpg',
       nu: 'Voorzitter RvC Alliander (april 2026)',
-      dossier: '<strong>2017–2019 — Nalatigheid:</strong> Volgde Wiebes op en kreeg de toeslagenaffaire op zijn bord. Noemde het handelen "beschamend" maar greep maandenlang niet in terwijl gezinnen bleven lijden.' + bron('Enquêtecommissie 2024', 'https://www.tweedekamer.nl/kamerstukken/detail?id=2024D07858') + '<br><br>' +
+      dossier: '<strong>2017–2019 — Nalatigheid:</strong> Volgde Wiebes op en kreeg de toeslagenaffaire op zijn bord. Noemde het handelen "beschamend" maar greep maandenlang niet in terwijl gezinnen bleven lijden.' + bron('Enquêtecommissie 2024', 'https://www.tweedekamer.nl/kamerstukken/detail?id=2024Z02942&did=2024D06757') + '<br><br>' +
         '<strong>Gebroken beloftes:</strong> Beloofde de Kamer transparantie en informatie, maar leverde die niet of onvolledig. Stukken werden niet gedeeld, vragen werden ontwijkend beantwoord.<br><br>' +
         '<strong>Dec 2019 — Eerste politieke val:</strong> Trad af als eerste politicus vanwege de affaire. Maar tegen die tijd hadden duizenden gezinnen al alles verloren.<br><br>' +
         '<strong style="color:var(--yellow)">Consequenties:</strong> Geen. Vrijwillig afgetreden, geen vervolging.<br>' +
@@ -1868,7 +1874,7 @@ function pgOrganigram(){
       naam: 'Lodewijk Asscher', functie: 'Vicepremier, Minister SZW (2012–2017)', korte_functie: 'Vicepremier', partij: 'PvdA', partij_kleur: '#E12B1A',
       foto: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/eb/Lodewijk_Asscher_2013-1.jpg/300px-Lodewijk_Asscher_2013-1.jpg',
       nu: 'Voorzitter RvT FNV + diverse voorzitterschappen',
-      dossier: '<strong>2012–2017 — Medeverantwoordelijk:</strong> Vicepremier in het kabinet dat de Ministeriële Commissie Fraude oprichtte. Zat aan tafel toen de besluiten werden genomen. Als minister van Sociale Zaken medeverantwoordelijk voor het klimaat van fraudejacht.' + bron('Enquêtecommissie 2024', 'https://www.tweedekamer.nl/kamerstukken/detail?id=2024D07858') + '<br><br>' +
+      dossier: '<strong>2012–2017 — Medeverantwoordelijk:</strong> Vicepremier in het kabinet dat de Ministeriële Commissie Fraude oprichtte. Zat aan tafel toen de besluiten werden genomen. Als minister van Sociale Zaken medeverantwoordelijk voor het klimaat van fraudejacht.' + bron('Enquêtecommissie 2024', 'https://www.tweedekamer.nl/kamerstukken/detail?id=2024Z02942&did=2024D06757') + '<br><br>' +
         '<strong>2020 — Ondervragingscommissie:</strong> Verscheen voor de parlementaire commissie. Erkende fouten maar wees ook naar anderen.<br><br>' +
         '<strong>Jan 2021 — Teruggetrokken:</strong> Trok zich terug als PvdA-lijsttrekker — maar pas nadat de publieke druk onhoudbaar werd. Het schandaal was toen al 7 jaar gaande.<br><br>' +
         '<strong style="color:var(--yellow)">Consequenties:</strong> Geen. Verliet de politiek vrijwillig, geen vervolging.<br>' +
@@ -1885,7 +1891,7 @@ function pgOrganigram(){
       foto: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/77/Tamara_van_Ark%2C_April_2018.jpg/300px-Tamara_van_Ark%2C_April_2018.jpg',
       nu: 'Bestuurskamers: Oranje Fonds, Reclassering NL',
       dossier: '<strong>2017–2020 — In stand houden:</strong> Als staatssecretaris SZW betrokken bij het in stand houden van het harde toeslagenbeleid. Onder haar bewind bleef de Belastingdienst doorgaan met discriminerende werkwijzen.<br><br>' +
-        '<strong>Periode van uithuisplaatsingen:</strong> Haar ambtsperiode viel samen met de jaren waarin de meeste kinderen uit huis werden geplaatst (2.090 kinderen).' + bron('Commissie-Hamer 2025', 'https://www.rijksoverheid.nl/documenten/rapporten/2025/03/03/rapport-commissie-hamer') + '<br><br>' +
+        '<strong>Periode van uithuisplaatsingen:</strong> Haar ambtsperiode viel samen met de jaren waarin de meeste kinderen uit huis werden geplaatst (2.090 kinderen).' + bron('Commissie-Hamer 2025', 'https://www.rijksoverheid.nl/documenten/rapporten/2025/03/27/tk-bijlage-1-rapportage-commissie-toeslagen-en-uithuisplaatsingen-erfenis-van-onrecht') + '<br><br>' +
         '<strong style="color:var(--yellow)">Consequenties:</strong> Geen. Verscheen voor de ondervragingscommissie. Werd direct daarna gepromoveerd tot minister.<br>' +
         '<strong style="color:var(--yellow)">Nu:</strong> Voorzitter Schoonmakend Nederland. Lid Raad van Toezicht Reclassering Nederland. Bestuurslid Oranje Fonds. Diverse adviesrollen. Van uithuisplaatsingen naar bestuurskamers.',
       wetten: '<div class="wet-item"><div class="wet-art">Art. 42 lid 2 Grondwet — Ministeriële verantwoordelijkheid</div><div class="wet-desc">Als staatssecretaris SZW droeg Van Ark verantwoordelijkheid voor het beleid dat bijdroeg aan de toeslagenaffaire. Ze hield het harde beleid in stand terwijl de signalen van misstanden zich opstapelden.</div></div>' +
@@ -1899,7 +1905,7 @@ function pgOrganigram(){
       naam: 'Alexandra van Huffelen', functie: 'Staatssecretaris Toeslagen (2020–2022)', korte_functie: 'Stss. Toeslagen', partij: 'D66', partij_kleur: '#01AF36',
       foto: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/20/220107Alexandra_van_Huffelen34_%28cropped%29.jpg/300px-220107Alexandra_van_Huffelen34_%28cropped%29.jpg',
       nu: 'Collegevoorzitter Radboud Uni + voorzitter D66',
-      dossier: '<strong>2020–2022 — Mislukt herstel:</strong> Aangesteld om de schade te herstellen. Beloofde iedere gedupeerde €30.000.' + bron('Commissie-Van Dam 2025', 'https://www.rijksoverheid.nl/documenten/rapporten/2025/02/13/rapport-commissie-van-dam') + ' Maar de hersteloperatie werd een tweede schandaal: tergend langzaam, bureaucratisch, opnieuw traumatiserend.<br><br>' +
+      dossier: '<strong>2020–2022 — Mislukt herstel:</strong> Aangesteld om de schade te herstellen. Beloofde iedere gedupeerde €30.000.' + bron('Commissie-Van Dam 2025', 'https://www.rijksoverheid.nl/documenten/kamerstukken/2025/01/23/minder-beloven-meer-doen-lr') + ' Maar de hersteloperatie werd een tweede schandaal: tergend langzaam, bureaucratisch, opnieuw traumatiserend.<br><br>' +
         '<strong>Nieuw BSN geweigerd:</strong> Weigerde een nieuw BSN voor slachtoffers. Argument: "het lost niks op" en "het geeft regeldruk." De juridische basis bestaat — ze koos ervoor het niet te doen.<br><br>' +
         '<strong style="color:var(--yellow)">Consequenties:</strong> Geen. Terwijl de hersteloperatie faalde, werd ze gepromoveerd.<br>' +
         '<strong style="color:var(--yellow)">Nu:</strong> <strong>Collegevoorzitter Radboud Universiteit</strong> (sinds feb 2025).' + bron('Radboud Universiteit, 2025', 'https://www.ru.nl/') + ' <strong>Partijvoorzitter D66</strong> (sinds nov 2024).' + bron('D66.nl, 2024') + ' Voorzitter Economic Board Regio Arnhem-Nijmegen. Van mislukt slachtofferherstel naar de top van een universiteit en een politieke partij.',
@@ -1916,7 +1922,7 @@ function pgOrganigram(){
       foto: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/fe/Jetta_Klijnsma_2012_%28highres%29.jpg/300px-Jetta_Klijnsma_2012_%28highres%29.jpg',
       nu: 'Commissaris van de Koning Drenthe',
       dossier: '<strong>2012–2017 — Mede-architect fraudebeleid:</strong> Als staatssecretaris SZW in kabinet-Rutte II zat Klijnsma aan tafel bij de Ministeriële Commissie Fraude die de keiharde fraudeaanpak lanceerde. Verantwoordelijk voor de Participatiewet die mensen met een bijstandsuitkering als potentiële fraudeurs behandelde.<br><br>' +
-        '<strong>2013 — Waarschuwing genegeerd:</strong> Ombudsman Alex Brenninkmeijer waarschuwde Klijnsma en Asscher persoonlijk over de gevolgen van het harde fraudebeleid. De ministers "hapten niet" — de waarschuwing werd "voor kennisgeving aangenomen."' + bron('Enquêtecommissie 2024', 'https://www.tweedekamer.nl/kamerstukken/detail?id=2024D07858') + '<br><br>' +
+        '<strong>2013 — Waarschuwing genegeerd:</strong> Ombudsman Alex Brenninkmeijer waarschuwde Klijnsma en Asscher persoonlijk over de gevolgen van het harde fraudebeleid. De ministers "hapten niet" — de waarschuwing werd "voor kennisgeving aangenomen."' + bron('Enquêtecommissie 2024', 'https://www.tweedekamer.nl/kamerstukken/detail?id=2024Z02942&did=2024D06757') + '<br><br>' +
         '<strong>Commissie-Donner:</strong> Werd in 2019 lid van de Commissie-Donner die het toeslagenschandaal moest onderzoeken. Follow the Money onthulde dat deze commissie conclusies trok die in strijd waren met eigen onderzoek — conclusies die gunstig waren voor de Belastingdienst en voor haar partijgenoot Asscher.' + bron('FTM — Commissie Donner', 'https://www.ftm.nl/artikelen/hardnekkig-wegkijken-commissie-donner') + '<br><br>' +
         '<strong>Eigen uitspraak:</strong> "Het is geen usance dat je je verdiept in wetgeving die niet bij jou regardeert. Ik heb er niet mee van doen gehad." — terwijl ze als lid van de ministerraad medeverantwoordelijk was voor álle kabinetsbesluiten.<br><br>' +
         '<strong style="color:var(--yellow)">Consequenties:</strong> Geen. Gepromoveerd tot Commissaris van de Koning.<br>' +
@@ -1994,11 +2000,11 @@ function pgOrganigram(){
       // --- BELASTINGDIENST ---
       '<div class="card" style="padding:18px;margin-bottom:12px;border-left:4px solid var(--accent)">' +
         '<div style="font-size:15px;font-weight:700;margin-bottom:8px"><span class="mi mi-sm" style="color:var(--accent)">business</span> Belastingdienst / Toeslagen</div>' +
-        '<div style="font-size:12px;color:var(--tx2);line-height:1.7;margin-bottom:10px"><strong style="color:var(--tx)">Rol:</strong> Uitvoerder van de discriminerende fraudejacht. Beheerde de FSV-zwarte lijst (270.000 burgers).' + bron('AP-rapport FSV, 2022', 'https://www.autoriteitpersoonsgegevens.nl/nl/nieuws/boete-belastingdienst-voor-zwarte-lijst-fsv') + ' Gebruikte dubbele nationaliteit als risicofactor. CAF-teams stopzetten toeslagen bij hele kinderdagverblijven zonder individueel bewijs. Bij één ontbrekend bonnetje van €230: volledige terugvordering van €8.300+.</div>' +
+        '<div style="font-size:12px;color:var(--tx2);line-height:1.7;margin-bottom:10px"><strong style="color:var(--tx)">Rol:</strong> Uitvoerder van de discriminerende fraudejacht. Beheerde de FSV-zwarte lijst (270.000 burgers).' + bron('AP-rapport FSV, 2022', 'https://autoriteitpersoonsgegevens.nl/actueel/boete-belastingdienst-voor-zwarte-lijst-fsv') + ' Gebruikte dubbele nationaliteit als risicofactor. CAF-teams stopzetten toeslagen bij hele kinderdagverblijven zonder individueel bewijs. Bij één ontbrekend bonnetje van €230: volledige terugvordering van €8.300+.</div>' +
         '<div class="wet" style="margin-top:0">' +
           '<div class="wet-title"><span class="mi mi-sm">gavel</span> Overtreden wetsartikelen &amp; sancties</div>' +
-          '<div class="wet-item"><div class="wet-art">Art. 5 + 6 AVG — Rechtmatigheid verwerking</div><div class="wet-desc">Geen wettelijke grondslag voor FSV. Verwerking dubbele nationaliteit was onrechtmatig en discriminerend.<br><strong style="color:var(--yellow)">Max. sanctie: €20.000.000 of 4% jaaromzet. Opgelegd: €3,7 miljoen (AP, 2022).</strong>' + bron('AP-rapport FSV', 'https://www.autoriteitpersoonsgegevens.nl/nl/nieuws/boete-belastingdienst-voor-zwarte-lijst-fsv') + '</div></div>' +
-          '<div class="wet-item"><div class="wet-art">Art. 9 AVG — Verbod verwerking bijzondere categorieën</div><div class="wet-desc">Verwerking van ras/etnische afkomst via nationaliteitsgegevens als risicofactor.<br><strong style="color:var(--yellow)">Max. sanctie: €20.000.000. Opgelegd: €2,75 miljoen (AP, 2021).</strong>' + bron('AP-rapport discriminatie', 'https://www.autoriteitpersoonsgegevens.nl/nl/nieuws/boete-belastingdienst-kinderopvangtoeslag') + '</div></div>' +
+          '<div class="wet-item"><div class="wet-art">Art. 5 + 6 AVG — Rechtmatigheid verwerking</div><div class="wet-desc">Geen wettelijke grondslag voor FSV. Verwerking dubbele nationaliteit was onrechtmatig en discriminerend.<br><strong style="color:var(--yellow)">Max. sanctie: €20.000.000 of 4% jaaromzet. Opgelegd: €3,7 miljoen (AP, 2022).</strong>' + bron('AP-rapport FSV', 'https://autoriteitpersoonsgegevens.nl/actueel/boete-belastingdienst-voor-zwarte-lijst-fsv') + '</div></div>' +
+          '<div class="wet-item"><div class="wet-art">Art. 9 AVG — Verbod verwerking bijzondere categorieën</div><div class="wet-desc">Verwerking van ras/etnische afkomst via nationaliteitsgegevens als risicofactor.<br><strong style="color:var(--yellow)">Max. sanctie: €20.000.000. Opgelegd: €2,75 miljoen (AP, 2021).</strong>' + bron('AP-rapport discriminatie', 'https://www.autoriteitpersoonsgegevens.nl/documenten/boete-belastingdienst-kinderopvangtoeslag') + '</div></div>' +
           '<div class="wet-item"><div class="wet-art">Art. 22 AVG — Geautomatiseerde besluitvorming</div><div class="wet-desc">Zelflerend algoritme nam besluiten over gezinnen zonder menselijke tussenkomst of waarborgen.<br><strong style="color:var(--yellow)">Max. sanctie: €20.000.000. Opgelegd: nee.</strong></div></div>' +
           '<div class="wet-item"><div class="wet-art">Art. 1 Grondwet — Discriminatieverbod</div><div class="wet-desc">Etnisch profileren via dubbele nationaliteit. College voor de Rechten van de Mens bevestigde discriminatie op grond van ras.' + bron('College oordeel 2023-103', 'https://oordelen.mensenrechten.nl/oordeel/2023-103') + '<br><strong style="color:var(--yellow)">Sanctie: nvt (Grondwet kent geen directe sanctie, art. 120 Gw toetsingsverbod).</strong></div></div>' +
           '<div class="wet-item"><div class="wet-art">Art. 137g Sr — Ambtelijke discriminatie</div><div class="wet-desc">Discriminatie bij uitoefening van ambt/beroep.<br><strong style="color:var(--yellow)">Max. sanctie: 6 maanden gevangenisstraf + geldboete 3e cat. (€10.300). Opgelegd: nee — feiten verjaard (verjaringstermijn 6 jaar, art. 70 Sr).</strong></div></div>' +
@@ -2084,7 +2090,7 @@ function pgOrganigram(){
           '<div class="wet-title"><span class="mi mi-sm">gavel</span> Wetsartikelen &amp; blokkades</div>' +
           '<div class="wet-item"><div class="wet-art">Art. 167 lid 2 Sv — Opportuniteitsbeginsel</div><div class="wet-desc">Het OM beslist of vervolging "in het algemeen belang" is. Gebruikt als reden om <strong>niet</strong> te vervolgen: "dit hoort in het politieke domein."<br><strong style="color:var(--yellow)">Gevolg: geen vervolging ondanks erkend onrecht.</strong></div></div>' +
           '<div class="wet-item"><div class="wet-art">Art. 12 Sv — Beklag niet-vervolging</div><div class="wet-desc">152 gedupeerden vroegen het Hof Den Haag om vervolging te bevelen. Het Hof erkende "schending grondbeginselen rechtsstaat" maar wees het verzoek af wegens staatsimmuniteit en verjaring.<br><strong style="color:var(--yellow)">Laatste correctiemechanisme: uitgeput zonder resultaat.</strong></div></div>' +
-          '<div class="wet-item"><div class="wet-art">Art. 119 Grondwet — Vervolging bewindslieden</div><div class="wet-desc">Vervolging van ministers/staatssecretarissen loopt via de Hoge Raad, op last van de Tweede Kamer. 5 Kamerleden moeten een aanklacht ondertekenen. De Kamer verwierp het verzoek met 97 tegen 34 stemmen.' + bron('Enquêtecommissie 2024', 'https://www.tweedekamer.nl/kamerstukken/detail?id=2024D07858') + '<br><strong style="color:var(--yellow)">Gevolg: het parlement beschermde zichzelf.</strong></div></div>' +
+          '<div class="wet-item"><div class="wet-art">Art. 119 Grondwet — Vervolging bewindslieden</div><div class="wet-desc">Vervolging van ministers/staatssecretarissen loopt via de Hoge Raad, op last van de Tweede Kamer. 5 Kamerleden moeten een aanklacht ondertekenen. De Kamer verwierp het verzoek met 97 tegen 34 stemmen.' + bron('Enquêtecommissie 2024', 'https://www.tweedekamer.nl/kamerstukken/detail?id=2024Z02942&did=2024D06757') + '<br><strong style="color:var(--yellow)">Gevolg: het parlement beschermde zichzelf.</strong></div></div>' +
           '<div class="wet-item"><div class="wet-art">Art. 355 Sr — Ambtsmisdrijven bewindslieden</div><div class="wet-desc">Opzettelijk handelen in strijd met de Grondwet door ministers/staatssecretarissen.<br><strong style="color:var(--yellow)">Max. sanctie: 3 jaar gevangenisstraf + €25.750 boete. Opgelegd: nee — PG Jos Silvis adviseerde niet te vervolgen.' + bron('BijzonderStrafrecht.nl', 'https://www.bijzonderstrafrecht.nl/home/geen-vervolging-van-individuele-ambtenaren-van-de-belastingdienst-uit-de-toeslagenaffaire-voor-beroepsmatige-discriminatie') + '</strong></div></div>' +
           '<div class="wet-item"><div class="wet-art">Volkel-arrest + Pikmeer-arresten — Staatsimmuniteit</div><div class="wet-desc">De Staat en zijn organen (Belastingdienst) genieten volledige strafrechtelijke immuniteit. Ambtenaren die uitvoering geven aan publiekrechtelijk beleid zijn ook beschermd. Wetsvoorstel 30538 tot opheffing is sinds 2006 aanhangig' + bron('Kamerstuk 30538, Tweede Kamer') + ' — nooit aangenomen.' + bron('BijzonderStrafrecht.nl — geen vervolging', 'https://www.bijzonderstrafrecht.nl/home/geen-vervolging-van-individuele-ambtenaren-van-de-belastingdienst-uit-de-toeslagenaffaire-voor-beroepsmatige-discriminatie') + '<br><strong style="color:var(--yellow)">Gevolg: het systeem beschermt zichzelf. Niemand is strafbaar.</strong></div></div>' +
         '</div>' +
@@ -2106,7 +2112,7 @@ function pgOrganigram(){
       // --- TWEEDE KAMER ---
       '<div class="card" style="padding:18px;margin-bottom:12px;border-left:4px solid var(--yellow)">' +
         '<div style="font-size:15px;font-weight:700;margin-bottom:8px"><span class="mi mi-sm" style="color:var(--yellow)">groups</span> Tweede Kamer</div>' +
-        '<div style="font-size:12px;color:var(--tx2);line-height:1.7;margin-bottom:10px"><strong style="color:var(--tx)">Rol:</strong> Keurde de harde fraudewetgeving goed. Keek jarenlang weg ondanks signalen. De coalitiemeerderheid beschermde het kabinet tegen informatieverzoeken. Verwierp met 97 tegen 34 stemmen het verzoek tot strafrechtelijke vervolging van bewindslieden.' + bron('Enquêtecommissie 2024', 'https://www.tweedekamer.nl/kamerstukken/detail?id=2024D07858') + ' De parlementaire enquêtecommissie concludeerde zelf: "De Tweede Kamer heeft gefaald in haar controlerende taak."</div>' +
+        '<div style="font-size:12px;color:var(--tx2);line-height:1.7;margin-bottom:10px"><strong style="color:var(--tx)">Rol:</strong> Keurde de harde fraudewetgeving goed. Keek jarenlang weg ondanks signalen. De coalitiemeerderheid beschermde het kabinet tegen informatieverzoeken. Verwierp met 97 tegen 34 stemmen het verzoek tot strafrechtelijke vervolging van bewindslieden.' + bron('Enquêtecommissie 2024', 'https://www.tweedekamer.nl/kamerstukken/detail?id=2024Z02942&did=2024D06757') + ' De parlementaire enquêtecommissie concludeerde zelf: "De Tweede Kamer heeft gefaald in haar controlerende taak."</div>' +
         '<div class="wet" style="margin-top:0">' +
           '<div class="wet-title"><span class="mi mi-sm">gavel</span> Geschonden normen</div>' +
           '<div class="wet-item"><div class="wet-art">Art. 50 Grondwet — Volksvertegenwoordiging</div><div class="wet-desc">De Staten-Generaal vertegenwoordigen het gehele Nederlandse volk. Het parlement faalde: het keurde wetgeving goed die burgers vernietigde en beschermde het kabinet dat dit veroorzaakte.<br><strong style="color:var(--yellow)">Sanctie: alleen via verkiezingen. Geen juridisch mechanisme.</strong></div></div>' +
@@ -2136,7 +2142,7 @@ function pgOrganigram(){
     // FSV-VERSPREIDING
     '<div style="margin-top:24px">' +
       '<h2 style="font-size:16px;font-weight:700;margin-bottom:4px;display:flex;align-items:center;gap:6px"><span class="mi mi-sm" style="color:var(--accent)">share</span> FSV-data verspreid naar 75+ organisaties</h2>' +
-      '<p style="font-size:12px;color:var(--tx3);margin-bottom:10px">De zwarte lijst (FSV) met 270.000 burgers is gedeeld met tientallen organisaties. PwC vond 536 gevallen van datadeling.' + bron('PwC-rapport FSV-datadeling, 2022') + '' + bron('AP-rapport FSV, 2022', 'https://www.autoriteitpersoonsgegevens.nl/nl/nieuws/boete-belastingdienst-voor-zwarte-lijst-fsv') + ' De Belastingdienst erkent <strong>"geen zicht"</strong> te hebben op of de data daadwerkelijk is verwijderd. Elke ontvanger heeft de AVG overtreden — max. boete: €20 miljoen per organisatie.</p>' +
+      '<p style="font-size:12px;color:var(--tx3);margin-bottom:10px">De zwarte lijst (FSV) met 270.000 burgers is gedeeld met tientallen organisaties. PwC vond 536 gevallen van datadeling.' + bron('PwC-rapport FSV-datadeling, 2022') + '' + bron('AP-rapport FSV, 2022', 'https://autoriteitpersoonsgegevens.nl/actueel/boete-belastingdienst-voor-zwarte-lijst-fsv') + ' De Belastingdienst erkent <strong>"geen zicht"</strong> te hebben op of de data daadwerkelijk is verwijderd. Elke ontvanger heeft de AVG overtreden — max. boete: €20 miljoen per organisatie.</p>' +
 
       '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px;margin-bottom:12px">' +
         '<div class="card" style="padding:12px;border-left:3px solid var(--accent);font-size:11px"><strong>UWV</strong><br>Ontving fraudesignalen + FSV-status. Beweert data verwijderd.</div>' +
@@ -2182,28 +2188,28 @@ function pgOrganigram(){
 // ============ PAGE: TIJDLIJN ============
 function pgTijdlijn(){
   var events = [
-    { jaar: '2003', titel: 'Rutte\'s eerste discriminatieschandaal: de Somaliërs', tekst: 'Staatssecretaris Mark Rutte schrijft een brief aan alle gemeenten om Somalische Nederlanders te traceren via hun geboorteplaats (Mogadishu) voor extra controles op uitkeringsfraude. De rechtbank Haarlem oordeelt later (2007) dat dit <strong>rassendiscriminatie</strong> is.' + bron('VN Speciaal Rapporteur 2019', 'https://www.ohchr.org/en/documents/country-reports/ahrc4457add2-visit-netherlands') + ' Het patroon begint hier.', kleur: 'var(--yellow)' },
-    { jaar: '2013', titel: 'Bulgarenfraude & start harde aanpak', tekst: 'Na berichten over misbruik door Bulgaren richt premier Rutte de Ministeriële Commissie Fraude op. Hij wordt persoonlijk voorzitter. Staatssecretaris Frans Weekers voert de Fraudewet in. Dezelfde Rutte die in 2003 al veroordeeld was voor discriminatie op afkomst, lanceert nu een fraudejacht die disproportioneel mensen met een migratieachtergrond treft.' + bron('Enquêtecommissie 2024', 'https://www.tweedekamer.nl/kamerstukken/detail?id=2024D07858') + '', kleur: 'var(--tx3)' },
-    { jaar: '2014', titel: 'CAF-11: het begin van de ellende', tekst: 'De Belastingdienst stopt de kinderopvangtoeslag van alle ouders bij kinderdagverblijf Dadim. Honderden gezinnen verliezen van de ene op de andere dag hun toeslag. Dubbele nationaliteit wordt als selectiecriterium gebruikt — 11.236 aangiftes extra doorgelicht op basis van afkomst.' + bron('AP-rapport discriminatie, 2021', 'https://www.autoriteitpersoonsgegevens.nl/nl/nieuws/boete-belastingdienst-kinderopvangtoeslag') + '', kleur: 'var(--yellow)' },
-    { jaar: '2014–2019', titel: '26.000 ouders slachtoffer', tekst: 'Gezinnen moeten tienduizenden euro\'s terugbetalen die ze niet hebben. Mensen verliezen hun huis, hun huwelijk, hun gezondheid. 2.090 kinderen worden uit huis geplaatst.' + bron('Commissie-Hamer 2025', 'https://www.rijksoverheid.nl/documenten/rapporten/2025/03/03/rapport-commissie-hamer') + ' De overheid weet ervan — maar doet niets.' + bron('Rapport "Ongekend Onrecht"', 'https://www.tweedekamer.nl/kamerstukken/detail?id=2020Z25198') + '', kleur: 'var(--accent)' },
+    { jaar: '2003', titel: 'Rutte\'s eerste discriminatieschandaal: de Somaliërs', tekst: 'Staatssecretaris Mark Rutte schrijft een brief aan alle gemeenten om Somalische Nederlanders te traceren via hun geboorteplaats (Mogadishu) voor extra controles op uitkeringsfraude. De rechtbank Haarlem oordeelt later (2007) dat dit <strong>rassendiscriminatie</strong> is.' + bron('VN Speciaal Rapporteur 2019', 'https://www.ohchr.org/en/press-releases/2019/10/netherlands-building-surveillance-state-poor-says-un-rights-expert') + ' Het patroon begint hier.', kleur: 'var(--yellow)' },
+    { jaar: '2013', titel: 'Bulgarenfraude & start harde aanpak', tekst: 'Na berichten over misbruik door Bulgaren richt premier Rutte de Ministeriële Commissie Fraude op. Hij wordt persoonlijk voorzitter. Staatssecretaris Frans Weekers voert de Fraudewet in. Dezelfde Rutte die in 2003 al veroordeeld was voor discriminatie op afkomst, lanceert nu een fraudejacht die disproportioneel mensen met een migratieachtergrond treft.' + bron('Enquêtecommissie 2024', 'https://www.tweedekamer.nl/kamerstukken/detail?id=2024Z02942&did=2024D06757') + '', kleur: 'var(--tx3)' },
+    { jaar: '2014', titel: 'CAF-11: het begin van de ellende', tekst: 'De Belastingdienst stopt de kinderopvangtoeslag van alle ouders bij kinderdagverblijf Dadim. Honderden gezinnen verliezen van de ene op de andere dag hun toeslag. Dubbele nationaliteit wordt als selectiecriterium gebruikt — 11.236 aangiftes extra doorgelicht op basis van afkomst.' + bron('AP-rapport discriminatie, 2021', 'https://www.autoriteitpersoonsgegevens.nl/documenten/boete-belastingdienst-kinderopvangtoeslag') + '', kleur: 'var(--yellow)' },
+    { jaar: '2014–2019', titel: '26.000 ouders slachtoffer', tekst: 'Gezinnen moeten tienduizenden euro\'s terugbetalen die ze niet hebben. Mensen verliezen hun huis, hun huwelijk, hun gezondheid. 2.090 kinderen worden uit huis geplaatst.' + bron('Commissie-Hamer 2025', 'https://www.rijksoverheid.nl/documenten/rapporten/2025/03/27/tk-bijlage-1-rapportage-commissie-toeslagen-en-uithuisplaatsingen-erfenis-van-onrecht') + ' De overheid weet ervan — maar doet niets.' + bron('Rapport "Ongekend Onrecht"', 'https://www.parlement.com/parlementaire-ondervraging-kinderopvangtoeslag') + '', kleur: 'var(--accent)' },
     { jaar: '2017', titel: 'Eerste signalen in de Kamer', tekst: 'De toeslagenaffaire wordt onder die naam bekend. Pieter Omtzigt (CDA) begint Kamervragen te stellen.' + bron('Trouw/RTL Nieuws, 2017') + ' De rechtbank oordeelt dat de Belastingdienst onrechtmatig handelde.', kleur: 'var(--yellow)' },
-    { jaar: '2019', titel: 'Het schandaal breekt open', tekst: 'Omtzigt, Leijten en Azarkan brengen de affaire volop in de Tweede Kamer. De Raad van State draait jurisprudentie om (23 oktober).' + bron('ECLI:NL:RVS:2019:3535') + ' Staatssecretaris Menno Snel noemt het "beschamend" en treedt af in december.' + bron('Enquêtecommissie 2024', 'https://www.tweedekamer.nl/kamerstukken/detail?id=2024D07858') + '', kleur: 'var(--accent)' },
-    { jaar: 'Juli 2020', titel: 'Autoriteit Persoonsgegevens: discriminatie bewezen', tekst: 'De AP oordeelt: de Belastingdienst discrimineerde jarenlang op nationaliteit. Boete: €2,75 miljoen. Het gebruik van dubbele nationaliteit als selectiecriterium wordt officieel als discriminerend bestempeld.' + bron('AP-rapport discriminatie', 'https://www.autoriteitpersoonsgegevens.nl/nl/nieuws/boete-belastingdienst-kinderopvangtoeslag') + '', kleur: 'var(--accent)' },
-    { jaar: 'Nov 2020', titel: 'Rutte voor de commissie: "geen actieve herinnering"', tekst: 'Mark Rutte, Eric Wiebes, Lodewijk Asscher en anderen verschijnen voor de parlementaire ondervragingscommissie. Rutte beroept zich herhaaldelijk op een haperend geheugen.' + bron('Parlementaire ondervragingscommissie, 2020', 'https://www.tweedekamer.nl/kamerstukken/detail?id=2020Z25198') + '', kleur: 'var(--yellow)' },
-    { jaar: 'Dec 2020', titel: 'Rapport "Ongekend Onrecht"', tekst: 'De parlementaire commissie concludeert: de grondbeginselen van de rechtsstaat zijn geschonden. 25.000+ ouders hebben "ongekend onrecht" geleden. De term "Rutte Doctrine" wordt officieel vastgelegd — de weigering om informatie aan de Kamer te verstrekken.' + bron('Rapport "Ongekend Onrecht", dec 2020', 'https://www.tweedekamer.nl/kamerstukken/detail?id=2020Z25198') + '', kleur: 'var(--accent)' },
+    { jaar: '2019', titel: 'Het schandaal breekt open', tekst: 'Omtzigt, Leijten en Azarkan brengen de affaire volop in de Tweede Kamer. De Raad van State draait jurisprudentie om (23 oktober).' + bron('ECLI:NL:RVS:2019:3535') + ' Staatssecretaris Menno Snel noemt het "beschamend" en treedt af in december.' + bron('Enquêtecommissie 2024', 'https://www.tweedekamer.nl/kamerstukken/detail?id=2024Z02942&did=2024D06757') + '', kleur: 'var(--accent)' },
+    { jaar: 'Juli 2020', titel: 'Autoriteit Persoonsgegevens: discriminatie bewezen', tekst: 'De AP oordeelt: de Belastingdienst discrimineerde jarenlang op nationaliteit. Boete: €2,75 miljoen. Het gebruik van dubbele nationaliteit als selectiecriterium wordt officieel als discriminerend bestempeld.' + bron('AP-rapport discriminatie', 'https://www.autoriteitpersoonsgegevens.nl/documenten/boete-belastingdienst-kinderopvangtoeslag') + '', kleur: 'var(--accent)' },
+    { jaar: 'Nov 2020', titel: 'Rutte voor de commissie: "geen actieve herinnering"', tekst: 'Mark Rutte, Eric Wiebes, Lodewijk Asscher en anderen verschijnen voor de parlementaire ondervragingscommissie. Rutte beroept zich herhaaldelijk op een haperend geheugen.' + bron('Parlementaire ondervragingscommissie, 2020', 'https://www.parlement.com/parlementaire-ondervraging-kinderopvangtoeslag') + '', kleur: 'var(--yellow)' },
+    { jaar: 'Dec 2020', titel: 'Rapport "Ongekend Onrecht"', tekst: 'De parlementaire commissie concludeert: de grondbeginselen van de rechtsstaat zijn geschonden. 25.000+ ouders hebben "ongekend onrecht" geleden. De term "Rutte Doctrine" wordt officieel vastgelegd — de weigering om informatie aan de Kamer te verstrekken.' + bron('Rapport "Ongekend Onrecht", dec 2020', 'https://www.parlement.com/parlementaire-ondervraging-kinderopvangtoeslag') + '', kleur: 'var(--accent)' },
     { jaar: 'Jan 2021', titel: 'Kabinet Rutte III valt', tekst: 'Het kabinet biedt collectief ontslag aan. Maar Rutte blijft zitten als demissionair premier. Asscher trekt zich terug als PvdA-lijsttrekker. Eric Wiebes is de enige die daadwerkelijk opstapt. 80 ouders doen aangifte tegen Rutte — het OM vervolgt niet.' + bron('BijzonderStrafrecht.nl', 'https://www.bijzonderstrafrecht.nl/home/geen-vervolging-van-individuele-ambtenaren-van-de-belastingdienst-uit-de-toeslagenaffaire-voor-beroepsmatige-discriminatie') + '', kleur: 'var(--accent)' },
-    { jaar: '2021–2023', titel: 'Hersteloperatie mislukt', tekst: 'Staatssecretaris Van Huffelen belooft iedere gedupeerde €30.000. Maar de uitvoering is tergend langzaam. In 2023 wachten nog duizenden ouders. Van Huffelen weigert een nieuw BSN. Het FSV-systeem met 180.000 namen wordt stilgelegd' + bron('AP-rapport FSV, 2022', 'https://www.autoriteitpersoonsgegevens.nl/nl/nieuws/boete-belastingdienst-voor-zwarte-lijst-fsv') + ' — maar de schade is al aangericht.', kleur: 'var(--yellow)' },
+    { jaar: '2021–2023', titel: 'Hersteloperatie mislukt', tekst: 'Staatssecretaris Van Huffelen belooft iedere gedupeerde €30.000. Maar de uitvoering is tergend langzaam. In 2023 wachten nog duizenden ouders. Van Huffelen weigert een nieuw BSN. Het FSV-systeem met 180.000 namen wordt stilgelegd' + bron('AP-rapport FSV, 2022', 'https://autoriteitpersoonsgegevens.nl/actueel/boete-belastingdienst-voor-zwarte-lijst-fsv') + ' — maar de schade is al aangericht.', kleur: 'var(--yellow)' },
     { jaar: 'Okt 2023', titel: 'College voor de Rechten van de Mens: discriminatie', tekst: 'Het College oordeelt in drie zaken dat er sprake was van indirecte discriminatie door de Belastingdienst/Toeslagen. Amnesty International had de affaire eerder al als mensenrechtenschending geclassificeerd.' + bron('Amnesty "Xenofobe machines", 2021', 'https://www.amnesty.nl/content/uploads/2021/10/Amnesty-International-rapport-Xenofobe-machines.pdf') + '', kleur: 'var(--accent)' },
     { jaar: '2024', titel: 'Raad van State biedt excuses aan', tekst: 'De Raad van State erkent dat zij jarenlang een te strikte lijn hanteerde en biedt excuses aan toeslagenouders. Te laat, te weinig — maar een erkenning.' + bron('RvS zelfreflectie', 'https://www.raadvanstate.nl/lessen-uit-de-kinderopvangtoeslagzaken/') + '', kleur: 'var(--yellow)' },
-    { jaar: 'Feb 2024', titel: 'Parlementaire enquête: "Blind voor mens en recht"', tekst: 'De enquêtecommissie onder voorzitter Michiel van Nispen (SP) concludeert: "In een verhard politiek en maatschappelijk klimaat zijn de drie staatsmachten blind geweest voor mens en recht, waardoor levens zijn vermorzeld." De commissie beveelt aan om bestuursrechtspraak weg te halen bij de Raad van State. De Raad van State weigert schuld te erkennen.' + bron('Enquêtecommissie 2024', 'https://www.tweedekamer.nl/kamerstukken/detail?id=2024D07858') + '', kleur: 'var(--accent)' },
+    { jaar: 'Feb 2024', titel: 'Parlementaire enquête: "Blind voor mens en recht"', tekst: 'De enquêtecommissie onder voorzitter Michiel van Nispen (SP) concludeert: "In een verhard politiek en maatschappelijk klimaat zijn de drie staatsmachten blind geweest voor mens en recht, waardoor levens zijn vermorzeld." De commissie beveelt aan om bestuursrechtspraak weg te halen bij de Raad van State. De Raad van State weigert schuld te erkennen.' + bron('Enquêtecommissie 2024', 'https://www.tweedekamer.nl/kamerstukken/detail?id=2024Z02942&did=2024D06757') + '', kleur: 'var(--accent)' },
     { jaar: 'Okt 2024', titel: 'Rutte wordt NAVO-baas', tekst: 'Mark Rutte wordt de 14e secretaris-generaal van de NAVO. Jaarsalaris ~€270.000 belastingvrij. 26.000 gezinnen kapot. 2.090 kinderen uit huis. Nul consequenties. Karim Aachboun dagvaardt Rutte voor het Brusselse Hof van Cassatie.' + bron('DutchEcho, mrt 2025', 'https://dutchecho.com/2025/03/30/aachboun-vs-rutte-the-legal-showdown/') + '', kleur: 'var(--accent)' },
-    { jaar: 'Nov 2024', titel: 'Staatssecretaris Achahbar stapt op', tekst: 'Nora Achahbar, pas maanden in functie als staatssecretaris hersteloperatie, treedt af.' + bron('NOS, nov 2024', 'https://nos.nl/artikel/2547044') + ' De zoveelste bestuurder die wegloopt. 37.000 erkende gedupeerden wachten nog steeds.' + bron('Commissie-Van Dam 2025', 'https://www.rijksoverheid.nl/documenten/rapporten/2025/02/13/rapport-commissie-van-dam') + '', kleur: 'var(--yellow)' },
+    { jaar: 'Nov 2024', titel: 'Staatssecretaris Achahbar stapt op', tekst: 'Nora Achahbar, pas maanden in functie als staatssecretaris hersteloperatie, treedt af.' + bron('NOS, nov 2024', 'https://nos.nl/artikel/2547044') + ' De zoveelste bestuurder die wegloopt. 37.000 erkende gedupeerden wachten nog steeds.' + bron('Commissie-Van Dam 2025', 'https://www.rijksoverheid.nl/documenten/kamerstukken/2025/01/23/minder-beloven-meer-doen-lr') + '', kleur: 'var(--yellow)' },
     { jaar: '2025', titel: 'Rechters slaan alarm: €100 miljoen aan dwangsommen', tekst: 'De Raad van State onthult: tussen november 2023 en november 2024 is <strong>€101,6 miljoen</strong> aan dwangsommen opgelegd omdat de Dienst Toeslagen wettelijke termijnen overschrijdt. 9.300 rechtszaken lopen, 500 nieuwe per maand. Het geld verdwijnt in boetes — niet in herstel.' + bron('RvS dwangsommen', 'https://www.raadvanstate.nl/uitspraken/@141810/202403045-1-a2/') + '', kleur: 'var(--accent)' },
     { jaar: '2025', titel: 'Dienst Toeslagen geeft bewust geen informatie', tekst: 'NOS onthult een intern memo: de Dienst Toeslagen weigert <strong>bewust</strong> uit te leggen aan ouders waarom ze als fraudeur zijn bestempeld. Het memo erkent dat dit "niet houdbaar in beroep" is — ze weten dat het illegaal is en doen het tóch.' + bron('NOS, 2025', 'https://nos.nl/artikel/2599959') + '', kleur: 'var(--accent)' },
     { jaar: '2025', titel: 'College: directe discriminatie op ras', tekst: 'Het College voor de Rechten van de Mens oordeelt voor het eerst dat de Belastingdienst <strong>direct discrimineerde op grond van ras</strong> — niet indirect, maar bewust. 20+ discriminatieoordelen inmiddels.' + bron('College oordeel 2023-103', 'https://oordelen.mensenrechten.nl/oordeel/2023-103') + '', kleur: 'var(--accent)' },
-    { jaar: 'Mrt 2025', titel: 'Commissie-Hamer: 3.500 kinderen, 23 terug', tekst: 'De Commissie-Hamer concludeert dat de toeslagenaffaire een "grote rol" speelde bij uithuisplaatsingen. Van de 3.500+ kinderen zijn er slechts <strong>23</strong> herenigd met hun ouders. 482 kinderen van gedupeerden zijn overleden (2005–2021). De gevolgen zijn "blijvend — mogelijk generatielang."' + bron('Commissie-Hamer, mrt 2025', 'https://www.rijksoverheid.nl/documenten/rapporten/2025/03/03/rapport-commissie-hamer') + '', kleur: 'var(--accent)' },
+    { jaar: 'Mrt 2025', titel: 'Commissie-Hamer: 3.500 kinderen, 23 terug', tekst: 'De Commissie-Hamer concludeert dat de toeslagenaffaire een "grote rol" speelde bij uithuisplaatsingen. Van de 3.500+ kinderen zijn er slechts <strong>23</strong> herenigd met hun ouders. 482 kinderen van gedupeerden zijn overleden (2005–2021). De gevolgen zijn "blijvend — mogelijk generatielang."' + bron('Commissie-Hamer, mrt 2025', 'https://www.rijksoverheid.nl/documenten/rapporten/2025/03/27/tk-bijlage-1-rapportage-commissie-toeslagen-en-uithuisplaatsingen-erfenis-van-onrecht') + '', kleur: 'var(--accent)' },
     { jaar: '2025', titel: '50+ illegale algoritmes nog actief', tekst: 'Follow the Money onthult: meer dan 50 van de 100+ algoritmes van de Belastingdienst zijn <strong>onrechtmatig</strong>. De Autoriteit Persoonsgegevens weigert te handhaven en gedraagt zich als "consultant van de Belastingdienst" aldus Bits of Freedom.' + bron('Follow the Money, 2025', 'https://www.ftm.nl/artikelen/meer-dan-50-algoritmes-van-de-belasting-dienst-zijn-onrechtmatig') + '', kleur: 'var(--yellow)' },
-    { jaar: '2026', titel: 'Het is niet voorbij', tekst: 'Anno 2026 wachten duizenden ouders nog op compensatie. Volledige afronding: niet voor 2030. 50+ illegale algoritmes draaien door. Geen enkele ambtenaar of politicus is strafrechtelijk vervolgd. De patronen die de enquêtecommissie signaleerde zijn <strong>"nog steeds aanwezig."</strong>' + bron('Enquêtecommissie 2024', 'https://www.tweedekamer.nl/kamerstukken/detail?id=2024D07858') + ' Het kan morgen opnieuw gebeuren.', kleur: 'var(--accent)' }
+    { jaar: '2026', titel: 'Het is niet voorbij', tekst: 'Anno 2026 wachten duizenden ouders nog op compensatie. Volledige afronding: niet voor 2030. 50+ illegale algoritmes draaien door. Geen enkele ambtenaar of politicus is strafrechtelijk vervolgd. De patronen die de enquêtecommissie signaleerde zijn <strong>"nog steeds aanwezig."</strong>' + bron('Enquêtecommissie 2024', 'https://www.tweedekamer.nl/kamerstukken/detail?id=2024Z02942&did=2024D06757') + ' Het kan morgen opnieuw gebeuren.', kleur: 'var(--accent)' }
   ];
 
   var html = '<div class="page">' +
@@ -2215,9 +2221,9 @@ function pgTijdlijn(){
 
     // IMPACT STATS
     '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:20px">' +
-      '<div class="card" style="text-align:center;padding:14px"><div style="font-size:24px;font-weight:800;color:var(--accent)">37.000+</div><div style="font-size:10px;color:var(--tx3)">ERKENDE GEDUPEERDEN' + bron('Commissie-Van Dam 2025', 'https://www.rijksoverheid.nl/documenten/rapporten/2025/02/13/rapport-commissie-van-dam') + '</div></div>' +
-      '<div class="card" style="text-align:center;padding:14px"><div style="font-size:24px;font-weight:800;color:var(--accent)">3.500+</div><div style="font-size:10px;color:var(--tx3)">KINDEREN UIT HUIS' + bron('Commissie-Hamer 2025', 'https://www.rijksoverheid.nl/documenten/rapporten/2025/03/03/rapport-commissie-hamer') + '</div></div>' +
-      '<div class="card" style="text-align:center;padding:14px"><div style="font-size:24px;font-weight:800;color:var(--yellow)">23</div><div style="font-size:10px;color:var(--tx3)">KINDEREN TERUG' + bron('Commissie-Hamer 2025', 'https://www.rijksoverheid.nl/documenten/rapporten/2025/03/03/rapport-commissie-hamer') + '</div></div>' +
+      '<div class="card" style="text-align:center;padding:14px"><div style="font-size:24px;font-weight:800;color:var(--accent)">37.000+</div><div style="font-size:10px;color:var(--tx3)">ERKENDE GEDUPEERDEN' + bron('Commissie-Van Dam 2025', 'https://www.rijksoverheid.nl/documenten/kamerstukken/2025/01/23/minder-beloven-meer-doen-lr') + '</div></div>' +
+      '<div class="card" style="text-align:center;padding:14px"><div style="font-size:24px;font-weight:800;color:var(--accent)">3.500+</div><div style="font-size:10px;color:var(--tx3)">KINDEREN UIT HUIS' + bron('Commissie-Hamer 2025', 'https://www.rijksoverheid.nl/documenten/rapporten/2025/03/27/tk-bijlage-1-rapportage-commissie-toeslagen-en-uithuisplaatsingen-erfenis-van-onrecht') + '</div></div>' +
+      '<div class="card" style="text-align:center;padding:14px"><div style="font-size:24px;font-weight:800;color:var(--yellow)">23</div><div style="font-size:10px;color:var(--tx3)">KINDEREN TERUG' + bron('Commissie-Hamer 2025', 'https://www.rijksoverheid.nl/documenten/rapporten/2025/03/27/tk-bijlage-1-rapportage-commissie-toeslagen-en-uithuisplaatsingen-erfenis-van-onrecht') + '</div></div>' +
       '<div class="card" style="text-align:center;padding:14px"><div style="font-size:24px;font-weight:800;color:var(--accent)">€7,1 mrd</div><div style="font-size:10px;color:var(--tx3)">KOSTEN HERSTEL' + bron('Algemene Rekenkamer 2025', 'https://www.rekenkamer.nl/publicaties/rapporten/2025/05/21/hersteloperatie-toeslagen') + '</div></div>' +
       '<div class="card" style="text-align:center;padding:14px"><div style="font-size:24px;font-weight:800;color:var(--yellow)">0</div><div style="font-size:10px;color:var(--tx3)">POLITICI VERVOLGD</div></div>' +
     '</div>' +
@@ -2228,7 +2234,7 @@ function pgTijdlijn(){
       '<div style="font-size:42px;font-weight:800;color:#fff;letter-spacing:2px;margin-bottom:8px">482</div>' +
       '<div style="font-size:16px;color:var(--tx);font-weight:600;margin-bottom:12px">kinderen van gedupeerde ouders zijn overleden</div>' +
       '<div style="font-size:13px;color:var(--tx2);max-width:520px;margin:0 auto;line-height:1.8">' +
-        'Tussen 2005 en 2021 zijn 482 kinderen van gedupeerde toeslagenouders overleden.' + bron('Commissie-Hamer / CBS, mrt 2025', 'https://www.rijksoverheid.nl/documenten/rapporten/2025/03/03/rapport-commissie-hamer') + ' ' +
+        'Tussen 2005 en 2021 zijn 482 kinderen van gedupeerde toeslagenouders overleden.' + bron('Commissie-Hamer / CBS, mrt 2025', 'https://www.rijksoverheid.nl/documenten/rapporten/2025/03/27/tk-bijlage-1-rapportage-commissie-toeslagen-en-uithuisplaatsingen-erfenis-van-onrecht') + ' ' +
         'Elk van deze kinderen had een naam, een gezicht, een leven dat nog moest beginnen. ' +
         'Sommigen zijn uit huis geplaatst en hebben hun ouders nooit meer gezien. ' +
         'Sommigen konden de druk niet aan. Sommigen zijn nooit oud genoeg geworden om te begrijpen wat er met hun gezin was gebeurd.' +
@@ -2345,7 +2351,7 @@ function pgRechtspraak(){
       feiten: [
         'Adviseerde tegen vervolging van Rutte, Wiebes, Asscher en anderen',
         'Art. 119 Gw vervolging (bewindslieden) vereist besluit Tweede Kamer of Kroon',
-        'De Kamer stemde 97–34 tegen vervolging (7 juli 2021)' + bron('Enquêtecommissie 2024', 'https://www.tweedekamer.nl/kamerstukken/detail?id=2024D07858'),
+        'De Kamer stemde 97–34 tegen vervolging (7 juli 2021)' + bron('Enquêtecommissie 2024', 'https://www.tweedekamer.nl/kamerstukken/detail?id=2024Z02942&did=2024D06757'),
         '80+ ouders deden strafrechtelijk aangifte — geen enkel gevolg',
         'Ontving na vertrek een koninklijke onderscheiding'
       ],
@@ -2373,7 +2379,7 @@ function pgRechtspraak(){
       functie: 'Rechter Rechtbank Rotterdam',
       nu: 'Nog steeds rechter',
       foto: '',
-      rol: 'Een van de weinige rechters die WEL afweek van de harde lijn. Cooijmans weigerde de alles-of-niets jurisprudentie toe te passen en oordeelde in het voordeel van ouders. Werd intern bekritiseerd. Getuigde voor de parlementaire enquetecommissie' + bron('Enquêtecommissie 2024', 'https://www.tweedekamer.nl/kamerstukken/detail?id=2024D07858') + ' over de cultuur bij de rechtbanken: "Er was druk om de lijn van de Afdeling te volgen, ook als je het er niet mee eens was."',
+      rol: 'Een van de weinige rechters die WEL afweek van de harde lijn. Cooijmans weigerde de alles-of-niets jurisprudentie toe te passen en oordeelde in het voordeel van ouders. Werd intern bekritiseerd. Getuigde voor de parlementaire enquetecommissie' + bron('Enquêtecommissie 2024', 'https://www.tweedekamer.nl/kamerstukken/detail?id=2024Z02942&did=2024D06757') + ' over de cultuur bij de rechtbanken: "Er was druk om de lijn van de Afdeling te volgen, ook als je het er niet mee eens was."',
       feiten: [
         'Week als een van de weinigen af van de alles-of-niets lijn',
         'Oordeelde meerdere keren in het voordeel van toeslagenouders',
@@ -2494,7 +2500,7 @@ function pgRechtspraak(){
     '<h3 style="font-size:16px;font-weight:700;margin-bottom:12px"><span class="mi mi-sm" style="color:var(--yellow)">warning</span> Staatsraden met politieke achtergrond</h3>' +
     '<p style="font-size:13px;color:var(--tx2);line-height:1.7;margin-bottom:14px">' +
       'De Raad van State bestaat voor een groot deel uit oud-politici. Zij beoordeelden als bestuursrechter het beleid dat zij als politicus zelf mede hebben gemaakt of gesteund. ' +
-      'De enquetecommissie noemde dit een structureel probleem.' + bron('Enquêtecommissie 2024', 'https://www.tweedekamer.nl/kamerstukken/detail?id=2024D07858') + '' +
+      'De enquetecommissie noemde dit een structureel probleem.' + bron('Enquêtecommissie 2024', 'https://www.tweedekamer.nl/kamerstukken/detail?id=2024Z02942&did=2024D06757') + '' +
     '</p>' +
     '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px">';
   staatsraden.forEach(function(s,idx){
@@ -2538,7 +2544,7 @@ function pgRechtspraak(){
   html += '<div class="card" style="padding:20px;background:linear-gradient(135deg,rgba(239,68,68,.06),rgba(239,68,68,.02));border:1px solid rgba(239,68,68,.2)">' +
     '<h3 style="font-size:16px;font-weight:700;margin-bottom:10px;color:var(--accent)"><span class="mi mi-sm">report</span> Aanbeveling enquetecommissie</h3>' +
     '<p style="font-size:14px;color:var(--tx);line-height:1.7;margin-bottom:12px">' +
-      'De parlementaire enquetecommissie adviseerde in februari 2024' + bron('Enquêtecommissie 2024', 'https://www.tweedekamer.nl/kamerstukken/detail?id=2024D07858') + ' om de Afdeling bestuursrechtspraak <strong style="color:var(--accent)">weg te halen bij de Raad van State</strong> en onder te brengen bij de gewone rechtspraak. ' +
+      'De parlementaire enquetecommissie adviseerde in februari 2024' + bron('Enquêtecommissie 2024', 'https://www.tweedekamer.nl/kamerstukken/detail?id=2024Z02942&did=2024D06757') + ' om de Afdeling bestuursrechtspraak <strong style="color:var(--accent)">weg te halen bij de Raad van State</strong> en onder te brengen bij de gewone rechtspraak. ' +
       'Dit om het probleem van politieke benoemingen en gebrek aan onafhankelijkheid structureel op te lossen.' +
     '</p>' +
     '<p style="font-size:14px;color:var(--accent);font-weight:700">' +
@@ -2562,7 +2568,7 @@ function pgRechtspraak(){
         '<div style="font-size:14px;font-weight:700;margin-bottom:4px">Kabinet Schoof</div>' +
         '<div style="font-size:12px;color:var(--tx2);line-height:1.6">' +
           '<strong>Nora Achahbar</strong> (NSC) was staatssecretaris Herstel Toeslagen — trad af op 15 november 2024' + bron('NOS, nov 2024', 'https://nos.nl/artikel/2547044') + ' na racisme-discussie in ministerraad. Ouders reageerden teleurgesteld.<br>' +
-          '<strong>Sandra Palmen</strong> is de huidige staatssecretaris Herstel en Toeslagen (dec 2024–heden, eerst NSC, nu partijloos). Palmen schreef in 2017 als interne jurist bij de Belastingdienst het "memo-Palmen" waarin zij het handelen als "laakbaar" bestempelde' + bron('Enquêtecommissie 2024', 'https://www.tweedekamer.nl/kamerstukken/detail?id=2024D07858') + ' — het management negeerde haar. Haar doel: ouders uiterlijk 2027 geholpen. Commissie-Van Dam noemt die deadline onhaalbaar.' + bron('Commissie-Van Dam 2025', 'https://www.rijksoverheid.nl/documenten/rapporten/2025/02/13/rapport-commissie-van-dam') + '<br>' +
+          '<strong>Sandra Palmen</strong> is de huidige staatssecretaris Herstel en Toeslagen (dec 2024–heden, eerst NSC, nu partijloos). Palmen schreef in 2017 als interne jurist bij de Belastingdienst het "memo-Palmen" waarin zij het handelen als "laakbaar" bestempelde' + bron('Enquêtecommissie 2024', 'https://www.tweedekamer.nl/kamerstukken/detail?id=2024Z02942&did=2024D06757') + ' — het management negeerde haar. Haar doel: ouders uiterlijk 2027 geholpen. Commissie-Van Dam noemt die deadline onhaalbaar.' + bron('Commissie-Van Dam 2025', 'https://www.rijksoverheid.nl/documenten/kamerstukken/2025/01/23/minder-beloven-meer-doen-lr') + '<br>' +
           '<strong>€101,6 mln</strong> aan dwangsommen opgelegd wegens te trage afhandeling.' + bron('RvS dwangsommen', 'https://www.raadvanstate.nl/uitspraken/@141810/202403045-1-a2/') + ' Ouders krijgen €5.000 aangeboden als ze hun bezwaar intrekken.' + bron('NOS, 2025', 'https://nos.nl/artikel/2599959') + '' +
         '</div>' +
       '</div>' +
@@ -2578,7 +2584,7 @@ function pgRechtspraak(){
       '<div class="card" style="padding:16px;border-left:3px solid var(--purple)">' +
         '<div style="font-size:14px;font-weight:700;margin-bottom:4px">Gemeenten</div>' +
         '<div style="font-size:12px;color:var(--tx2);line-height:1.6">' +
-          '342 gemeenten kregen elk €5.000 per gedupeerde' + bron('Commissie-Van Dam 2025', 'https://www.rijksoverheid.nl/documenten/rapporten/2025/02/13/rapport-commissie-van-dam') + ' voor de "brede hulp." ' +
+          '342 gemeenten kregen elk €5.000 per gedupeerde' + bron('Commissie-Van Dam 2025', 'https://www.rijksoverheid.nl/documenten/kamerstukken/2025/01/23/minder-beloven-meer-doen-lr') + ' voor de "brede hulp." ' +
           'Veel gemeenten besteedden het geld niet aan de ouders. Er is geen verantwoordingsplicht. ' +
           'Sommige gemeenten weigeren nog steeds de schuldsanering.' +
         '</div>' +
@@ -2597,11 +2603,11 @@ function pgRechtspraak(){
       '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">' +
         '<div style="background:var(--glass);padding:12px;border-radius:var(--rs);text-align:center">' +
           '<div style="font-size:22px;font-weight:800;color:var(--accent)">€2,75 mln</div>' +
-          '<div style="font-size:11px;color:var(--tx3)">Toeslagenaffaire (dec 2021)' + bron('AP', 'https://www.autoriteitpersoonsgegevens.nl/nl/nieuws/boete-belastingdienst-kinderopvangtoeslag') + '</div>' +
+          '<div style="font-size:11px;color:var(--tx3)">Toeslagenaffaire (dec 2021)' + bron('AP', 'https://www.autoriteitpersoonsgegevens.nl/documenten/boete-belastingdienst-kinderopvangtoeslag') + '</div>' +
         '</div>' +
         '<div style="background:var(--glass);padding:12px;border-radius:var(--rs);text-align:center">' +
           '<div style="font-size:22px;font-weight:800;color:var(--accent)">€3,7 mln</div>' +
-          '<div style="font-size:11px;color:var(--tx3)">Zwarte lijst FSV (apr 2022)' + bron('AP', 'https://www.autoriteitpersoonsgegevens.nl/nl/nieuws/boete-belastingdienst-voor-zwarte-lijst-fsv') + '</div>' +
+          '<div style="font-size:11px;color:var(--tx3)">Zwarte lijst FSV (apr 2022)' + bron('AP', 'https://autoriteitpersoonsgegevens.nl/actueel/boete-belastingdienst-voor-zwarte-lijst-fsv') + '</div>' +
         '</div>' +
       '</div>' +
       '<p style="font-size:13px;color:var(--tx);line-height:1.7;margin-bottom:10px">' +
@@ -2729,7 +2735,7 @@ function pgRechtspraak(){
         '<div style="padding:14px;background:var(--glass);border-radius:var(--rs);border-left:3px solid var(--green)">' +
           '<div style="font-size:13px;font-weight:700;margin-bottom:4px"><span class="mi mi-sm" style="color:var(--green)">public</span> 3. Internationaal</div>' +
           '<div style="font-size:12px;color:var(--tx2);line-height:1.5">' +
-            'Het Europees Hof voor de Rechten van de Mens (EHRM) en het VN-Comité CERD (rassendiscriminatie)' + bron('CERD 2021', 'https://www.ohchr.org/en/documents/concluding-observations/cerdcnldco22-24') + ' ' +
+            'Het Europees Hof voor de Rechten van de Mens (EHRM) en het VN-Comité CERD (rassendiscriminatie)' + bron('CERD 2021', 'https://www.ohchr.org/en/documents/concluding-observations/cerdcnldco22-24-concluding-observations-combined-twenty-second') + ' ' +
             'zijn nog beschikbare routes als Nederland het zelf niet oplost.' +
           '</div>' +
         '</div>' +
@@ -2759,23 +2765,23 @@ function pgRechtspraak(){
 function pgDocumentatie(){
   var bronnen = {
     parlementair: [
-      { titel: 'Rapport "Ongekend Onrecht"', bron: 'Parlementaire ondervragingscommissie Kinderopvangtoeslag', jaar: '2020', url: 'https://www.tweedekamer.nl/kamerstukken/detail?id=2020Z25198' },
-      { titel: '"Blind voor mens en recht"', bron: 'Parlementaire enquêtecommissie Fraudebeleid en Dienstverlening', jaar: '2024', url: 'https://www.tweedekamer.nl/kamerstukken/detail?id=2024D07858' },
-      { titel: '"Minder belomen, meer doen"', bron: 'Commissie-Van Dam', jaar: '2025', url: 'https://www.rijksoverheid.nl/documenten/rapporten/2025/02/13/rapport-commissie-van-dam' },
-      { titel: 'Rapport uithuisplaatsingen kinderen gedupeerden', bron: 'Commissie-Hamer', jaar: '2025', url: 'https://www.rijksoverheid.nl/documenten/rapporten/2025/03/03/rapport-commissie-hamer' }
+      { titel: 'Rapport "Ongekend Onrecht"', bron: 'Parlementaire ondervragingscommissie Kinderopvangtoeslag', jaar: '2020', url: 'https://www.parlement.com/parlementaire-ondervraging-kinderopvangtoeslag' },
+      { titel: '"Blind voor mens en recht"', bron: 'Parlementaire enquêtecommissie Fraudebeleid en Dienstverlening', jaar: '2024', url: 'https://www.tweedekamer.nl/kamerstukken/detail?id=2024Z02942&did=2024D06757' },
+      { titel: '"Minder beloven, meer doen"', bron: 'Commissie-Van Dam', jaar: '2025', url: 'https://www.rijksoverheid.nl/documenten/kamerstukken/2025/01/23/minder-beloven-meer-doen-lr' },
+      { titel: 'Rapport uithuisplaatsingen kinderen gedupeerden', bron: 'Commissie-Hamer', jaar: '2025', url: 'https://www.rijksoverheid.nl/documenten/rapporten/2025/03/27/tk-bijlage-1-rapportage-commissie-toeslagen-en-uithuisplaatsingen-erfenis-van-onrecht' }
     ],
     rechtspraak: [
       { titel: 'Oordeel 2023-103, 2023-104, 2023-105: indirecte discriminatie', bron: 'College voor de Rechten van de Mens', jaar: '2023', url: 'https://oordelen.mensenrechten.nl/oordeel/2023-103' },
-      { titel: 'Oordeel 2024-51: discriminatie moeder Turkse achternaam', bron: 'College voor de Rechten van de Mens', jaar: '2024', url: 'https://www.mensenrechten.nl/actueel/nieuws/2024/06/12/' },
-      { titel: 'Oordeel 2025: directe discriminatie op ras', bron: 'College voor de Rechten van de Mens', jaar: '2025', url: 'https://www.mensenrechten.nl/actueel/nieuws/2025/07/03/' },
+      { titel: 'Oordeel 2024-51: discriminatie moeder Turkse achternaam', bron: 'College voor de Rechten van de Mens', jaar: '2024', url: 'https://www.mensenrechten.nl/actueel/nieuws/2024/06/12/opnieuw-indirecte-discriminatie-door-belastingdienst-vastgesteld-in-toeslagenzaak-moeder-van-dochter-met-turkse-achternaam-en-dubbele-nationaliteit-gediscrimineerd' },
+      { titel: 'Oordeel 2025: directe discriminatie op ras', bron: 'College voor de Rechten van de Mens', jaar: '2025', url: 'https://www.mensenrechten.nl/actueel/nieuws/2025/07/03/college-oordeelt-belastingdienst-maakt-direct-onderscheid-in-toeslagenaffaire' },
       { titel: 'Staat handelde onrechtmatig (ECLI:NL:RBOVL:2023)', bron: 'Rechtbank Overijssel', jaar: '2023', url: 'https://www.rechtspraak.nl/Organisatie-en-contact/Organisatie/Rechtbanken/Rechtbank-Overijssel/Nieuws/Paginas/Staat-handelde-onrechtmatig-tegen-twee-gedupeerde-ouders-toeslagenaffaire-.aspx' },
       { titel: 'Dwangsommen-uitspraak (ECLI:NL:RVS:2025:1301)', bron: 'Raad van State', jaar: '2025', url: 'https://www.raadvanstate.nl/uitspraken/@141810/202403045-1-a2/' },
       { titel: '"Recht vinden bij de rechtbank" — zelfreflectie rechtbanken', bron: 'Raad voor de Rechtspraak', jaar: '2021', url: 'https://www.rechtspraak.nl/Organisatie-en-contact/Organisatie/Raad-voor-de-rechtspraak/Nieuws/Paginas/Toeslagenaffaire-Belang-rechtsbescherming-individu-moet-zwaarder-wegen-dan-vaste-lijn-jurisprudentie.aspx' },
       { titel: '"Lessen uit de kinderopvangtoeslagzaken"', bron: 'Raad van State — Afdeling bestuursrechtspraak', jaar: '2021', url: 'https://www.raadvanstate.nl/lessen-uit-de-kinderopvangtoeslagzaken/' }
     ],
     toezicht: [
-      { titel: 'Boete Belastingdienst — discriminatie dubbele nationaliteit (€2,75 mln)', bron: 'Autoriteit Persoonsgegevens', jaar: '2021', url: 'https://www.autoriteitpersoonsgegevens.nl/nl/nieuws/boete-belastingdienst-kinderopvangtoeslag' },
-      { titel: 'Boete Belastingdienst — FSV zwarte lijst (€3,7 mln)', bron: 'Autoriteit Persoonsgegevens', jaar: '2022', url: 'https://www.autoriteitpersoonsgegevens.nl/nl/nieuws/boete-belastingdienst-voor-zwarte-lijst-fsv' },
+      { titel: 'Boete Belastingdienst — discriminatie dubbele nationaliteit (€2,75 mln)', bron: 'Autoriteit Persoonsgegevens', jaar: '2021', url: 'https://www.autoriteitpersoonsgegevens.nl/documenten/boete-belastingdienst-kinderopvangtoeslag' },
+      { titel: 'Boete Belastingdienst — FSV zwarte lijst (€3,7 mln)', bron: 'Autoriteit Persoonsgegevens', jaar: '2022', url: 'https://autoriteitpersoonsgegevens.nl/actueel/boete-belastingdienst-voor-zwarte-lijst-fsv' },
       { titel: 'Informatiehuishouding Toeslagen voldoet niet', bron: 'Inspectie Overheidsinformatie en Erfgoed', jaar: '2024', url: 'https://www.inspectie-oe.nl/actueel/nieuws/2024/04/26/informatiehuishouding-toeslagen' },
       { titel: 'Hersteloperatie Toeslagen — verantwoording', bron: 'Algemene Rekenkamer', jaar: '2025', url: 'https://www.rekenkamer.nl/publicaties/rapporten/2025/05/21/hersteloperatie-toeslagen' },
       { titel: '"Xenofobe machines" — mensenrechtenschending', bron: 'Amnesty International', jaar: '2021', url: 'https://www.amnesty.nl/content/uploads/2021/10/Amnesty-International-rapport-Xenofobe-machines.pdf' }
@@ -2797,8 +2803,8 @@ function pgDocumentatie(){
       { titel: 'Herziening art. 119 Grondwet — ambtsmisdrijven bewindslieden', bron: 'Raad van State — advies', jaar: '2025', url: 'https://www.raadvanstate.nl/adviezen/@151990/w01-25-00144/' }
     ],
     internationaal: [
-      { titel: 'Concluding Observations Netherlands — raciale discriminatie', bron: 'CERD (VN-comité)', jaar: '2021', url: 'https://www.ohchr.org/en/documents/concluding-observations/cerdcnldco22-24' },
-      { titel: 'Country visit Netherlands — racisme en discriminatie', bron: 'VN Speciaal Rapporteur', jaar: '2019', url: 'https://www.ohchr.org/en/documents/country-reports/ahrc4457add2-visit-netherlands' },
+      { titel: 'Concluding Observations Netherlands — raciale discriminatie', bron: 'CERD (VN-comité)', jaar: '2021', url: 'https://www.ohchr.org/en/documents/concluding-observations/cerdcnldco22-24-concluding-observations-combined-twenty-second' },
+      { titel: 'Country visit Netherlands — racisme en discriminatie', bron: 'VN Speciaal Rapporteur', jaar: '2019', url: 'https://www.ohchr.org/en/press-releases/2019/10/netherlands-building-surveillance-state-poor-says-un-rights-expert' },
       { titel: 'Venice Commission — advies toetsingsverbod', bron: 'Raad van Europa', jaar: '2021', url: 'https://verfassungsblog.de/constitutional-review-in-sight/' },
       { titel: 'Aachboun vs. Rutte — Brusselse Hof van Cassatie', bron: 'DutchEcho', jaar: '2025', url: 'https://dutchecho.com/2025/03/30/aachboun-vs-rutte-the-legal-showdown/' }
     ],
@@ -2889,6 +2895,515 @@ function pgDocumentatie(){
   '</div>';
 }
 
+// ============ PAGE: OPLOSSING — NIEUW BSN & VERGOEDING ============
+function pgOplossing(){
+  return '<div class="page">' +
+
+    // HERO
+    '<div style="text-align:center;padding:28px 0 20px">' +
+      '<span class="mi" style="font-size:48px;color:var(--yellow);display:block;margin-bottom:8px">verified</span>' +
+      '<h1 style="font-size:clamp(22px,4vw,32px);font-weight:800;line-height:1.2">De oplossing die de<br>overheid <span style="color:var(--yellow)">weigert</span></h1>' +
+      '<p style="font-size:14px;color:var(--tx2);max-width:600px;margin:10px auto 0">Een nieuw BSN-nummer en een eerlijke vergoeding. Het minimum. En toch weigert Den Haag.</p>' +
+    '</div>' +
+
+    // ==========================================
+    // SECTIE 1: WAAROM EEN NIEUW BSN
+    // ==========================================
+    '<div style="margin:24px 0 10px;display:flex;align-items:center;gap:10px">' +
+      '<div style="height:2px;flex:1;background:linear-gradient(90deg,transparent,var(--yellow))"></div>' +
+      '<span style="font-size:12px;font-weight:700;color:var(--yellow);text-transform:uppercase;letter-spacing:1px;white-space:nowrap">Deel 1 — Nieuw BSN-nummer</span>' +
+      '<div style="height:2px;flex:1;background:linear-gradient(90deg,var(--yellow),transparent)"></div>' +
+    '</div>' +
+
+    '<div class="card" style="padding:24px;margin-bottom:16px;border-left:4px solid var(--yellow)">' +
+      '<h2 style="font-size:19px;margin-bottom:10px"><span class="mi mi-sm" style="color:var(--yellow)">credit_card</span> Je BSN is besmet — en het gaat niet weg</h2>' +
+      '<p style="font-size:14px;line-height:1.8;color:var(--tx);margin-bottom:10px">' +
+        'Het Burgerservicenummer is de ruggengraat van elk overheidscontact. Belastingdienst, gemeente, zorgverzekeraar, bank, woningcorporatie, school — alles is gekoppeld aan dat ene nummer. En bij <strong>240.000+ Nederlanders</strong> staat dat nummer gemarkeerd.' + bron('AP-rapport FSV, 2022', 'https://autoriteitpersoonsgegevens.nl/actueel/boete-belastingdienst-voor-zwarte-lijst-fsv') +
+      '</p>' +
+      '<p style="font-size:14px;line-height:1.8;color:var(--tx);margin-bottom:10px">' +
+        'De FSV-lijst (Fraude Signalerings Voorziening) was een zwarte lijst waarop de Belastingdienst signalen van mogelijke fraude bijhield. Zonder medeweten van de betrokkenen. Zonder wettelijke grondslag. De Autoriteit Persoonsgegevens oordeelde: <strong>volledig onrechtmatig</strong>. Boete: €3,7 miljoen.' +
+      '</p>' +
+      '<p style="font-size:14px;line-height:1.8;color:var(--tx);margin-bottom:10px">' +
+        'Maar de schade is al gedaan. Die FSV-data is <strong>al doorgesijpeld</strong> naar honderden instanties:' +
+      '</p>' +
+
+      '<div style="display:grid;gap:8px;margin-bottom:12px">' +
+        '<div style="display:flex;gap:10px;align-items:flex-start;padding:10px;background:var(--bg2);border-radius:var(--rs)">' +
+          '<span class="mi mi-sm" style="color:var(--accent)">account_balance</span>' +
+          '<div style="font-size:13px;color:var(--tx);line-height:1.6"><strong>Banken</strong> — hypotheek geweigerd, rekening opgezegd, lening afgewezen. Het BKR (Bureau Krediet Registratie) registreerde negatieve signalen op basis van Belastingdienst-data.</div>' +
+        '</div>' +
+        '<div style="display:flex;gap:10px;align-items:flex-start;padding:10px;background:var(--bg2);border-radius:var(--rs)">' +
+          '<span class="mi mi-sm" style="color:var(--accent)">health_and_safety</span>' +
+          '<div style="font-size:13px;color:var(--tx);line-height:1.6"><strong>Verzekeraars</strong> — hogere premies, polissen opgezegd, claims afgewezen. Het CIS (Centraal Informatie Systeem) deelt fraudesignalen tussen verzekeraars.</div>' +
+        '</div>' +
+        '<div style="display:flex;gap:10px;align-items:flex-start;padding:10px;background:var(--bg2);border-radius:var(--rs)">' +
+          '<span class="mi mi-sm" style="color:var(--accent)">home</span>' +
+          '<div style="font-size:13px;color:var(--tx);line-height:1.6"><strong>Woningcorporaties</strong> — sociale huurwoning geweigerd wegens "fraudeachtergrond." Terwijl de woning juist werd verloren door de toeslagenaffaire.</div>' +
+        '</div>' +
+        '<div style="display:flex;gap:10px;align-items:flex-start;padding:10px;background:var(--bg2);border-radius:var(--rs)">' +
+          '<span class="mi mi-sm" style="color:var(--accent)">gavel</span>' +
+          '<div style="font-size:13px;color:var(--tx);line-height:1.6"><strong>Schuldsanering</strong> — WSNP-traject geblokkeerd omdat het BSN gekoppeld is aan een "frauderegistratie." De weg naar een schuldenvrij bestaan afgesneden.</div>' +
+        '</div>' +
+        '<div style="display:flex;gap:10px;align-items:flex-start;padding:10px;background:var(--bg2);border-radius:var(--rs)">' +
+          '<span class="mi mi-sm" style="color:var(--accent)">child_care</span>' +
+          '<div style="font-size:13px;color:var(--tx);line-height:1.6"><strong>Jeugdbescherming</strong> — het BSN van ouders die op de FSV-lijst stonden werd gedeeld met Veilig Thuis. De link tussen de toeslagenaffaire en uithuisplaatsingen liep via het BSN.</div>' +
+        '</div>' +
+      '</div>' +
+
+      '<p style="font-size:14px;line-height:1.8;color:var(--tx);margin-bottom:0">' +
+        'De overheid zegt: "we wissen de data." Maar dat is een leugen. Na 10+ jaar is die data verspreid over <strong>honderden databases</strong> bij honderden organisaties. De overheid heeft geen zicht op waar de data terecht is gekomen, laat staan de macht om het te wissen. Het BSN IS het probleem. Zolang het nummer hetzelfde is, <strong>blijft het vlaggetje staan</strong>.' +
+      '</p>' +
+    '</div>' +
+
+    // ==========================================
+    // SECTIE 2: VAN HUFFELEN ONTKRACHT
+    // ==========================================
+    '<div class="card" style="padding:24px;margin-bottom:16px;border-left:4px solid var(--accent)">' +
+      '<h2 style="font-size:19px;margin-bottom:12px"><span class="mi mi-sm" style="color:var(--accent)">gavel</span> Van Huffelen zegt "het kan niet" — elk argument weerlegd</h2>' +
+      '<p style="font-size:14px;line-height:1.8;color:var(--tx);margin-bottom:14px">' +
+        'Staatssecretaris Alexandra van Huffelen verklaarde in 2022 dat een nieuw BSN voor slachtoffers "niet mogelijk en niet wenselijk" is.' + bron('Kamerstukken II 2021/22, 31 066, nr. 951') + ' Haar argumenten raken kant noch wal. Punt voor punt:' +
+      '</p>' +
+
+      // Argument 1
+      '<div style="background:var(--bg2);border-radius:var(--rs);padding:16px;margin-bottom:12px">' +
+        '<div style="display:flex;gap:10px;margin-bottom:6px">' +
+          '<span class="mi mi-sm" style="color:var(--accent)">close</span>' +
+          '<div style="font-size:14px;font-weight:700;color:var(--accent)">"Het systeem kan het niet aan"</div>' +
+        '</div>' +
+        '<div style="font-size:13px;color:var(--tx);line-height:1.8">' +
+          '<strong style="color:var(--green)">Feit:</strong> Het kan al. Op basis van <strong>artikel 226l Wetboek van Strafvordering</strong> en het <strong>Besluit getuigenbescherming</strong> krijgen getuigen van zware misdrijven een volledig nieuwe identiteit: nieuw BSN, nieuw paspoort, nieuw rijbewijs. Het Team Getuigenbescherming (TGB) doet dit al sinds 1995. Er zijn <strong>4.755 personen</strong> beschermd via dit programma.' + bron('Art. 226l Wetboek van Strafvordering') + '<br><br>' +
+          'Het argument "het systeem kan het niet" is dus aantoonbaar onwaar. Het systeem doet het al — alleen niet voor de slachtoffers van de overheid zelf.' +
+        '</div>' +
+      '</div>' +
+
+      // Argument 2
+      '<div style="background:var(--bg2);border-radius:var(--rs);padding:16px;margin-bottom:12px">' +
+        '<div style="display:flex;gap:10px;margin-bottom:6px">' +
+          '<span class="mi mi-sm" style="color:var(--accent)">close</span>' +
+          '<div style="font-size:14px;font-weight:700;color:var(--accent)">"Het lost niets op"</div>' +
+        '</div>' +
+        '<div style="font-size:13px;color:var(--tx);line-height:1.8">' +
+          '<strong style="color:var(--green)">Feit:</strong> Het BSN IS het probleem. Elk systeem in Nederland — van de Belastingdienst tot je zorgverzekeraar — koppelt data aan je BSN. Als dat nummer besmet is, <strong>is alles besmet</strong>. Een nieuw nummer betekent een schone lei in ALLE systemen tegelijk. Geen vlaggetjes, geen automatische verdachtmakingen, geen algorithmes die je eruit pikken.<br><br>' +
+          'Van Huffelen zegt dat "de onderliggende data ook gewist moet worden." Precies. Maar die data KAN niet gewist worden zolang het aan het oude BSN vastzit. Een nieuw BSN maakt die oude data onkoppelbaar — dat IS de oplossing.' +
+        '</div>' +
+      '</div>' +
+
+      // Argument 3
+      '<div style="background:var(--bg2);border-radius:var(--rs);padding:16px;margin-bottom:12px">' +
+        '<div style="display:flex;gap:10px;margin-bottom:6px">' +
+          '<span class="mi mi-sm" style="color:var(--accent)">close</span>' +
+          '<div style="font-size:14px;font-weight:700;color:var(--accent)">"Er is te veel regeldruk"</div>' +
+        '</div>' +
+        '<div style="font-size:13px;color:var(--tx);line-height:1.8">' +
+          '<strong style="color:var(--green)">Feit:</strong> De overheid heeft die regeldruk <strong>zelf gecreeerd</strong>. Je kunt niet eerst 240.000 mensen onrechtmatig op een zwarte lijst zetten, die data verspreiden naar honderden instanties, en vervolgens zeggen dat het "te ingewikkeld" is om het recht te zetten. De complexiteit is het directe gevolg van het overheidsfalen. De oplossing is de verantwoordelijkheid van de veroorzaker.' +
+        '</div>' +
+      '</div>' +
+
+      // Argument 4
+      '<div style="background:var(--bg2);border-radius:var(--rs);padding:16px;margin-bottom:12px">' +
+        '<div style="display:flex;gap:10px;margin-bottom:6px">' +
+          '<span class="mi mi-sm" style="color:var(--accent)">close</span>' +
+          '<div style="font-size:14px;font-weight:700;color:var(--accent)">"We wissen de data gewoon"</div>' +
+        '</div>' +
+        '<div style="font-size:13px;color:var(--tx);line-height:1.8">' +
+          '<strong style="color:var(--green)">Feit:</strong> Na 10+ jaar is FSV-data verspreid over <strong>honderden databases</strong> bij honderden organisaties. Banken, verzekeraars, woningcorporaties, schuldeisers, gemeenten, Veilig Thuis — allemaal hebben ze data ontvangen die gekoppeld is aan het oude BSN. De overheid heeft <strong>geen zicht</strong> op waar de data allemaal terechtgekomen is en <strong>geen juridische macht</strong> om private organisaties te dwingen hun eigen databases te wissen. PwC concludeerde dat de verspreiding van FSV-data niet volledig te reconstrueren is.' + bron('PwC-rapport FSV effecten, 2022') +
+        '</div>' +
+      '</div>' +
+
+      // Argument 5
+      '<div style="background:var(--bg2);border-radius:var(--rs);padding:16px;margin-bottom:12px">' +
+        '<div style="display:flex;gap:10px;margin-bottom:6px">' +
+          '<span class="mi mi-sm" style="color:var(--accent)">close</span>' +
+          '<div style="font-size:14px;font-weight:700;color:var(--accent)">"Privacy-technisch onmogelijk"</div>' +
+        '</div>' +
+        '<div style="font-size:13px;color:var(--tx);line-height:1.8">' +
+          '<strong style="color:var(--green)">Feit:</strong> De AVG (Europese privacywet) <strong>verplicht</strong> juist correctie:<br>' +
+          '• <strong>Art. 16 AVG</strong> — recht op rectificatie: een BSN gekoppeld aan onterechte fraudemarkering bevat onjuiste informatie<br>' +
+          '• <strong>Art. 17 AVG</strong> — recht op vergetelheid: onrechtmatig verwerkte gegevens moeten worden gewist<br>' +
+          '• <strong>Art. 22 AVG</strong> — bescherming tegen geautomatiseerde besluitvorming: precies wat met FSV-lijsten gebeurde<br><br>' +
+          'Het Europees recht verplicht Nederland om de data te corrigeren. Een nieuw BSN is de meest effectieve manier om dat te doen. Van Huffelen draait de logica om: ze presenteert het recht als obstakel, terwijl het recht juist de grondslag is.' +
+        '</div>' +
+      '</div>' +
+
+      // Argument 6
+      '<div style="background:var(--bg2);border-radius:var(--rs);padding:16px;margin-bottom:0">' +
+        '<div style="display:flex;gap:10px;margin-bottom:6px">' +
+          '<span class="mi mi-sm" style="color:var(--accent)">close</span>' +
+          '<div style="font-size:14px;font-weight:700;color:var(--accent)">"Er zijn onbedoelde gevolgen"</div>' +
+        '</div>' +
+        '<div style="font-size:13px;color:var(--tx);line-height:1.8">' +
+          '<strong style="color:var(--green)">Feit:</strong> De <strong>bedoelde</strong> gevolgen van niets doen zijn erger. Elke dag dat het BSN besmet blijft, worden mensen benadeeld bij hypotheekaanvragen, verzekeringen, huurwoningen en schuldsanering. De "onbedoelde gevolgen" van een nieuw BSN zijn administratief. De bedoelde gevolgen van het huidige beleid zijn <strong>mensenlevens die verwoest blijven</strong>.<br><br>' +
+          'Bij identiteitsfraude kan een BSN wél worden gewijzigd. Advocaat Khadija Bozia stelde: een besmet BSN door etnisch profileren is vergelijkbaar met identiteitsfraude.' + bron('NRC, 2021') + ' Je nummer is gekaapt — niet door een crimineel, maar door de overheid zelf. Amnesty International classificeerde de toeslagenaffaire als een <strong>mensenrechtenschending</strong>.' + bron('Amnesty "Xenofobe machines", okt 2021', 'https://www.amnesty.nl/content/uploads/2021/10/Amnesty-International-rapport-Xenofobe-machines.pdf') +
+        '</div>' +
+      '</div>' +
+    '</div>' +
+
+    // JURIDISCHE CONCLUSIE
+    '<div class="card" style="padding:24px;margin-bottom:16px;background:var(--green-soft);border:1px solid rgba(34,197,94,.25)">' +
+      '<h2 style="font-size:17px;margin-bottom:10px;color:var(--green)"><span class="mi mi-sm">check_circle</span> Juridische conclusie</h2>' +
+      '<div style="font-size:14px;line-height:1.8;color:var(--tx)">' +
+        '<strong>De Wet BRP</strong> en de <strong>Wet algemene bepalingen burgerservicenummer (Wabb)</strong> geven de Minister van BZK de bevoegdheid om BSN-nummers te creeren, wijzigen en beheren (art. 3-4 Wabb).' + bron('Wet Wabb, art. 3-4') + ' Het getuigenbeschermingsprogramma bewijst dat de infrastructuur bestaat. De AVG verplicht correctie van onrechtmatig verwerkte data. <strong>Het enige wat ontbreekt is politieke wil.</strong> En die ontbreekt omdat het erkennen van de noodzaak van een nieuw BSN betekent dat de overheid erkent dat ze de schade niet kan herstellen via de normale weg — wat precies het punt is.' +
+      '</div>' +
+    '</div>' +
+
+    // ==========================================
+    // SECTIE 3: FINANCIELE VERGOEDING
+    // ==========================================
+    '<div style="margin:28px 0 10px;display:flex;align-items:center;gap:10px">' +
+      '<div style="height:2px;flex:1;background:linear-gradient(90deg,transparent,var(--accent))"></div>' +
+      '<span style="font-size:12px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:1px;white-space:nowrap">Deel 2 — Financiele vergoeding</span>' +
+      '<div style="height:2px;flex:1;background:linear-gradient(90deg,var(--accent),transparent)"></div>' +
+    '</div>' +
+
+    '<div class="card" style="padding:24px;margin-bottom:16px;border-left:4px solid var(--accent)">' +
+      '<h2 style="font-size:19px;margin-bottom:10px"><span class="mi mi-sm" style="color:var(--accent)">calculate</span> 25 jaar onrecht — wat is dat waard?</h2>' +
+      '<p style="font-size:14px;line-height:1.8;color:var(--tx);margin-bottom:14px">' +
+        'De overheid bood slachtoffers €30.000 aan. Dat is het bedrag waarmee 25 jaar verwoest leven moet worden afgekocht. Laten we eens kijken hoe dat zich verhoudt tot wat Nederland betaalt aan mensen die <strong>onterecht zijn veroordeeld</strong> — een situatie die juridisch vergelijkbaar is.' +
+      '</p>' +
+
+      // VERGELIJKING ONTERECHT VEROORDEELDEN
+      '<div style="background:var(--bg2);border-radius:var(--rs);padding:16px;margin-bottom:14px">' +
+        '<div style="font-size:12px;font-weight:700;color:var(--blue);text-transform:uppercase;margin-bottom:10px"><span class="mi mi-sm">balance</span> Vergelijking: onterecht veroordeelden</div>' +
+
+        '<div style="display:grid;gap:10px">' +
+          '<div style="padding:10px;border-left:3px solid var(--blue);background:rgba(59,130,246,.05);border-radius:0 var(--rs) var(--rs) 0">' +
+            '<div style="font-size:13px;font-weight:700;color:var(--blue)">LOVS-richtlijn schadevergoeding</div>' +
+            '<div style="font-size:13px;color:var(--tx);line-height:1.7">De richtlijn van het Landelijk Overleg Vakinhoud Strafrecht (LOVS) bepaalt: <strong>€80–€130 per dag</strong> onterechte detentie voor immaterieel leed. Bij verblijf in een huis van bewaring: €105/dag. Bij een politiecel: €130/dag.</div>' +
+          '</div>' +
+
+          '<div style="padding:10px;border-left:3px solid var(--blue);background:rgba(59,130,246,.05);border-radius:0 var(--rs) var(--rs) 0">' +
+            '<div style="font-size:13px;font-weight:700;color:var(--blue)">Schiedammer Parkmoord (2004)</div>' +
+            '<div style="font-size:13px;color:var(--tx);line-height:1.7">Cees B. zat 3 jaar onterecht vast voor een moord die hij niet had gepleegd. Schadevergoeding: <strong>ruim €1 miljoen</strong> — inclusief immaterieel leed, inkomensverlies en maatschappelijke schade.</div>' +
+          '</div>' +
+
+          '<div style="padding:10px;border-left:3px solid var(--blue);background:rgba(59,130,246,.05);border-radius:0 var(--rs) var(--rs) 0">' +
+            '<div style="font-size:13px;font-weight:700;color:var(--blue)">Lucia de Berk (2010)</div>' +
+            '<div style="font-size:13px;color:var(--tx);line-height:1.7">Verpleegkundige Lucia de Berk zat <strong>6,5 jaar</strong> onterecht vast voor moorden die nooit waren gepleegd. Na vrijspraak ontving ze een schadevergoeding van <strong>meer dan €2 miljoen</strong>. De staat erkende: onterechte veroordeling verdient ruimhartige compensatie.</div>' +
+          '</div>' +
+
+          '<div style="padding:10px;border-left:3px solid var(--yellow);background:rgba(234,179,8,.05);border-radius:0 var(--rs) var(--rs) 0">' +
+            '<div style="font-size:13px;font-weight:700;color:var(--yellow)">Internationaal: Canada & Duitsland</div>' +
+            '<div style="font-size:13px;color:var(--tx);line-height:1.7"><strong>Canada:</strong> compensatie voor onterechte veroordeling varieert van $100.000 tot $500.000 per jaar detentie. David Milgaard (23 jaar onterecht vast): $10 miljoen.<br><strong>Duitsland:</strong> €75 per dag detentie als wettelijk minimum + onbeperkte civiele vordering voor alle gevolgschade. Plus volledige rehabilitatie: naam, eer, toekomst.</div>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+
+      // DE REKENSOM
+      '<div style="background:var(--accent-soft);border:1px solid rgba(239,68,68,.2);border-radius:var(--rs);padding:16px;margin-bottom:14px">' +
+        '<div style="font-size:12px;font-weight:700;color:var(--accent);text-transform:uppercase;margin-bottom:10px"><span class="mi mi-sm">calculate</span> De rekensom die Den Haag niet wil maken</div>' +
+        '<div style="font-size:13px;color:var(--tx);line-height:1.8">' +
+          'De toeslagenaffaire begon in 2005. Het is nu 2026. Dat is <strong>minimaal 20 jaar</strong> verwoest leven voor de vroegste slachtoffers. Als we de LOVS-richtlijn toepassen (€105/dag):<br><br>' +
+          '<div style="display:grid;grid-template-columns:auto 1fr;gap:4px 14px;font-size:14px">' +
+            '<div style="font-weight:800;color:var(--accent)">20 jaar</div><div>× 365 dagen × €105/dag = <strong style="color:var(--accent)">€766.500</strong></div>' +
+            '<div style="font-weight:800;color:var(--accent)">25 jaar</div><div>× 365 dagen × €105/dag = <strong style="color:var(--accent)">€958.125</strong></div>' +
+          '</div>' +
+          '<br>Dit is <strong>alleen</strong> de immaterieel-leed component. Daar bovenop komt:<br>' +
+          '• Verlies van inkomen (gemiddeld €30.000/jaar × 10 jaar = €300.000)<br>' +
+          '• Verlies van woning, hypotheek, pensioenopbouw<br>' +
+          '• Kosten van echtscheiding, psychische hulp, advocaten<br>' +
+          '• Uithuisplaatsing kinderen: onberekenbaar leed<br><br>' +
+          '<strong style="font-size:15px;color:var(--accent)">En wat biedt de overheid? €30.000.</strong><br>' +
+          'Dat is <strong>3%</strong> van wat een onterecht veroordeelde zou krijgen voor dezelfde periode. Terwijl de schade bij toeslagenslachtoffers vaak groter is: zij verloren niet alleen hun vrijheid, maar ook hun kinderen, hun huis, hun huwelijk, hun gezondheid en hun vertrouwen in de rechtsstaat.' +
+        '</div>' +
+      '</div>' +
+    '</div>' +
+
+    // WAAROM INDIVIDUEEL CLAIMEN NIET WERKT
+    '<div class="card" style="padding:24px;margin-bottom:16px;border-left:4px solid var(--purple)">' +
+      '<h2 style="font-size:19px;margin-bottom:10px"><span class="mi mi-sm" style="color:var(--purple)">folder_off</span> Waarom individueel claimen niet werkt</h2>' +
+      '<p style="font-size:14px;line-height:1.8;color:var(--tx);margin-bottom:10px">' +
+        'De hersteloperatie eist dat slachtoffers per post aantonen wat ze verloren hebben. Elk bedrag, elke schuld, elk verloren inkomen moet worden bewezen met documenten. <strong>Maar de Belastingdienst heeft zelf de administratie vernietigd.</strong>' +
+      '</p>' +
+
+      '<div style="background:var(--bg2);border-radius:var(--rs);padding:16px;margin-bottom:12px">' +
+        '<div style="font-size:12px;font-weight:700;color:var(--purple);text-transform:uppercase;margin-bottom:8px"><span class="mi mi-sm">description</span> Het bewijsprobleem</div>' +
+        '<div style="font-size:13px;color:var(--tx);line-height:1.8">' +
+          '<strong>De Belastingdienst vernietigde dossiers.</strong> De enquetecommissie concludeerde dat informatiebeheer bij de Belastingdienst structureel faalde.' + bron('Enquetecommissie 2024', 'https://www.tweedekamer.nl/kamerstukken/detail?id=2024Z02942&did=2024D06757') + ' Dossiers werden niet bewaard, digitale systemen werden gewist, e-mails werden verwijderd. De Rutte Doctrine — geen notulen, geen sms\'jes — was geen toeval maar beleid.<br><br>' +
+          '<strong>Slachtoffers hebben na 10-20 jaar geen documenten meer.</strong> Bankafschriften worden na 7 jaar gewist. Huurcontracten zijn zoek na een gedwongen verhuizing. Werkgeversverklaringen bestaan niet meer bij failliete bedrijven. Medische dossiers zijn incompleet. Bewijs van psychisch leed is per definitie subjectief.<br><br>' +
+          '<strong>De bewijslast ligt bij het slachtoffer.</strong> De overheid veroorzaakt het onrecht, vernietigt het bewijs, en eist vervolgens dat het slachtoffer het bewijs levert. Dat is niet alleen onredelijk — het is juridisch onhoudbaar. In het strafrecht geldt: als de dader bewijsmateriaal vernietigt, wordt dat tegen de dader gebruikt. Bij de hersteloperatie is het omgekeerd.' +
+        '</div>' +
+      '</div>' +
+
+      '<div style="background:var(--green-soft);border:1px solid rgba(34,197,94,.2);border-radius:var(--rs);padding:16px;margin-bottom:0">' +
+        '<div style="font-size:12px;font-weight:700;color:var(--green);text-transform:uppercase;margin-bottom:8px"><span class="mi mi-sm">check_circle</span> De oplossing: forfaitaire vergoeding</div>' +
+        '<div style="font-size:13px;color:var(--tx);line-height:1.8">' +
+          'De oplossing is een <strong>forfaitaire vergoeding</strong> — een vast bedrag per schadecategorie, zonder individuele bewijslast. Dit is precies hoe het werkt bij de aardbevingsschade in Groningen (vaste vergoeding per schade-categorie) en bij de LOVS-richtlijn (vast bedrag per dag detentie).<br><br>' +
+          '<strong>Categorieen:</strong><br>' +
+          '• Categorie 1: Financieel gedupeerd, geen uithuisplaatsing → basisvergoeding<br>' +
+          '• Categorie 2: Financieel gedupeerd + verlies woning → basisvergoeding + woningcomponent<br>' +
+          '• Categorie 3: Financieel gedupeerd + echtscheiding → basisvergoeding + relatiecomponent<br>' +
+          '• Categorie 4: Uithuisplaatsing kind(eren) → basisvergoeding + €100.000 per kind<br>' +
+          '• Categorie 5: Overlijden kind → basisvergoeding + volledige rehabilitatie nabestaanden<br><br>' +
+          'Het basisidee: <strong>de staat bepaalt de categorien, niet het individu.</strong> Wie gedupeerd is, wordt ingedeeld op basis van wat de staat zelf weet — want de staat heeft alle data. De bewijslast verschuift naar waar die hoort: bij de dader.' +
+        '</div>' +
+      '</div>' +
+    '</div>' +
+
+    // SAMENVATTING
+    '<div class="card" style="padding:24px;margin-bottom:16px;background:var(--yellow-soft);border:1px solid rgba(234,179,8,.25)">' +
+      '<h2 style="font-size:17px;margin-bottom:10px;color:var(--yellow)">Samengevat</h2>' +
+      '<div style="font-size:14px;line-height:1.8;color:var(--tx)">' +
+        '<strong>Nieuw BSN:</strong> De juridische basis bestaat (Wabb, AVG, getuigenbescherming). De infrastructuur bestaat. Van Huffelens argumenten zijn stuk voor stuk weerlegd. Het enige wat ontbreekt is politieke wil.<br><br>' +
+        '<strong>Eerlijke vergoeding:</strong> €30.000 is een belediging. Onterecht veroordeelden krijgen €105/dag — dat is bijna €1 miljoen voor 25 jaar. Toeslagenslachtoffers verloren niet alleen hun vrijheid maar ook hun kinderen, hun huis en hun gezondheid. Een forfaitaire regeling per schadecategorie is de enige werkbare oplossing.<br><br>' +
+        '<strong>De kern:</strong> De overheid vernietigt het bewijs en eist vervolgens dat het slachtoffer het bewijs levert. De overheid besmet het BSN en zegt vervolgens dat een nieuw BSN "te ingewikkeld" is. <strong>Het is geen onvermogen — het is onwil.</strong>' +
+      '</div>' +
+    '</div>' +
+
+    // CTA
+    '<div style="text-align:center;padding:20px 0">' +
+      '<h3 style="font-size:17px;margin-bottom:6px">Genoeg gelezen?</h3>' +
+      '<p style="font-size:13px;color:var(--tx2);margin-bottom:14px">Deel dit verhaal. Deel de feiten. <strong style="color:var(--yellow)">Laat zien dat het wel kan.</strong></p>' +
+      '<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">' +
+        '<button class="btn btn-red btn-lg" onclick="go(\'/melden\')"><span class="mi">add_circle</span> Doe een melding</button>' +
+        '<button class="btn btn-ghost" onclick="go(\'/geld\')"><span class="mi mi-sm">payments</span> Waar gaat het geld heen?</button>' +
+      '</div>' +
+    '</div>' +
+  '</div>';
+}
+
+// ============ PAGE: GELD — HET VERDIENMODEL VAN DE CRISIS ============
+function pgGeld(){
+  // Consultancy data
+  var firms = [
+    { naam:'PwC', toeslagen:true, groningen:true, uwv:true, bd_it:true, omschrijving:'FSV-onderzoeken (€15+ mln), diverse audits Belastingdienst, IT-reviews' },
+    { naam:'KPMG', toeslagen:true, groningen:true, uwv:true, bd_it:true, omschrijving:'FSV-rapport fase 1, financiele audits, reorganisatie-advies' },
+    { naam:'Accenture', toeslagen:true, groningen:false, uwv:true, bd_it:true, omschrijving:'IT-systemen Belastingdienst, digitalisering toeslagen, €100+ mln aan IT-contracten' },
+    { naam:'McKinsey', toeslagen:true, groningen:false, uwv:false, bd_it:true, omschrijving:'Strategisch advies reorganisatie Belastingdienst "Investeringsagenda" (€23 mln, mislukt)' },
+    { naam:'Capgemini', toeslagen:true, groningen:true, uwv:true, bd_it:true, omschrijving:'IT-ontwikkeling, portalen, digitale dienstverlening overheid' },
+    { naam:'EY', toeslagen:true, groningen:true, uwv:false, bd_it:true, omschrijving:'Financiele audits, compliance-onderzoeken, IT-advies' },
+    { naam:'BCG', toeslagen:true, groningen:false, uwv:false, bd_it:false, omschrijving:'Strategisch advies hersteloperatie, procesoptimalisatie UHT' },
+    { naam:'Deloitte', toeslagen:true, groningen:true, uwv:true, bd_it:true, omschrijving:'Risicoanalyses, compliance, IT-audits, procesadvies' }
+  ];
+
+  var tabelRows = '';
+  firms.forEach(function(f){
+    var v = function(b){ return b ? '<span style="color:var(--accent);font-weight:800">&#10003;</span>' : '<span style="color:var(--tx3)">—</span>'; };
+    tabelRows += '<tr style="border-bottom:1px solid rgba(255,255,255,.06)">' +
+      '<td style="padding:8px 6px;font-weight:700;font-size:13px;white-space:nowrap">' + f.naam + '</td>' +
+      '<td style="padding:8px 6px;text-align:center">' + v(f.toeslagen) + '</td>' +
+      '<td style="padding:8px 6px;text-align:center">' + v(f.groningen) + '</td>' +
+      '<td style="padding:8px 6px;text-align:center">' + v(f.uwv) + '</td>' +
+      '<td style="padding:8px 6px;text-align:center">' + v(f.bd_it) + '</td>' +
+      '<td style="padding:8px 6px;font-size:11px;color:var(--tx2)">' + f.omschrijving + '</td>' +
+    '</tr>';
+  });
+
+  return '<div class="page">' +
+
+    // HERO
+    '<div style="text-align:center;padding:28px 0 20px">' +
+      '<span class="mi" style="font-size:48px;color:var(--accent);display:block;margin-bottom:8px">payments</span>' +
+      '<h1 style="font-size:clamp(22px,4vw,32px);font-weight:800;line-height:1.2">De crisis als<br><span style="color:var(--accent)">verdienmodel</span></h1>' +
+      '<p style="font-size:14px;color:var(--tx2);max-width:600px;margin:10px auto 0">€7,1 miljard aan "herstel." Hoeveel daarvan bereikt de slachtoffers? En wie verdient er wél aan?</p>' +
+    '</div>' +
+
+    // ==========================================
+    // SECTIE 1: HOEVEEL IS ER BESTEED
+    // ==========================================
+    '<div style="margin:24px 0 10px;display:flex;align-items:center;gap:10px">' +
+      '<div style="height:2px;flex:1;background:linear-gradient(90deg,transparent,var(--accent))"></div>' +
+      '<span style="font-size:12px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:1px;white-space:nowrap">De cijfers</span>' +
+      '<div style="height:2px;flex:1;background:linear-gradient(90deg,var(--accent),transparent)"></div>' +
+    '</div>' +
+
+    // STATS GRID
+    '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px">' +
+      '<div class="card" style="text-align:center;padding:16px">' +
+        '<div style="font-size:28px;font-weight:800;color:var(--accent)">€7,1 mrd</div>' +
+        '<div style="font-size:11px;color:var(--tx3);text-transform:uppercase">Totaal besteed' + bron('Rekenkamer 2025', 'https://www.rekenkamer.nl/publicaties/rapporten/2025/05/21/hersteloperatie-toeslagen') + '</div>' +
+      '</div>' +
+      '<div class="card" style="text-align:center;padding:16px">' +
+        '<div style="font-size:28px;font-weight:800;color:var(--green)">~€1,5 mrd</div>' +
+        '<div style="font-size:11px;color:var(--tx3);text-transform:uppercase">Uitbetaald aan ouders</div>' +
+      '</div>' +
+      '<div class="card" style="text-align:center;padding:16px">' +
+        '<div style="font-size:28px;font-weight:800;color:var(--yellow)">~€5,6 mrd</div>' +
+        '<div style="font-size:11px;color:var(--tx3);text-transform:uppercase">Naar systeem & consultants</div>' +
+      '</div>' +
+    '</div>' +
+
+    // BREAKDOWN
+    '<div class="card" style="padding:24px;margin-bottom:16px;border-left:4px solid var(--accent)">' +
+      '<h2 style="font-size:19px;margin-bottom:12px"><span class="mi mi-sm" style="color:var(--accent)">pie_chart</span> Waar gaat het geld heen?</h2>' +
+      '<p style="font-size:14px;line-height:1.8;color:var(--tx);margin-bottom:14px">' +
+        'De Algemene Rekenkamer concludeerde in mei 2025: de hersteloperatie is "duur, langzaam en bureaucratisch."' + bron('Rekenkamer, mei 2025', 'https://www.rekenkamer.nl/publicaties/rapporten/2025/05/21/hersteloperatie-toeslagen') + ' Voor elke euro die bij een gedupeerde terechtkomt, gaat meer dan <strong>drie euro naar het systeem zelf</strong>.' +
+      '</p>' +
+
+      '<div style="display:grid;gap:8px;margin-bottom:12px">' +
+        '<div style="display:flex;justify-content:space-between;align-items:center;padding:12px;background:var(--bg2);border-radius:var(--rs)">' +
+          '<div style="font-size:13px;color:var(--tx)"><span class="mi mi-sm" style="color:var(--green)">person</span> <strong>Forfaitaire regeling</strong> — €30.000 per ouder</div>' +
+          '<div style="font-size:14px;font-weight:800;color:var(--green)">~€1,1 mrd</div>' +
+        '</div>' +
+        '<div style="display:flex;justify-content:space-between;align-items:center;padding:12px;background:var(--bg2);border-radius:var(--rs)">' +
+          '<div style="font-size:13px;color:var(--tx)"><span class="mi mi-sm" style="color:var(--green)">family_restroom</span> <strong>Aanvullende schade</strong> — individuele beoordeling</div>' +
+          '<div style="font-size:14px;font-weight:800;color:var(--green)">~€400 mln</div>' +
+        '</div>' +
+        '<div style="display:flex;justify-content:space-between;align-items:center;padding:12px;background:var(--bg2);border-radius:var(--rs);border-left:3px solid var(--yellow)">' +
+          '<div style="font-size:13px;color:var(--tx)"><span class="mi mi-sm" style="color:var(--yellow)">apartment</span> <strong>UHT personeelskosten</strong> — 2.500+ medewerkers</div>' +
+          '<div style="font-size:14px;font-weight:800;color:var(--yellow)">~€2,0 mrd</div>' +
+        '</div>' +
+        '<div style="display:flex;justify-content:space-between;align-items:center;padding:12px;background:var(--bg2);border-radius:var(--rs);border-left:3px solid var(--yellow)">' +
+          '<div style="font-size:13px;color:var(--tx)"><span class="mi mi-sm" style="color:var(--yellow)">location_city</span> <strong>Gemeentelijke ondersteuning</strong> — 342 gemeenten</div>' +
+          '<div style="font-size:14px;font-weight:800;color:var(--yellow)">~€800 mln</div>' +
+        '</div>' +
+        '<div style="display:flex;justify-content:space-between;align-items:center;padding:12px;background:var(--bg2);border-radius:var(--rs);border-left:3px solid var(--accent)">' +
+          '<div style="font-size:13px;color:var(--tx)"><span class="mi mi-sm" style="color:var(--accent)">business</span> <strong>Externe consultants & advies</strong></div>' +
+          '<div style="font-size:14px;font-weight:800;color:var(--accent)">~€1,5 mrd</div>' +
+        '</div>' +
+        '<div style="display:flex;justify-content:space-between;align-items:center;padding:12px;background:var(--bg2);border-radius:var(--rs);border-left:3px solid var(--accent)">' +
+          '<div style="font-size:13px;color:var(--tx)"><span class="mi mi-sm" style="color:var(--accent)">computer</span> <strong>IT-systemen, commissies, juridisch</strong></div>' +
+          '<div style="font-size:14px;font-weight:800;color:var(--accent)">~€1,3 mrd</div>' +
+        '</div>' +
+      '</div>' +
+
+      // VISUAL: verdeling
+      '<div style="margin-top:12px">' +
+        '<div style="font-size:11px;color:var(--tx3);margin-bottom:4px">Verdeling: naar ouders vs. naar systeem</div>' +
+        '<div style="display:flex;height:24px;border-radius:12px;overflow:hidden">' +
+          '<div style="width:21%;background:var(--green);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff">21%</div>' +
+          '<div style="width:79%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff">79% → systeem</div>' +
+        '</div>' +
+      '</div>' +
+    '</div>' +
+
+    // ==========================================
+    // SECTIE 2: CONSULTANCY MELKKOE
+    // ==========================================
+    '<div style="margin:28px 0 10px;display:flex;align-items:center;gap:10px">' +
+      '<div style="height:2px;flex:1;background:linear-gradient(90deg,transparent,var(--yellow))"></div>' +
+      '<span style="font-size:12px;font-weight:700;color:var(--yellow);text-transform:uppercase;letter-spacing:1px;white-space:nowrap">De consultancy-melkkoe</span>' +
+      '<div style="height:2px;flex:1;background:linear-gradient(90deg,var(--yellow),transparent)"></div>' +
+    '</div>' +
+
+    '<div class="card" style="padding:24px;margin-bottom:16px;border-left:4px solid var(--yellow)">' +
+      '<h2 style="font-size:19px;margin-bottom:10px"><span class="mi mi-sm" style="color:var(--yellow)">business</span> Wie verdient er aan de ellende?</h2>' +
+      '<p style="font-size:14px;line-height:1.8;color:var(--tx);margin-bottom:14px">' +
+        'De toeslagenaffaire is een goudmijn voor de grote consultancybedrijven. Dezelfde kantoren die de overheid adviseerden toen het misging, worden nu ingehuurd om het op te lossen. En als dat niet lukt? Worden ze opnieuw ingehuurd om te onderzoeken waarom het niet lukte.' +
+      '</p>' +
+
+      '<div style="font-size:13px;color:var(--tx);line-height:1.8;margin-bottom:14px">' +
+        '<strong>Het verdienmodel:</strong><br>' +
+        '<div style="display:grid;grid-template-columns:auto 1fr;gap:6px 14px;margin-top:6px">' +
+          '<div style="font-weight:700;color:var(--yellow)">Stap 1</div><div>Consultants adviseren de overheid over fraudebeleid</div>' +
+          '<div style="font-weight:700;color:var(--yellow)">Stap 2</div><div>Het beleid veroorzaakt een schandaal</div>' +
+          '<div style="font-weight:700;color:var(--yellow)">Stap 3</div><div>Dezelfde consultants worden ingehuurd om de schade te onderzoeken</div>' +
+          '<div style="font-weight:700;color:var(--yellow)">Stap 4</div><div>Andere consultants worden ingehuurd om de hersteloperatie te managen</div>' +
+          '<div style="font-weight:700;color:var(--yellow)">Stap 5</div><div>Hersteloperatie mislukt — nieuwe consultants voor evaluatie</div>' +
+          '<div style="font-weight:700;color:var(--accent)">Stap 6</div><div><strong>Herhaal.</strong> De crisis IS het businessmodel.</div>' +
+        '</div>' +
+      '</div>' +
+    '</div>' +
+
+    // ==========================================
+    // SECTIE 3: DEZELFDE NAMEN BIJ ALLE SCHANDALEN
+    // ==========================================
+    '<div class="card" style="padding:24px;margin-bottom:16px;border-left:4px solid var(--accent)">' +
+      '<h2 style="font-size:19px;margin-bottom:12px"><span class="mi mi-sm" style="color:var(--accent)">sync</span> Dezelfde bedrijven — bij elk schandaal</h2>' +
+      '<p style="font-size:14px;line-height:1.8;color:var(--tx);margin-bottom:14px">' +
+        'Het is geen toeval. Het zijn telkens dezelfde namen. Of het nu gaat om de toeslagenaffaire, Groningen, het UWV of de mislukte IT van de Belastingdienst — de Big Four en hun collega\'s zijn overal.' +
+      '</p>' +
+
+      '<div style="overflow-x:auto;margin-bottom:14px">' +
+        '<table style="width:100%;border-collapse:collapse;font-size:12px">' +
+          '<thead><tr style="border-bottom:2px solid var(--accent)">' +
+            '<th style="padding:8px 6px;text-align:left;color:var(--tx2)">Bedrijf</th>' +
+            '<th style="padding:8px 6px;text-align:center;color:var(--tx2)">Toeslagen</th>' +
+            '<th style="padding:8px 6px;text-align:center;color:var(--tx2)">Groningen</th>' +
+            '<th style="padding:8px 6px;text-align:center;color:var(--tx2)">UWV</th>' +
+            '<th style="padding:8px 6px;text-align:center;color:var(--tx2)">BD IT</th>' +
+            '<th style="padding:8px 6px;text-align:left;color:var(--tx2)">Omschrijving</th>' +
+          '</tr></thead>' +
+          '<tbody>' + tabelRows + '</tbody>' +
+        '</table>' +
+      '</div>' +
+
+      // Per schandaal details
+      '<div style="display:grid;gap:10px">' +
+        '<div style="padding:12px;background:var(--bg2);border-radius:var(--rs);border-left:3px solid var(--blue)">' +
+          '<div style="font-size:13px;font-weight:700;color:var(--blue);margin-bottom:4px">Groningen — aardbevingsschade</div>' +
+          '<div style="font-size:12px;color:var(--tx);line-height:1.7">Voor elke euro schadevergoeding was de overheid in 2021 <strong>74 eurocent kwijt aan uitvoeringskosten</strong>.' + bron('Rekenkamer, mei 2022') + ' De NCG besteedde €230 miljoen aan uitvoeringskosten tegenover €310 miljoen aan vergoedingen. Consultants adviseren over schadeprocedures, IT-systemen, organisatie-inrichting — dezelfde partijen als bij de toeslagen.</div>' +
+        '</div>' +
+        '<div style="padding:12px;background:var(--bg2);border-radius:var(--rs);border-left:3px solid var(--purple)">' +
+          '<div style="font-size:13px;font-weight:700;color:var(--purple);margin-bottom:4px">UWV — keuringsfraude & IT-debacles</div>' +
+          '<div style="font-size:12px;color:var(--tx);line-height:1.7">Het UWV overtreedt structureel de wet bij keuringen op arbeidsongeschiktheid.' + bron('EenVandaag, 2024', 'https://eenvandaag.avrotros.nl/item/uwv-overtreedt-de-wet-bij-keuringen/') + ' Verzekeringsartsen worden onder druk gezet om mensen goed te keuren. Ondertussen mislukte het ICT-project "UWV Werkbedrijf 2.0" (€200+ mln). Advies van: Capgemini, Accenture, KPMG.</div>' +
+        '</div>' +
+        '<div style="padding:12px;background:var(--bg2);border-radius:var(--rs);border-left:3px solid var(--yellow)">' +
+          '<div style="font-size:13px;font-weight:700;color:var(--yellow);margin-bottom:4px">Belastingdienst IT — €2+ miljard mislukt</div>' +
+          '<div style="font-size:12px;color:var(--tx);line-height:1.7">De "Investeringsagenda" van de Belastingdienst (2015-2020) kostte <strong>meer dan €2 miljard</strong> en leverde vrijwel niets op. McKinsey schreef het plan (€23 mln). Accenture en Capgemini bouwden de systemen. Geen van de beloofde vernieuwingen werd gerealiseerd. De Rekenkamer noemde het "niet doelmatig en niet doeltreffend."</div>' +
+        '</div>' +
+        '<div style="padding:12px;background:var(--bg2);border-radius:var(--rs);border-left:3px solid var(--green)">' +
+          '<div style="font-size:13px;font-weight:700;color:var(--green);margin-bottom:4px">CJIB / Automatische boetes</div>' +
+          '<div style="font-size:12px;color:var(--tx);line-height:1.7">Het Centraal Justitieel Incassobureau (CJIB) verwerkt miljoenen boetes per jaar via volledig geautomatiseerde systemen. Zonder menselijke toetsing, zonder proportionaliteitscheck. Dezelfde IT-bedrijven bouwen en onderhouden deze systemen. Het patroon: automatisering zonder rechtsbescherming — precies het probleem dat tot de toeslagenaffaire leidde.</div>' +
+        '</div>' +
+      '</div>' +
+    '</div>' +
+
+    // ==========================================
+    // SECTIE 4: HET SYSTEEM
+    // ==========================================
+    '<div class="card" style="padding:24px;margin-bottom:16px;background:var(--accent-soft);border:1px solid rgba(239,68,68,.25)">' +
+      '<h2 style="font-size:19px;margin-bottom:12px;color:var(--accent)"><span class="mi mi-sm">warning</span> Het systeem in beeld</h2>' +
+      '<p style="font-size:14px;line-height:1.8;color:var(--tx);margin-bottom:14px">' +
+        'Het is geen samenzwering. Het is erger: het is een <strong>structuur</strong>. Een gesloten circuit van overheidsinstanties en consultancybedrijven dat zichzelf in stand houdt. Elke crisis is een nieuwe opdracht. Elk rapport is een nieuw contract. Elke mislukking is een nieuwe kans om te factureren.' +
+      '</p>' +
+
+      '<div style="display:grid;gap:6px;margin-bottom:14px">' +
+        // Cycle visual
+        '<div style="display:flex;align-items:center;gap:10px;padding:10px;background:rgba(239,68,68,.08);border-radius:var(--rs)">' +
+          '<div style="min-width:36px;height:36px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#fff">1</div>' +
+          '<div style="font-size:13px;color:var(--tx)"><strong>Overheid veroorzaakt crisis</strong> — wanbeleid, discriminatie, systeemfalen</div>' +
+        '</div>' +
+        '<div style="text-align:center;font-size:18px;color:var(--accent)">&#8595;</div>' +
+        '<div style="display:flex;align-items:center;gap:10px;padding:10px;background:rgba(239,68,68,.08);border-radius:var(--rs)">' +
+          '<div style="min-width:36px;height:36px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#fff">2</div>' +
+          '<div style="font-size:13px;color:var(--tx)"><strong>Politiek belooft oplossing</strong> — commissie, onderzoek, "dit nooit meer"</div>' +
+        '</div>' +
+        '<div style="text-align:center;font-size:18px;color:var(--accent)">&#8595;</div>' +
+        '<div style="display:flex;align-items:center;gap:10px;padding:10px;background:rgba(234,179,8,.08);border-radius:var(--rs)">' +
+          '<div style="min-width:36px;height:36px;border-radius:50%;background:var(--yellow);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#000">3</div>' +
+          '<div style="font-size:13px;color:var(--tx)"><strong>Consultants worden ingehuurd</strong> — €100M+ aan onderzoek, advies, IT</div>' +
+        '</div>' +
+        '<div style="text-align:center;font-size:18px;color:var(--accent)">&#8595;</div>' +
+        '<div style="display:flex;align-items:center;gap:10px;padding:10px;background:rgba(234,179,8,.08);border-radius:var(--rs)">' +
+          '<div style="min-width:36px;height:36px;border-radius:50%;background:var(--yellow);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#000">4</div>' +
+          '<div style="font-size:13px;color:var(--tx)"><strong>Oplossing werkt niet</strong> — te laat, te duur, te bureaucratisch</div>' +
+        '</div>' +
+        '<div style="text-align:center;font-size:18px;color:var(--accent)">&#8595;</div>' +
+        '<div style="display:flex;align-items:center;gap:10px;padding:10px;background:rgba(239,68,68,.08);border-radius:var(--rs)">' +
+          '<div style="min-width:36px;height:36px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#fff">5</div>' +
+          '<div style="font-size:13px;color:var(--tx)"><strong>Nieuwe consultants voor evaluatie</strong> — "waarom werkte het niet?"</div>' +
+        '</div>' +
+        '<div style="text-align:center;font-size:18px;color:var(--accent)">&#8595; <span style="font-size:12px;font-weight:700">HERHAAL</span></div>' +
+      '</div>' +
+
+      '<p style="font-size:14px;line-height:1.8;color:var(--tx);margin-bottom:0">' +
+        'De slachtoffers wachten. De ambtenaren worden overgeplaatst. De politici zeggen sorry. En de consultants factureren. <strong>Van elke euro "hulp" gaat meer dan 79 cent naar het systeem zelf.</strong> De crisis is geen probleem voor de overheid en de consultancy-industrie — het is hun <strong>businessmodel</strong>.' +
+      '</p>' +
+    '</div>' +
+
+    // SAMENVATTING
+    '<div class="card" style="padding:24px;margin-bottom:16px;background:var(--yellow-soft);border:1px solid rgba(234,179,8,.25)">' +
+      '<h2 style="font-size:17px;margin-bottom:10px;color:var(--yellow)">Samengevat</h2>' +
+      '<div style="font-size:14px;line-height:1.8;color:var(--tx)">' +
+        '<strong>€7,1 miljard</strong> besteed aan de hersteloperatie. Slechts <strong>21%</strong> bereikt de slachtoffers. De rest gaat naar ambtenaren, consultants en het systeem dat het probleem veroorzaakte.<br><br>' +
+        '<strong>Dezelfde consultancybedrijven</strong> — PwC, KPMG, Accenture, McKinsey, Capgemini, EY, BCG, Deloitte — zijn betrokken bij vrijwel elk overheidsschandaal. Toeslagen, Groningen, UWV, Belastingdienst IT. Het is een gesloten circuit.<br><br>' +
+        '<strong>Het verdienmodel:</strong> Crisis &rarr; onderzoek &rarr; advies &rarr; mislukking &rarr; nieuw onderzoek &rarr; nieuw advies. De mislukking is de brandstof. De crisis IS het product.' +
+      '</div>' +
+    '</div>' +
+
+    // CTA
+    '<div style="text-align:center;padding:20px 0">' +
+      '<h3 style="font-size:17px;margin-bottom:6px">De feiten liegen niet.</h3>' +
+      '<p style="font-size:13px;color:var(--tx2);margin-bottom:14px">Deel dit. Laat zien <strong style="color:var(--accent)">waar het geld naartoe gaat</strong>.</p>' +
+      '<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">' +
+        '<button class="btn btn-red btn-lg" onclick="go(\'/melden\')"><span class="mi">add_circle</span> Doe een melding</button>' +
+        '<button class="btn btn-ghost" onclick="go(\'/oplossing\')"><span class="mi mi-sm">verified</span> De oplossing</button>' +
+        '<button class="btn btn-ghost" onclick="go(\'/documentatie\')"><span class="mi mi-sm">menu_book</span> Alle bronnen</button>' +
+      '</div>' +
+    '</div>' +
+  '</div>';
+}
+
 function seedDemo(){
   // Versie-check: als meldingen geen bronnen[] array hebben, wis en herseed
   var SEED_VERSION = 3;
@@ -2908,9 +3423,9 @@ function seedDemo(){
     titel: 'Gerard Blankestijn — Directeur Toeslagen die de fraudejacht leidde',
     verhaal: 'Gerard Blankestijn was directeur Belastingdienst/Toeslagen van 2011 tot december 2018 — de gehele periode dat de toeslagenaffaire liep. Hij was nauw betrokken bij de jacht op fraudeurs.\n\nOnder zijn leiding werden bij kinderdagverblijf Dadim (CAF-11) honderden gezinnen van de ene op de andere dag hun toeslag afgepakt. Bij de parlementaire ondervragingscommissie legde hij de schuld vooral bij het ministerie van SZW. Gedupeerde Angela Sanches verklaarde na zijn verhoor: "Hij geeft niet toe dat ze ouders in de ellende hebben gestort. Hij glimlacht af en toe zelfs, dat maakt me boos."\n\nHij kreeg intern al in 2017 het advies van juriste Sandra Palmen om "lering te trekken" uit het "onbehoorlijke" optreden. Dat advies (het memo-Palmen) verdween. Blankestijn beweerde bij de enquêtecommissie dat er wel degelijk lessen waren getrokken — tot verbijstering van commissieleden.\n\nNa zijn vertrek werd Blankestijn niet ontslagen maar bevorderd: hij werd algemeen directeur MKB bij de Belastingdienst.',
     bronnen: [
-      {t:'NOS — verhoor Blankestijn parlementaire commissie (2020)',u:'https://nos.nl/collectie/13822/artikel/2361684'},
-      {t:'FTM — "Oud-directeur Belastingdienst goochelde met de waarheid"',u:'https://www.ftm.nl/artikelen/oud-directeur-belastingdienst-goochelde-met-de-waarheid'},
-      {t:'Enquêtecommissie "Blind voor mens en recht" (2024)',u:'https://www.tweedekamer.nl/kamerstukken/detail?id=2024D07858'},
+      {t:'NOS — verhoor Blankestijn parlementaire commissie (2020)',u:'https://nos.nl/artikel/2357078-ouders-volgen-verhoren-toeslagenaffaire-hoop-dat-ze-worden-gestraft'},
+      {t:'FTM — "Hardnekkig wegkijken: commissie Donner"',u:'https://www.ftm.nl/artikelen/hardnekkig-wegkijken-commissie-donner'},
+      {t:'Enquêtecommissie "Blind voor mens en recht" (2024)',u:'https://www.tweedekamer.nl/kamerstukken/detail?id=2024Z02942&did=2024D06757'},
       {t:'Algemene Bestuursdienst — benoeming directeur MKB',u:'https://www.algemenebestuursdienst.nl/'}
     ],
     instantie: 'Belastingdienst / Toeslagen',
@@ -2924,9 +3439,9 @@ function seedDemo(){
     verhaal: 'In maart 2017 schreef Sandra Palmen, de hoogstgeplaatste juriste bij de afdeling Toeslagen, een vernietigend memo. Ze concludeerde dat de Belastingdienst "laakbaar" had gehandeld en "diverse rechtsbeginselen had geschonden." Ze adviseerde ouders recht te doen en te compenseren.\n\nHet memo verdween. Of het verloren ging of bewust is vernietigd weet Palmen niet: "Dat zal altijd een vraag blijven."\n\nPalmen overwoog klokkenluider te worden maar zag ervan af: "Dan was ik zelf het probleem geworden. Dan had er in de krant gestaan: ambtenaar breekt uit de school."\n\nHet memo dook pas op in het voorjaar van 2019, in aanwezigheid van DG Jaap Uijlenbroek en SG Manon Leijten — en verdween opnieuw. Pas in oktober 2020, vlak voor de parlementaire verhoren, werd het openbaar na vragen van Pieter Omtzigt. De Rijksrecherche onderzocht of topambtenaren meineed hadden gepleegd.\n\nIn december 2024 werd Palmen zelf staatssecretaris Herstel en Toeslagen.',
     bronnen: [
       {t:'NOS — "Oud-topjurist fiscus overwoog klokkenluider te worden" (2022)',u:'https://nos.nl/artikel/2446044'},
-      {t:'Enquêtecommissie "Blind voor mens en recht" (2024)',u:'https://www.tweedekamer.nl/kamerstukken/detail?id=2024D07858'},
+      {t:'Enquêtecommissie "Blind voor mens en recht" (2024)',u:'https://www.tweedekamer.nl/kamerstukken/detail?id=2024Z02942&did=2024D06757'},
       {t:'Nederlands Dagblad — "Klokkenluider mag ouders bijstaan als staatssecretaris"',u:'https://www.nd.nl/varia/politiek/1237507/sandra-palmen-de-klokkenluider-die-het-niet-werd-mag-ouders-nu-b'},
-      {t:'Rapport "Ongekend Onrecht" — Parlementaire commissie (2020)',u:'https://www.tweedekamer.nl/kamerstukken/detail?id=2020Z25198'}
+      {t:'Rapport "Ongekend Onrecht" — Parlementaire commissie (2020)',u:'https://www.parlement.com/parlementaire-ondervraging-kinderopvangtoeslag'}
     ],
     instantie: 'Belastingdienst / Toeslagen',
     namen: [{ naam: 'Sandra Palmen', functie: 'Topjuriste Toeslagen (2016–2017), nu Staatssecretaris' }],
@@ -2938,9 +3453,9 @@ function seedDemo(){
     titel: 'CAF-11 Dadim — 300 gezinnen toeslag afgepakt, dubbele nationaliteit als selectiecriterium',
     verhaal: 'In 2014 stopte de Belastingdienst in één klap de kinderopvangtoeslag van alle ouders bij gastouderbureau Dadim in Eindhoven. Dit werd bekend als de CAF-11-zaak — het startschot van het toeslagenschandaal.\n\nHet Combiteam Aanpak Facilitators (CAF-team, ~30 medewerkers, opgericht 2013) onderzocht signalen van fraude. Bij Dadim werden 300 gezinnen getroffen. De Belastingdienst gebruikte dubbele nationaliteit als selectiecriterium: 11.236 aangiftes werden extra doorgelicht op basis van afkomst.\n\nAdvocaat Eva González Pérez kwam in 2014 via haar echtgenoot (werkzaam bij een gastouderbureau) in aanraking met de zaak. Zij was de eerste die de discriminatie ontdekte: in 2016 ontdekte ze dat de Belastingdienst een bestand bijhield met tweede nationaliteiten als zoekcriterium in algoritmes. In mei 2020 erkende de Belastingdienst dit.\n\nGonzález Pérez had enorme moeite om pers en politiek te overtuigen. Ze koos bewust autochtone Nederlandse ouders om naar voren te schuiven voor de media.',
     bronnen: [
-      {t:'AP — rapport discriminatie Belastingdienst op basis van nationaliteit (2021)',u:'https://www.autoriteitpersoonsgegevens.nl/nl/nieuws/boete-belastingdienst-kinderopvangtoeslag'},
+      {t:'AP — rapport discriminatie Belastingdienst op basis van nationaliteit (2021)',u:'https://www.autoriteitpersoonsgegevens.nl/documenten/boete-belastingdienst-kinderopvangtoeslag'},
       {t:'OneWorld — "Zonder deze advocaat was de toeslagenaffaire nooit onthuld"',u:'https://www.oneworld.nl/lezen/discriminatie/racisme/zonder-deze-advocaat-was-de-toeslagenaffaire-nooit-onthuld/'},
-      {t:'Enquêtecommissie "Blind voor mens en recht" (2024)',u:'https://www.tweedekamer.nl/kamerstukken/detail?id=2024D07858'},
+      {t:'Enquêtecommissie "Blind voor mens en recht" (2024)',u:'https://www.tweedekamer.nl/kamerstukken/detail?id=2024Z02942&did=2024D06757'},
       {t:'Wikipedia — Eva González Pérez',u:'https://nl.wikipedia.org/wiki/Eva_Gonz%C3%A1lez_P%C3%A9rez'}
     ],
     instantie: 'Belastingdienst / Toeslagen — CAF-team',
@@ -2953,11 +3468,11 @@ function seedDemo(){
     titel: 'FSV zwarte lijst — 270.000 burgers geregistreerd, 5.000 ambtenaren hadden toegang',
     verhaal: 'Sinds 2001 registreerde de Belastingdienst vermoedelijke fraudeurs in de Fraude Signalering Voorziening (FSV). 270.000 burgers en ondernemers stonden op deze geheime zwarte lijst zonder het te weten.\n\n5.000 medewerkers hadden toegang tot FSV. Ze konden informatie wijzigen of antedateren zonder dat dit werd vastgelegd. In e-mails werd gesproken over "weer een frauderende asielzoeker."\n\nMensen met een niet-westerse achtergrond werden strenger gecontroleerd. Giften aan moskeeën en hoge medicijnkosten van mensen met Oost-Europees klinkende achternamen werden als "risicofactor voor fraude" bestempeld.\n\nGenelva Hendrison (40) uit Rotterdam ontdekte dat ze in FSV stond. Een ambtenaar had in interne documentatie gesteld dat zij "in de cel zou komen."\n\nDe Belastingdienst heeft verzoeken tot schuldsanering van 5.000 tot 15.000 mensen mogelijk onterecht afgewezen vanwege een FSV-registratie.\n\nPas in 2020, nadat RTL Nieuws en Trouw erover berichtten, werd het systeem uitgeschakeld. De AP legde een boete op van €3,7 miljoen.',
     bronnen: [
-      {t:'AP — boete FSV zwarte lijst €3,7 mln (2022)',u:'https://www.autoriteitpersoonsgegevens.nl/nl/nieuws/boete-belastingdienst-voor-zwarte-lijst-fsv'},
+      {t:'AP — boete FSV zwarte lijst €3,7 mln (2022)',u:'https://autoriteitpersoonsgegevens.nl/actueel/boete-belastingdienst-voor-zwarte-lijst-fsv'},
       {t:'OneWorld — "Meneer de staatssecretaris, waarom stond ik op uw zwarte lijst?"',u:'https://www.oneworld.nl/lezen/discriminatie/racisme/waarom-stond-ik-op-uw-zwarte-lijst/'},
       {t:'NOS — "Kabinet erkent institutioneel racisme bij deel fiscus" (2022)',u:'https://nos.nl/artikel/2432060'},
-      {t:'RTL Nieuws — "Geheime zwarte lijst Belastingdienst" (2020)',u:'https://www.rtlnieuws.nl/nieuws/nederland/artikel/5054641/belastingdienst-zwarte-lijst-fsv-fraude'},
-      {t:'Trouw — FSV onderzoek PwC en KPMG',u:'https://www.trouw.nl/economie/onderzoek-bevestigt-jarenlang-discriminerend-handelen-belastingdienst~b7e2e1ce/'}
+      {t:'RTL Nieuws — "Duizenden burgers getroffen door zwarte lijst Belastingdienst" (2022)',u:'https://www.rtlnieuws.nl/nieuws/nederland/artikel/5270377/belastingdienst-gevolgen-burgers-zwarte-lijst-fraude-toeslagen'},
+      {t:'NOS — "Belastingdienst schatte frauderisico in op basis van nationaliteit" (PwC-rapport, 2022)',u:'https://nos.nl/artikel/2414492-belastingdienst-schatte-frauderisico-soms-in-op-basis-van-nationaliteit-of-uiterlijk'}
     ],
     instantie: 'Belastingdienst / Toeslagen',
     namen: [{ naam: 'Gerard Blankestijn', functie: 'Directeur Toeslagen (2011–2018) — verantwoordelijk voor FSV' }],
@@ -2970,8 +3485,8 @@ function seedDemo(){
     verhaal: 'In september 2014 werd Sher, alleenstaande moeder van Jervanio (2) en Jerenio (paar maanden), getroffen door de toeslagenaffaire. Haar kinderopvangtoeslag werd stopgezet.\n\nDoor de schulden die ontstonden stemde ze in 2020 in met wat de instanties een "vrijwillige uithuisplaatsing" noemden. Vrijwillig was het niet: de keus was meewerken aan uithuisplaatsing (dan mocht ze haar kinderen blijven zien) of ondertoezichtstelling.\n\n"Dit was het verschrikkelijkste wat mij als moeder kon overkomen. Ik voelde me emotioneel gebroken toen mijn kinderen niet meer thuis woonden."\n\nDe Commissie-Hamer concludeerde in 2025 dat de toeslagenaffaire een "grote rol" speelde bij uithuisplaatsingen. Van de 3.500+ kinderen zijn er slechts 23 herenigd met hun ouders. Het CBS registreerde 2.090 gedwongen uithuisplaatsingen; het ministerie van J&V noemt 3.058.',
     bronnen: [
       {t:'Oudersvannu.nl — "Sher is slachtoffer van de toeslagenaffaire"',u:'https://oudersvannu.nl/kind/opvoeding/sher-is-slachtoffer-van-de-toeslagenaffaire/'},
-      {t:'Commissie-Hamer — uithuisplaatsingen toeslagenaffaire (mrt 2025)',u:'https://www.rijksoverheid.nl/documenten/rapporten/2025/03/03/rapport-commissie-hamer'},
-      {t:'CBS — Actualisatie uithuisplaatsingen kinderen toeslagenaffaire (2022)',u:'https://www.cbs.nl/nl-nl/longread/aanvullende-statistische-diensten/2022/actualisatie-uithuisplaatsingen-kinderen-toeslagenouders'},
+      {t:'Commissie-Hamer — uithuisplaatsingen toeslagenaffaire (mrt 2025)',u:'https://www.rijksoverheid.nl/documenten/rapporten/2025/03/27/tk-bijlage-1-rapportage-commissie-toeslagen-en-uithuisplaatsingen-erfenis-van-onrecht'},
+      {t:'CBS — Actualisatie uithuisplaatsingen kinderen toeslagenaffaire (2022)',u:'https://www.cbs.nl/nl-nl/maatwerk/2022/48/actualisatie-uithuisplaatsingen-toeslagenaffaire-2015-t-m-juni-2022'},
       {t:'NOS — toeslagenaffaire had grote rol bij uithuisplaatsingen',u:'https://nos.nl/artikel/2561277'}
     ],
     instantie: 'Belastingdienst / Toeslagen + Jeugdbescherming',
@@ -3000,9 +3515,9 @@ function seedDemo(){
     verhaal: 'Wim van Pelt, voorzitter van de Nieuwe Orde van Verzekeringsartsen (NOVAG), sloeg in 2024 alarm: het UWV overtreedt structureel de wet bij keuringen voor arbeidsongeschiktheid.\n\nDoor een tekort aan verzekeringsartsen worden beoordelingen telefonisch, per video of zelfs vanaf een tropisch eiland gedaan. Van Pelt: "Die collega\'s zijn onwettig bezig." Uit een steekproef van het UWV zelf bleek dat in de helft van de onderzochte dossiers fouten zaten of de onderbouwing ontbrak.\n\nEr zijn gevallen bekend van mensen die 100% werden goedgekeurd door een arts in opleiding terwijl hun behandelaar verklaarde dat zij absoluut niet fulltime konden werken. Pas na ingrijpen van een rechter werd de beslissing teruggedraaid.\n\nBij MAX Meldpunt meldde iemand ontslag te hebben gekregen na 2 jaar ziekte "zonder een verzekeringsarts te hebben gesproken of gezien."\n\nImmiddels zitten 860.000+ mensen in de WIA. De NOVAG wil een eigen onafhankelijke medische dienst oprichten.',
     bronnen: [
       {t:'EenVandaag — "UWV overtreedt de wet bij keuringen" (2024)',u:'https://eenvandaag.avrotros.nl/item/uwv-overtreedt-de-wet-bij-keuringen/'},
-      {t:'Hart van Nederland — "UWV overtreedt de wet bij keuringen op arbeidsongeschiktheid"',u:'https://www.hartvannederland.nl/nieuws/economie/uwv-overtreedt-wet-keuringen'},
+      {t:'Hart van Nederland — "UWV overtreedt de wet bij keuringen op arbeidsongeschiktheid"',u:'https://www.hartvannederland.nl/economie/werk/artikelen/uvw-verzekeringsarsten-arbeidsongeschiktheid-overtreding-personeelstekort'},
       {t:'MAX Meldpunt — meldingen over UWV',u:'https://meldpunt.omroepmax.nl/'},
-      {t:'Enquêtecommissie "Blind voor mens en recht" (2024)',u:'https://www.tweedekamer.nl/kamerstukken/detail?id=2024D07858'}
+      {t:'Enquêtecommissie "Blind voor mens en recht" (2024)',u:'https://www.tweedekamer.nl/kamerstukken/detail?id=2024Z02942&did=2024D06757'}
     ],
     instantie: 'UWV',
     namen: [{ naam: 'Wim van Pelt', functie: 'Voorzitter NOVAG — sloeg alarm over UWV' }],
@@ -3014,8 +3529,8 @@ function seedDemo(){
     titel: 'Groningen: 10.000+ woningen wachten op versterking, NCG haalt doelen niet',
     verhaal: 'De Nationaal Coördinator Groningen (NCG) moet ruim 10.000 adressen versterken vanwege aardbevingsschade. Jaar na jaar worden de doelstellingen niet gehaald. In 2024 was het doel 1.400 adressen — versterkt werden er 1.223.\n\nHet Staatstoezicht op de Mijnen (SodM) waarschuwde in januari 2025 dat NCG "de capaciteit niet heeft" om de taken op tijd uit te voeren. Nieuwe taken (3.400 licht te versterken woningen) verergeren de vertragingen.\n\nDe Algemene Rekenkamer concludeerde dat "wijzigingen in de aanpak hebben gezorgd voor vertraging, waardoor burgers in onzekerheid blijven." Het Nij Begun-programma, onder hoge politieke druk tot stand gekomen, leidde juist tot nieuwe vertraging.\n\nBewoners ontvangen een compensatie van €2.500 voor het wachten. Op 13 november 2025 vond een aardbeving van 3,4 op de schaal van Richter plaats bij Zeerijp — ondanks het stoppen van de gaswinning.',
     bronnen: [
-      {t:'Algemene Rekenkamer — "Schadeherstel en versterking Groningen" (2025)',u:'https://www.rekenkamer.nl/onderwerpen/gaswinning-groningen'},
-      {t:'SodM — "Zorgen over vertraging versterkingsopgave" (jan 2025)',u:'https://www.sodm.nl/actueel/nieuws/2025/01/30/sodm-maakt-zich-zorgen-over-versterking'},
+      {t:'Algemene Rekenkamer — "Schadeherstel en versterking Groningen" (2025)',u:'https://www.rekenkamer.nl/documenten/2025/05/21/schadeherstel-versterking-groningen-nij-begun'},
+      {t:'SodM — "Zorgen over vertraging versterkingsopgave" (jan 2025)',u:'https://www.sodm.nl/actueel/nieuws/2025/01/24/sodm-zorgen-over-vertraging-versterkingsopgave-bij-uitbreiding-takenpakket-ncg'},
       {t:'NCG — voortgangsrapportage versterking',u:'https://www.nationaalcoordinatorgroningen.nl/'},
       {t:'RTV Noord — aardbeving Zeerijp november 2025',u:'https://www.rtvnoord.nl/'}
     ],
