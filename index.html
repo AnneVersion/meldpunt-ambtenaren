@@ -246,6 +246,84 @@ sup a[title], sup[title] { border-bottom: 1px dotted var(--blue); }
   .org-naam { font-size: 10px; max-width: 70px; }
   .org-row { gap: 8px; }
 }
+
+/* WIZARD */
+.wiz-progress { display: flex; align-items: center; justify-content: center; gap: 0; margin-bottom: 24px; }
+.wiz-dot {
+  width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 700; border: 2px solid var(--glass-bd); color: var(--tx3);
+  background: var(--bg2); transition: var(--tr); position: relative; z-index: 1;
+}
+.wiz-dot.active { border-color: var(--blue); color: var(--blue); background: var(--blue-soft); box-shadow: 0 0 12px rgba(59,130,246,.3); }
+.wiz-dot.done { border-color: var(--green); color: #fff; background: var(--green); }
+.wiz-line { width: 40px; height: 2px; background: var(--glass-bd); }
+.wiz-line.done { background: var(--green); }
+.wiz-step { animation: fadeIn .3s ease; }
+.wiz-nav { display: flex; justify-content: space-between; align-items: center; margin-top: 20px; gap: 10px; }
+
+/* FOTO DROPZONE */
+.foto-drop {
+  width: 100%; min-height: 80px; border: 2px dashed var(--glass-bd); border-radius: var(--rs);
+  display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 6px;
+  padding: 16px; cursor: pointer; transition: var(--tr); background: var(--bg2); text-align: center;
+}
+.foto-drop:hover, .foto-drop.drag-over { border-color: var(--blue); background: var(--blue-soft); }
+.foto-drop .mi { font-size: 28px; color: var(--tx3); }
+.foto-preview {
+  position: relative; display: inline-block;
+}
+.foto-preview img {
+  width: 72px; height: 72px; border-radius: 50%; object-fit: cover;
+  border: 3px solid var(--green); filter: saturate(.4) contrast(1.15);
+}
+.foto-preview .foto-rm {
+  position: absolute; top: -4px; right: -4px; width: 22px; height: 22px;
+  border-radius: 50%; background: var(--accent); color: #fff; border: none;
+  font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+  line-height: 1;
+}
+
+/* INSTANTIE CHIPS */
+.chip-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+.inst-chip {
+  padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 600;
+  background: var(--glass); border: 1px solid var(--glass-bd); color: var(--tx2);
+  cursor: pointer; transition: var(--tr);
+}
+.inst-chip:hover { background: var(--blue-soft); border-color: var(--blue); color: var(--blue); }
+.inst-chip.sel { background: var(--blue); border-color: var(--blue); color: #fff; }
+
+/* NAAM SUGGEST */
+.naam-suggest {
+  position: absolute; top: 100%; left: 0; right: 0; z-index: 100;
+  background: var(--bg2); border: 1px solid var(--glass-bd); border-radius: var(--rs);
+  max-height: 180px; overflow-y: auto; box-shadow: 0 8px 24px rgba(0,0,0,.4);
+}
+.naam-suggest-item {
+  padding: 8px 14px; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 8px;
+  border-bottom: 1px solid var(--glass-bd);
+}
+.naam-suggest-item:hover { background: var(--blue-soft); }
+.naam-suggest-item:last-child { border-bottom: none; }
+.naam-suggest-item .sg-count { font-size: 10px; color: var(--accent); font-weight: 700; }
+
+/* PERSOON KAART in wizard */
+.persoon-entry {
+  background: var(--surface); border: 1px solid var(--glass-bd); border-radius: var(--r);
+  padding: 16px; margin-bottom: 12px; position: relative;
+}
+.persoon-entry .pe-rm {
+  position: absolute; top: 8px; right: 8px; background: none; border: none;
+  color: var(--tx3); cursor: pointer; font-size: 18px;
+}
+.persoon-entry .pe-rm:hover { color: var(--accent); }
+
+@media(max-width:600px){
+  .wiz-line { width: 20px; }
+  .wiz-dot { width: 28px; height: 28px; font-size: 11px; }
+  .chip-grid { gap: 6px; }
+  .inst-chip { padding: 6px 12px; font-size: 12px; }
+}
 </style>
 </head>
 <body>
@@ -262,7 +340,6 @@ sup a[title], sup[title] { border-bottom: 1px dotted var(--blue); }
       </button>
       <nav class="nav-links" id="navLinks">
         <button class="nav-btn" data-r="/" onclick="go('/')"><span class="mi mi-sm">home</span> Home</button>
-        <button class="nav-btn" data-r="/meldingen" onclick="go('/meldingen')"><span class="mi mi-sm">list</span> Meldingen</button>
         <button class="nav-btn" data-r="/namen" onclick="go('/namen')"><span class="mi mi-sm">people</span> Namen</button>
         <button class="nav-btn" data-r="/missie" onclick="go('/missie')"><span class="mi mi-sm">flag</span> Missie</button>
         <button class="nav-btn" data-r="/organigram" onclick="go('/organigram')"><span class="mi mi-sm">account_tree</span> Daders</button>
@@ -352,9 +429,9 @@ function render(){
   var app = document.getElementById('app');
   switch(_route){
     case '/': app.innerHTML = pgHome(); break;
-    case '/meldingen': app.innerHTML = pgMeldingen(); break;
+    case '/meldingen': app.innerHTML = pgMelden(); initMeldListeners(); break;
     case '/melding': app.innerHTML = pgMelding(); break;
-    case '/melden': app.innerHTML = pgMelden(); break;
+    case '/melden': app.innerHTML = pgMelden(); initMeldListeners(); break;
     case '/melden-ai': app.innerHTML = pgMeldenAI(); initAI(); break;
     case '/namen': app.innerHTML = pgNamen(); break;
     case '/missie': app.innerHTML = pgMissie(); break;
@@ -554,17 +631,25 @@ function pgHome(){
 // ============ MELDING CARD ============
 function meldingCard(m){
   var namenStr = (m.namen || []).map(function(n){ return esc(n.naam); }).join(', ') || 'Geen naam genoemd';
+  // Eerste foto van genoemde personen
+  var fotoUrl = '';
+  (m.namen || []).forEach(function(n){ if(!fotoUrl && n.foto) fotoUrl = n.foto; });
   return '<div class="card m-card" onclick="go(\'/melding/' + m.id + '\')">' +
-    '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:6px">' +
-      '<h3 style="font-size:14px;font-weight:700;line-height:1.3">' + esc(m.titel) + '</h3>' +
-      (m.klokkenluider ? '<span class="badge badge-purple"><span class="mi mi-sm">shield</span> Klokkenluider</span>' : '') +
-    '</div>' +
-    '<div style="font-size:12px;color:var(--accent);margin-bottom:4px;font-weight:600"><span class="mi mi-sm">person</span> ' + namenStr + '</div>' +
-    (m.instantie ? '<div style="font-size:11px;color:var(--tx3);margin-bottom:6px"><span class="mi mi-sm">business</span> ' + esc(m.instantie) + '</div>' : '') +
-    '<div style="font-size:13px;color:var(--tx2);line-height:1.5;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden">' + esc(trunc(m.verhaal,200)) + '</div>' +
-    '<div style="display:flex;justify-content:space-between;font-size:11px;color:var(--tx3);margin-top:10px;padding-top:8px;border-top:1px solid var(--glass-bd)">' +
-      '<span>' + timeAgo(m.ts) + '</span>' +
-      '<span>' + (m.anoniem ? '<span class="mi mi-sm">visibility_off</span> Anoniem' : esc(m.melder_naam || 'Burger')) + '</span>' +
+    '<div style="display:flex;gap:12px;align-items:flex-start">' +
+      (fotoUrl ? '<img src="' + esc(fotoUrl) + '" style="width:48px;height:48px;border-radius:50%;object-fit:cover;border:2px solid var(--accent);filter:saturate(.35) contrast(1.2);flex-shrink:0" onerror="this.style.display=\'none\'">' : '') +
+      '<div style="flex:1;min-width:0">' +
+        '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:6px">' +
+          '<h3 style="font-size:14px;font-weight:700;line-height:1.3">' + esc(m.titel) + '</h3>' +
+          (m.klokkenluider ? '<span class="badge badge-purple"><span class="mi mi-sm">shield</span> Klokkenluider</span>' : '') +
+        '</div>' +
+        '<div style="font-size:12px;color:var(--accent);margin-bottom:4px;font-weight:600"><span class="mi mi-sm">person</span> ' + namenStr + '</div>' +
+        (m.instantie ? '<div style="font-size:11px;color:var(--tx3);margin-bottom:6px"><span class="mi mi-sm">business</span> ' + esc(m.instantie) + '</div>' : '') +
+        '<div style="font-size:13px;color:var(--tx2);line-height:1.5;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden">' + esc(trunc(m.verhaal,200)) + '</div>' +
+        '<div style="display:flex;justify-content:space-between;font-size:11px;color:var(--tx3);margin-top:10px;padding-top:8px;border-top:1px solid var(--glass-bd)">' +
+          '<span>' + timeAgo(m.ts) + '</span>' +
+          '<span>' + (m.anoniem ? '<span class="mi mi-sm">visibility_off</span> Anoniem' : esc(m.melder_naam || 'Burger')) + '</span>' +
+        '</div>' +
+      '</div>' +
     '</div>' +
   '</div>';
 }
@@ -694,7 +779,7 @@ function zoekMeldingen(val){
   _zoek = val;
   clearTimeout(window._zt);
   window._zt = setTimeout(function(){
-    document.getElementById('app').innerHTML = pgMeldingen();
+    document.getElementById('app').innerHTML = pgMelden();
     var inp = document.querySelector('.search-input');
     if(inp){ inp.focus(); inp.setSelectionRange(inp.value.length, inp.value.length); }
   }, 250);
@@ -709,8 +794,10 @@ function pgMelding(){
 
   var namenHtml = '';
   (m.namen || []).forEach(function(n){
-    namenHtml += '<div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--accent-soft);border-radius:var(--rs);margin-bottom:6px;border-left:3px solid var(--accent)">' +
-      '<span class="mi" style="color:var(--accent)">person</span>' +
+    namenHtml += '<div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--accent-soft);border-radius:var(--rs);margin-bottom:6px;border-left:3px solid var(--accent)">' +
+      (n.foto ?
+        '<img src="' + esc(n.foto) + '" style="width:48px;height:48px;border-radius:50%;object-fit:cover;border:2px solid var(--accent);filter:saturate(.35) contrast(1.2)" onerror="this.style.display=\'none\'">' :
+        '<span class="mi" style="color:var(--accent);font-size:28px">person</span>') +
       '<div>' +
         '<div style="font-size:14px;font-weight:700">' + esc(n.naam) + '</div>' +
         (n.functie ? '<div style="font-size:12px;color:var(--tx2)">' + esc(n.functie) + '</div>' : '') +
@@ -733,7 +820,7 @@ function pgMelding(){
   });
 
   return '<div class="page">' +
-    '<button class="btn btn-ghost btn-sm" onclick="go(\'/meldingen\')" style="margin-bottom:14px"><span class="mi mi-sm">arrow_back</span> Terug</button>' +
+    '<button class="btn btn-ghost btn-sm" onclick="go(\'/melden\')" style="margin-bottom:14px"><span class="mi mi-sm">arrow_back</span> Terug</button>' +
 
     '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">' +
       (m.klokkenluider ? '<span class="badge badge-purple"><span class="mi mi-sm">shield</span> Klokkenluider</span>' : '') +
@@ -811,112 +898,449 @@ function deel(id, platform){
   else if(platform==='copy'){ if(navigator.clipboard) navigator.clipboard.writeText(url).then(function(){toast('Link gekopieerd!')}); else prompt('Kopieer:',url); }
 }
 
-// ============ PAGE: MELDEN (SIMPEL FORMULIER) ============
+// ============ PAGE: MELDEN (WIZARD + DOSSIERS) ============
 var _namen = [{ naam: '', functie: '' }];
+var _meldStap = 1;
+var _meldFotos = {};
+var _meldInstantie = '';
+var _meldVerhaal = '';
+var _meldTitel = '';
+var _naamSugVisible = -1;
+
+var INSTANTIES = [
+  'Belastingdienst','Toeslagen','UWV','DUO','IND','SVB',
+  'Gemeente','Jeugdzorg','CJIB','Politie','Justitie',
+  'Raad van State','CAK','CBR','RDW','Douane'
+];
 
 function pgMelden(){
-  var namenHtml = '';
-  _namen.forEach(function(n, i){
-    namenHtml += '<div style="display:flex;gap:8px;margin-bottom:8px;align-items:flex-start">' +
-      '<div style="flex:2"><input class="fi" id="nNaam' + i + '" value="' + esc(n.naam) + '" placeholder="Naam ambtenaar" oninput="updateNaam(' + i + ',\'naam\',this.value)"></div>' +
-      '<div style="flex:1"><input class="fi" id="nFunc' + i + '" value="' + esc(n.functie) + '" placeholder="Functie (optioneel)" oninput="updateNaam(' + i + ',\'functie\',this.value)"></div>' +
-      (i > 0 ? '<button class="btn btn-sm btn-ghost" onclick="verwijderNaam(' + i + ')" style="padding:8px"><span class="mi mi-sm">close</span></button>' : '<div style="width:42px"></div>') +
+  // Wizard + meldingen overzicht op 1 pagina
+  var meldingen = DS.all('meldingen').sort(function(a,b){ return (b.ts||0)-(a.ts||0); });
+  var stap = _meldStap;
+
+  // Progress dots
+  var progress = '<div class="wiz-progress">';
+  for(var s = 1; s <= 5; s++){
+    var cls = s < stap ? 'wiz-dot done' : (s === stap ? 'wiz-dot active' : 'wiz-dot');
+    progress += (s > 1 ? '<div class="wiz-line' + (s <= stap ? ' done' : '') + '"></div>' : '');
+    progress += '<div class="' + cls + '">' + (s < stap ? '<span class="mi" style="font-size:16px">check</span>' : s) + '</div>';
+  }
+  progress += '</div>';
+
+  // Stap-inhoud
+  var stepHtml = '';
+
+  if(stap === 1){
+    // ---- STAP 1: WIE ----
+    var namenHtml = '';
+    _namen.forEach(function(n, i){
+      var heeftFoto = _meldFotos[i];
+      namenHtml += '<div class="persoon-entry">' +
+        (i > 0 ? '<button class="pe-rm" onclick="verwijderNaam(' + i + ')"><span class="mi">close</span></button>' : '') +
+        '<div style="display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap">' +
+          // Foto kolom
+          '<div style="flex-shrink:0;text-align:center">' +
+            (heeftFoto ?
+              '<div class="foto-preview">' +
+                '<img src="' + esc(_meldFotos[i]) + '" onerror="this.src=\'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 80 80%22><rect fill=%22%231e293b%22 width=%2280%22 height=%2280%22/><text x=%2240%22 y=%2248%22 text-anchor=%22middle%22 fill=%22%2394a3b8%22 font-size=%2228%22>?</text></svg>\'">' +
+                '<button class="foto-rm" onclick="verwijderFoto(' + i + ')">×</button>' +
+              '</div>' :
+              '<div class="foto-drop" id="fotoDrop' + i + '" onclick="document.getElementById(\'fotoFile' + i + '\').click()">' +
+                '<span class="mi">add_a_photo</span>' +
+                '<div style="font-size:11px;color:var(--tx3)">Sleep foto<br>hierheen</div>' +
+                '<input type="file" id="fotoFile' + i + '" accept="image/*" style="display:none" onchange="uploadFotoFile(' + i + ',this.files)">' +
+              '</div>'
+            ) +
+          '</div>' +
+          // Naam + functie kolom
+          '<div style="flex:1;min-width:200px">' +
+            '<div style="position:relative">' +
+              '<input class="fi" id="nNaam' + i + '" value="' + esc(n.naam) + '" placeholder="Naam ambtenaar" oninput="updateNaam(' + i + ',\'naam\',this.value); toonSuggesties(' + i + ',this.value)" autocomplete="off">' +
+              '<div id="nSug' + i + '" style="display:none" class="naam-suggest"></div>' +
+            '</div>' +
+            '<input class="fi" id="nFunc' + i + '" value="' + esc(n.functie) + '" placeholder="Functie (optioneel)" oninput="updateNaam(' + i + ',\'functie\',this.value)" style="margin-top:8px">' +
+            '<div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap">' +
+              '<button class="btn btn-sm btn-ghost" onclick="zoekFoto(' + i + ')"><span class="mi mi-sm">image_search</span> Zoek foto</button>' +
+              '<button class="btn btn-sm btn-ghost" onclick="plakFotoUrl(' + i + ')"><span class="mi mi-sm">link</span> Plak URL</button>' +
+            '</div>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+    });
+
+    stepHtml = '<div class="wiz-step">' +
+      '<h3 style="font-size:18px;font-weight:700;margin-bottom:4px"><span class="mi" style="color:var(--accent);vertical-align:-3px">person_search</span> Wie wil je melden?</h3>' +
+      '<p style="font-size:13px;color:var(--tx2);margin-bottom:16px">Vul de naam in van de ambtenaar. Zoek een foto zodat anderen de juiste persoon herkennen.</p>' +
+      namenHtml +
+      '<button class="btn btn-sm btn-ghost" onclick="voegNaamToe()" style="margin-bottom:4px"><span class="mi mi-sm">person_add</span> Nog een persoon</button>' +
+      '<div class="wiz-nav">' +
+        '<div></div>' +
+        '<button class="btn btn-blue" onclick="meldVolgende()"><span class="mi mi-sm">arrow_forward</span> Volgende</button>' +
+      '</div>' +
     '</div>';
-  });
 
-  return '<div class="page">' +
-    '<h2 style="font-size:20px;font-weight:700;margin-bottom:4px"><span class="mi">edit_note</span> Doe een melding</h2>' +
-    '<p style="font-size:13px;color:var(--tx2);margin-bottom:18px">Voer de namen in, de instantie, en vertel wat er is gebeurd. Zo simpel is het.</p>' +
+  } else if(stap === 2){
+    // ---- STAP 2: INSTANTIE ----
+    var chipHtml = '';
+    INSTANTIES.forEach(function(inst){
+      var sel = _meldInstantie === inst ? ' sel' : '';
+      chipHtml += '<span class="inst-chip' + sel + '" onclick="kiesInstantie(\'' + inst + '\')">' + inst + '</span>';
+    });
 
-    '<div class="card" style="padding:24px">' +
+    stepHtml = '<div class="wiz-step">' +
+      '<h3 style="font-size:18px;font-weight:700;margin-bottom:4px"><span class="mi" style="color:var(--blue);vertical-align:-3px">business</span> Bij welke instantie?</h3>' +
+      '<p style="font-size:13px;color:var(--tx2);margin-bottom:16px">Kies of typ de organisatie waar deze ambtenaar werkt.</p>' +
+      '<div class="chip-grid">' + chipHtml + '</div>' +
+      '<div class="fg">' +
+        '<input class="fi" id="mInstantie" placeholder="Of typ een andere instantie / afdeling..." value="' + esc(_meldInstantie) + '" oninput="_meldInstantie=this.value">' +
+      '</div>' +
+      '<div class="wiz-nav">' +
+        '<button class="btn btn-ghost" onclick="meldVorige()"><span class="mi mi-sm">arrow_back</span> Terug</button>' +
+        '<button class="btn btn-blue" onclick="meldVolgende()"><span class="mi mi-sm">arrow_forward</span> Volgende</button>' +
+      '</div>' +
+    '</div>';
 
-      // BRIEVEN UPLOADEN (meerdere)
+  } else if(stap === 3){
+    // ---- STAP 3: WAT IS ER GEBEURD (optioneel) ----
+    stepHtml = '<div class="wiz-step">' +
+      '<h3 style="font-size:18px;font-weight:700;margin-bottom:4px"><span class="mi" style="color:var(--yellow);vertical-align:-3px">description</span> Wat is er gebeurd?</h3>' +
+      '<p style="font-size:13px;color:var(--tx2);margin-bottom:16px">Vertel in een paar zinnen wat deze ambtenaar heeft gedaan. <strong>Dit is optioneel</strong> — je kunt het later altijd aanvullen.</p>' +
+      '<div class="fg">' +
+        '<input class="fi" id="mTitel" placeholder="Korte titel, bijv. \'Jarenlang dossier genegeerd\'" value="' + esc(_meldTitel) + '" oninput="_meldTitel=this.value">' +
+      '</div>' +
+      '<div class="fg">' +
+        '<textarea class="ft" id="mVerhaal" style="min-height:140px" placeholder="Wat heeft deze persoon gedaan? Noem data, feiten, gevolgen.\n\nJe mag ook alleen de naam noemen — elke melding telt." oninput="_meldVerhaal=this.value">' + esc(_meldVerhaal) + '</textarea>' +
+      '</div>' +
+      '<div class="wiz-nav">' +
+        '<button class="btn btn-ghost" onclick="meldVorige()"><span class="mi mi-sm">arrow_back</span> Terug</button>' +
+        '<div style="display:flex;gap:8px">' +
+          '<button class="btn btn-ghost" onclick="meldSkip()">Dit vul ik later aan</button>' +
+          '<button class="btn btn-blue" onclick="meldVolgende()"><span class="mi mi-sm">arrow_forward</span> Volgende</button>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+
+  } else if(stap === 4){
+    // ---- STAP 4: BEWIJS UPLOADEN (optioneel) ----
+    stepHtml = '<div class="wiz-step">' +
+      '<h3 style="font-size:18px;font-weight:700;margin-bottom:4px"><span class="mi" style="color:var(--purple);vertical-align:-3px">upload_file</span> Heb je bewijs?</h3>' +
+      '<p style="font-size:13px;color:var(--tx2);margin-bottom:16px">Upload brieven, besluiten, e-mails of screenshots. Wij halen automatisch info eruit om het dossier te versterken. <strong>Dit is optioneel.</strong></p>' +
       '<div style="padding:18px;margin-bottom:12px;border:2px dashed var(--blue);border-radius:var(--r);text-align:center;background:var(--blue-soft);cursor:pointer" onclick="document.getElementById(\'briefUpload\').click()" id="briefDropzone">' +
         '<span class="mi" style="font-size:36px;color:var(--blue);display:block;margin-bottom:6px">upload_file</span>' +
-        '<div style="font-size:14px;font-weight:700;margin-bottom:4px">Upload brieven van de overheid</div>' +
-        '<div style="font-size:12px;color:var(--tx2)">Sleep brieven hierheen of klik om te kiezen. Meerdere bestanden tegelijk kan.<br>Wij halen automatisch namen, instantie, datum en context eruit.</div>' +
+        '<div style="font-size:14px;font-weight:700;margin-bottom:4px">Sleep bestanden hierheen</div>' +
+        '<div style="font-size:12px;color:var(--tx2)">PDF, afbeeldingen, tekst. Meerdere bestanden tegelijk kan.</div>' +
         '<input type="file" id="briefUpload" accept=".pdf,.jpg,.jpeg,.png,.gif,.bmp,.txt,.doc,.docx" style="display:none" multiple onchange="verwerkBrieven(this.files)">' +
       '</div>' +
       '<div id="briefResult" style="display:none;margin-bottom:18px"></div>' +
+      '<div class="wiz-nav">' +
+        '<button class="btn btn-ghost" onclick="meldVorige()"><span class="mi mi-sm">arrow_back</span> Terug</button>' +
+        '<div style="display:flex;gap:8px">' +
+          '<button class="btn btn-ghost" onclick="meldSkip()">Ik heb (nog) geen bestanden</button>' +
+          '<button class="btn btn-blue" onclick="meldVolgende()"><span class="mi mi-sm">arrow_forward</span> Volgende</button>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
 
-      // Namen
-      '<div style="font-size:13px;font-weight:700;margin-bottom:8px;color:var(--accent)"><span class="mi mi-sm">person</span> Naam / namen</div>' +
-      namenHtml +
-      '<button class="btn btn-sm btn-ghost" onclick="voegNaamToe()" style="margin-bottom:18px"><span class="mi mi-sm">add</span> Nog een naam</button>' +
+  } else if(stap === 5){
+    // ---- STAP 5: BEVESTIGEN ----
+    var namenPreview = _namen.filter(function(n){ return n.naam.trim(); });
+    var prevHtml = '';
+    namenPreview.forEach(function(n, i){
+      prevHtml += '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">' +
+        (_meldFotos[i] ?
+          '<img src="' + esc(_meldFotos[i]) + '" style="width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid var(--accent);filter:saturate(.4)" onerror="this.style.display=\'none\'">' :
+          '<div style="width:40px;height:40px;border-radius:50%;background:var(--bg2);display:flex;align-items:center;justify-content:center"><span class="mi" style="color:var(--tx3)">person</span></div>'
+        ) +
+        '<div><div style="font-weight:700;font-size:14px">' + esc(n.naam) + '</div>' +
+          (n.functie ? '<div style="font-size:12px;color:var(--tx3)">' + esc(n.functie) + '</div>' : '') +
+        '</div>' +
+      '</div>';
+    });
 
-      // Instantie
-      '<div class="fg">' +
-        '<label class="fl">Instantie / organisatie</label>' +
-        '<input class="fi" id="mInstantie" placeholder="Bijv. Gemeente Rotterdam, Belastingdienst, UWV, Jeugdzorg..." value="">' +
+    stepHtml = '<div class="wiz-step">' +
+      '<h3 style="font-size:18px;font-weight:700;margin-bottom:4px"><span class="mi" style="color:var(--green);vertical-align:-3px">fact_check</span> Bevestig je melding</h3>' +
+      '<p style="font-size:13px;color:var(--tx2);margin-bottom:16px">Controleer de gegevens en publiceer.</p>' +
+
+      '<div class="card" style="padding:18px;margin-bottom:14px;border-left:3px solid var(--accent)">' +
+        '<div style="font-size:12px;font-weight:700;color:var(--accent);margin-bottom:8px;text-transform:uppercase">Gemeld over</div>' +
+        prevHtml +
+        (_meldInstantie ? '<div style="font-size:13px;margin-top:6px"><span class="mi mi-sm" style="color:var(--blue)">business</span> ' + esc(_meldInstantie) + '</div>' : '') +
+        (_meldTitel ? '<div style="font-size:14px;font-weight:600;margin-top:8px">' + esc(_meldTitel) + '</div>' : '') +
+        (_meldVerhaal ? '<div style="font-size:13px;color:var(--tx2);margin-top:4px;line-height:1.5">' + esc(trunc(_meldVerhaal, 300)) + '</div>' : '<div style="font-size:12px;color:var(--tx3);margin-top:4px;font-style:italic">Geen verhaal ingevuld (kan later)</div>') +
       '</div>' +
 
-      // Titel
-      '<div class="fg">' +
-        '<label class="fl">Titel</label>' +
-        '<input class="fi" id="mTitel" placeholder="Korte omschrijving, bijv. \'Al 2 jaar wachten op besluit\'">' +
-      '</div>' +
-
-      // Verhaal
-      '<div class="fg">' +
-        '<label class="fl">Wat is er gebeurd?</label>' +
-        '<textarea class="ft" id="mVerhaal" style="min-height:180px" placeholder="Vertel je verhaal. Noem data, feiten, wat er precies is gezegd of gedaan. Hoe meer detail, hoe beter.\n\nJe mag ook alleen namen noemen zonder lang verhaal — elke melding telt."></textarea>' +
-      '</div>' +
-
-      // Anoniem
       '<div style="margin-bottom:16px">' +
         '<label class="fcheck"><input type="checkbox" id="mAnoniem" checked> Ik wil anoniem melden</label>' +
         '<div class="fhint">Als je anoniem meldt worden je gegevens niet opgeslagen.</div>' +
       '</div>' +
-
-      // Melder gegevens (optioneel)
       '<div id="melderVelden" style="display:none">' +
         '<div class="fg"><label class="fl">Je naam</label><input class="fi" id="mNaam" placeholder="Optioneel"></div>' +
         '<div class="fg"><label class="fl">E-mail</label><input class="fi" id="mEmail" type="email" placeholder="Optioneel — voor opvolging"></div>' +
       '</div>' +
 
-      // Submit
-      '<div style="display:flex;gap:10px;justify-content:space-between;align-items:center;flex-wrap:wrap">' +
-        '<button class="btn btn-blue" onclick="go(\'/melden-ai\')"><span class="mi mi-sm">smart_toy</span> Liever met AI-hulp?</button>' +
-        '<button class="btn btn-red btn-lg" onclick="submitMelding()"><span class="mi">send</span> Publiceer melding</button>' +
+      // VEILIGHEID
+      '<div class="card" style="padding:14px;margin-bottom:16px;border-left:3px solid var(--green);background:linear-gradient(135deg,rgba(34,197,94,.06),transparent)">' +
+        '<div style="font-size:12px;font-weight:700;color:var(--green);margin-bottom:4px"><span class="mi mi-sm">shield</span> Veilig melden</div>' +
+        '<div style="font-size:12px;color:var(--tx2);line-height:1.6">' +
+          'Alles wordt lokaal in je browser opgeslagen. Geen servers, geen tracking, geen IP-registratie. ' +
+          'Voor extra veiligheid: gebruik <strong>Tor Browser</strong> of een VPN.' +
+        '</div>' +
       '</div>' +
 
-    '</div>' +
+      '<div class="wiz-nav">' +
+        '<button class="btn btn-ghost" onclick="meldVorige()"><span class="mi mi-sm">arrow_back</span> Terug</button>' +
+        '<button class="btn btn-red btn-lg" onclick="submitMelding()"><span class="mi">send</span> Publiceer melding</button>' +
+      '</div>' +
+    '</div>';
+  }
 
-    // Privacy notice
-    '<div style="text-align:center;padding:16px 0;font-size:11px;color:var(--tx3)">' +
-      '<span class="mi mi-sm" style="color:var(--green)">lock</span> Alles wordt lokaal in je browser opgeslagen. Geen servers, geen tracking.' +
+  // Meldingen-lijst (onder wizard)
+  var listHtml = '';
+  if(meldingen.length > 0){
+    listHtml = '<div style="margin-top:32px;padding-top:24px;border-top:1px solid var(--glass-bd)">';
+
+    // Ambtenaren: kom zelf naar voren
+    listHtml += '<div class="card" style="padding:20px;margin-bottom:20px;border:2px solid var(--green);background:linear-gradient(135deg,rgba(34,197,94,.06),transparent)">' +
+      '<div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">' +
+        '<span class="mi" style="font-size:36px;color:var(--green)">handshake</span>' +
+        '<div style="flex:1;min-width:240px">' +
+          '<h3 style="font-size:17px;font-weight:800;margin-bottom:6px">Ben jij ambtenaar? Stap naar voren.</h3>' +
+          '<p style="font-size:14px;color:var(--tx2);line-height:1.7;margin-bottom:10px">' +
+            'Wij zijn niet op zoek naar wraak. Wij willen transparantie. ' +
+            '<strong style="color:var(--green)">Wanneer je zelf open kaart speelt, verdien je misschien een tweede kans.</strong> ' +
+            'Eerlijkheid wordt beloond — wij proberen samen met jou tot een oplossing te komen.' +
+          '</p>' +
+          '<p style="font-size:13px;color:var(--tx2);margin-bottom:12px">' +
+            'Geef je e-mail op en wij sturen je de meldingen die over jou gaan. ' +
+            'Als je reageert en een oplossing biedt, vermelden wij dat bij de melding.' +
+          '</p>' +
+          '<div style="display:flex;gap:8px;flex-wrap:wrap">' +
+            '<input type="email" id="ambtenaarEmail" placeholder="je.naam@overheid.nl" style="flex:1;min-width:200px;padding:10px 14px;border-radius:var(--rs);border:1px solid var(--glass-bd);background:var(--bg);color:var(--tx);font:14px var(--font)">' +
+            '<input type="text" id="ambtenaarNaam" placeholder="Je volledige naam" style="flex:1;min-width:160px;padding:10px 14px;border-radius:var(--rs);border:1px solid var(--glass-bd);background:var(--bg);color:var(--tx);font:14px var(--font)">' +
+          '</div>' +
+          '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">' +
+            '<input type="text" id="ambtenaarOrg" placeholder="Organisatie" style="flex:1;min-width:200px;padding:10px 14px;border-radius:var(--rs);border:1px solid var(--glass-bd);background:var(--bg);color:var(--tx);font:14px var(--font)">' +
+            '<button class="btn btn-blue" onclick="registreerAmbtenaar()"><span class="mi mi-sm">send</span> Stuur mij meldingen</button>' +
+          '</div>' +
+          '<p style="font-size:11px;color:var(--tx3);margin-top:8px"><span class="mi mi-sm" style="font-size:12px">lock</span> Je gegevens worden alleen gebruikt om je meldingen te sturen.</p>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+
+    // Collectieve actie uitleg
+    listHtml += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-bottom:20px">' +
+      '<div class="card" style="padding:16px;border-left:3px solid var(--accent)">' +
+        '<div style="font-size:14px;font-weight:700;margin-bottom:4px"><span class="mi mi-sm" style="color:var(--accent)">groups</span> Samen sterker</div>' +
+        '<div style="font-size:12px;color:var(--tx2);line-height:1.6">Klagen meerdere mensen over dezelfde persoon? Dan kunnen we samen ons recht halen. Elke melding versterkt het dossier.</div>' +
+      '</div>' +
+      '<div class="card" style="padding:16px;border-left:3px solid var(--yellow)">' +
+        '<div style="font-size:14px;font-weight:700;margin-bottom:4px"><span class="mi mi-sm" style="color:var(--yellow)">folder_shared</span> Dossieropbouw</div>' +
+        '<div style="font-size:12px;color:var(--tx2);line-height:1.6">Upload bewijs, voeg details toe. Wij bouwen per persoon een dossier op. Transparantie is ons wapen.</div>' +
+      '</div>' +
+      '<div class="card" style="padding:16px;border-left:3px solid var(--green)">' +
+        '<div style="font-size:14px;font-weight:700;margin-bottom:4px"><span class="mi mi-sm" style="color:var(--green)">gavel</span> Recht is recht</div>' +
+        '<div style="font-size:12px;color:var(--tx2);line-height:1.6">Het publiceren van namen van ambtenaren in hun publieke functie is rechtmatig. Wij handelen in het kader van maatschappelijk belang.</div>' +
+      '</div>' +
+    '</div>';
+
+    // Zoekbalk + lijst
+    listHtml += '<h2 style="font-size:18px;font-weight:700;margin-bottom:12px"><span class="mi">folder_open</span> Dossiers <span style="font-size:14px;color:var(--tx3);font-weight:400">(' + meldingen.length + ')</span></h2>' +
+      '<div class="search-wrap"><span class="mi">search</span><input class="search-input" placeholder="Zoek op naam, instantie, verhaal..." value="' + esc(_zoek) + '" oninput="zoekMeldingen(this.value)"></div>';
+
+    if(_zoek){
+      var z = _zoek.toLowerCase();
+      meldingen = meldingen.filter(function(m){
+        var tekst = (m.titel||'') + ' ' + (m.verhaal||'') + ' ' + (m.instantie||'') + ' ' + (m.namen||[]).map(function(n){return n.naam;}).join(' ');
+        return tekst.toLowerCase().indexOf(z) >= 0;
+      });
+    }
+
+    if(meldingen.length === 0){
+      listHtml += '<div class="empty"><span class="mi">search_off</span><p>Geen meldingen gevonden.</p></div>';
+    } else {
+      listHtml += '<div class="card-grid">';
+      meldingen.forEach(function(m){ listHtml += meldingCard(m); });
+      listHtml += '</div>';
+    }
+    listHtml += '</div>';
+  }
+
+  return '<div class="page">' +
+    '<h2 style="font-size:22px;font-weight:800;margin-bottom:4px"><span class="mi" style="vertical-align:-3px">edit_note</span> Doe een melding</h2>' +
+    '<p style="font-size:14px;color:var(--tx2);margin-bottom:20px">Noem de naam. Dat is al genoeg. Wij bouwen samen het dossier op.</p>' +
+    '<div class="card" style="padding:24px">' +
+      progress +
+      stepHtml +
     '</div>' +
+    listHtml +
   '</div>';
 }
 
-function voegNaamToe(){ _namen.push({naam:'',functie:''}); render(); }
-function verwijderNaam(i){ _namen.splice(i,1); render(); }
-function updateNaam(i,field,val){ _namen[i][field] = val; }
-
-function submitMelding(){
-  // Sync namen van velden
+// ---- WIZARD NAVIGATIE ----
+function meldVolgende(){
+  syncMeldVelden();
+  if(_meldStap === 1){
+    var namen = _namen.filter(function(n){ return n.naam.trim(); });
+    if(namen.length === 0){ toast('Vul minstens één naam in'); return; }
+  }
+  if(_meldStap < 5) _meldStap++;
+  render();
+  initMeldListeners();
+}
+function meldVorige(){
+  syncMeldVelden();
+  if(_meldStap > 1) _meldStap--;
+  render();
+  initMeldListeners();
+}
+function meldSkip(){
+  syncMeldVelden();
+  _meldStap++;
+  render();
+  initMeldListeners();
+}
+function syncMeldVelden(){
   _namen.forEach(function(n,i){
     var nEl = document.getElementById('nNaam'+i);
     var fEl = document.getElementById('nFunc'+i);
     if(nEl) n.naam = nEl.value.trim();
     if(fEl) n.functie = fEl.value.trim();
   });
+  var inst = document.getElementById('mInstantie');
+  if(inst) _meldInstantie = inst.value;
+  var tit = document.getElementById('mTitel');
+  if(tit) _meldTitel = tit.value;
+  var ver = document.getElementById('mVerhaal');
+  if(ver) _meldVerhaal = ver.value;
+}
 
-  var titel = (document.getElementById('mTitel')||{}).value || '';
-  var verhaal = (document.getElementById('mVerhaal')||{}).value || '';
-  var instantie = (document.getElementById('mInstantie')||{}).value || '';
-  var anoniem = (document.getElementById('mAnoniem')||{}).checked;
+// ---- NAAM FUNCTIES ----
+function voegNaamToe(){ _namen.push({naam:'',functie:''}); syncMeldVelden(); render(); initMeldListeners(); }
+function verwijderNaam(i){ _namen.splice(i,1); delete _meldFotos[i]; reindexFotos(i); syncMeldVelden(); render(); initMeldListeners(); }
+function updateNaam(i,field,val){ _namen[i][field] = val; }
+function reindexFotos(removed){
+  var nf = {};
+  Object.keys(_meldFotos).forEach(function(k){
+    var ki = parseInt(k);
+    if(ki < removed) nf[ki] = _meldFotos[ki];
+    else if(ki > removed) nf[ki-1] = _meldFotos[ki];
+  });
+  _meldFotos = nf;
+}
 
-  // Filter lege namen
-  var namen = _namen.filter(function(n){ return n.naam.trim(); });
+// ---- FOTO FUNCTIES ----
+function zoekFoto(i){
+  syncMeldVelden();
+  var naam = _namen[i] && _namen[i].naam;
+  if(!naam || !naam.trim()){ toast('Vul eerst een naam in'); return; }
+  var url = 'https://www.google.com/search?tbm=isch&q=' + encodeURIComponent(naam + ' ambtenaar nederland overheid');
+  window.open(url, '_blank');
+  toast('Zoek de juiste foto en sleep of kopieer de afbeeldings-URL');
+}
+function plakFotoUrl(i){
+  var url = prompt('Plak de URL van de foto:');
+  if(url && url.match(/^https?:\/\//)){
+    _meldFotos[i] = url;
+    render();
+    initMeldListeners();
+  }
+}
+function verwijderFoto(i){
+  delete _meldFotos[i];
+  render();
+  initMeldListeners();
+}
+function uploadFotoFile(i, files){
+  if(!files || !files[0]) return;
+  var reader = new FileReader();
+  reader.onload = function(e){
+    _meldFotos[i] = e.target.result;
+    render();
+    initMeldListeners();
+  };
+  reader.readAsDataURL(files[0]);
+}
 
-  if(!titel.trim()){ toast('Vul een titel in'); return; }
-  if(!verhaal.trim() && namen.length === 0){ toast('Vul een verhaal in of noem een naam'); return; }
+// ---- FOTO DRAG & DROP ----
+function initMeldListeners(){
+  setTimeout(function(){
+    _namen.forEach(function(n, i){
+      var dz = document.getElementById('fotoDrop' + i);
+      if(!dz) return;
+      dz.addEventListener('dragover', function(e){ e.preventDefault(); e.stopPropagation(); dz.classList.add('drag-over'); });
+      dz.addEventListener('dragleave', function(e){ dz.classList.remove('drag-over'); });
+      dz.addEventListener('drop', function(e){
+        e.preventDefault(); e.stopPropagation(); dz.classList.remove('drag-over');
+        // URL van internet (sleep afbeelding uit browser)
+        var url = e.dataTransfer.getData('text/uri-list') || e.dataTransfer.getData('text/plain') || e.dataTransfer.getData('text/html');
+        if(url){
+          // Probeer URL uit HTML te halen (bijv. <img src="...">)
+          var m = url.match(/https?:\/\/[^\s"'<>]+\.(jpg|jpeg|png|gif|webp|bmp|svg)[^\s"'<>]*/i);
+          if(m){ _meldFotos[i] = m[0]; render(); initMeldListeners(); return; }
+          if(url.match(/^https?:\/\//)) { _meldFotos[i] = url.split('\n')[0].trim(); render(); initMeldListeners(); return; }
+        }
+        // Lokaal bestand
+        if(e.dataTransfer.files && e.dataTransfer.files[0]){
+          var reader = new FileReader();
+          reader.onload = function(ev){ _meldFotos[i] = ev.target.result; render(); initMeldListeners(); };
+          reader.readAsDataURL(e.dataTransfer.files[0]);
+        }
+      });
+    });
+  }, 50);
+}
+
+// ---- NAAM SUGGESTIES (autocomplete) ----
+function toonSuggesties(i, val){
+  var el = document.getElementById('nSug' + i);
+  if(!el) return;
+  if(!val || val.length < 2){ el.style.display = 'none'; return; }
+  var namen = getNamenLijst(DS.all('meldingen'));
+  var matches = namen.filter(function(n){ return n.naam.toLowerCase().indexOf(val.toLowerCase()) >= 0; }).slice(0,5);
+  if(matches.length === 0){ el.style.display = 'none'; return; }
+  var html = '';
+  matches.forEach(function(n){
+    html += '<div class="naam-suggest-item" onclick="kiesSuggestie(' + i + ',\'' + esc(n.naam) + '\')">' +
+      '<span class="mi mi-sm" style="color:var(--accent)">person</span> ' +
+      '<span>' + esc(n.naam) + '</span>' +
+      '<span class="sg-count">' + n.count + 'x gemeld</span>' +
+    '</div>';
+  });
+  el.innerHTML = html;
+  el.style.display = 'block';
+}
+function kiesSuggestie(i, naam){
+  _namen[i].naam = naam;
+  var el = document.getElementById('nNaam' + i);
+  if(el) el.value = naam;
+  var sg = document.getElementById('nSug' + i);
+  if(sg) sg.style.display = 'none';
+}
+
+// ---- INSTANTIE CHIP ----
+function kiesInstantie(inst){
+  _meldInstantie = (_meldInstantie === inst) ? '' : inst;
+  render();
+  initMeldListeners();
+}
+
+// ---- SUBMIT ----
+function submitMelding(){
+  syncMeldVelden();
+
+  var namen = _namen.filter(function(n){ return n.naam.trim(); }).map(function(n,i){
+    return { naam: n.naam.trim(), functie: n.functie.trim(), foto: _meldFotos[i] || '' };
+  });
+
+  if(namen.length === 0){ toast('Vul minstens één naam in'); return; }
+
+  var anoniem = (document.getElementById('mAnoniem')||{}).checked !== false;
+  var titel = _meldTitel.trim() || namen.map(function(n){return n.naam;}).join(', ');
 
   var melding = {
-    titel: titel.trim(),
-    verhaal: verhaal.trim(),
-    instantie: instantie.trim(),
+    titel: titel,
+    verhaal: _meldVerhaal.trim(),
+    instantie: _meldInstantie.trim(),
     namen: namen,
     anoniem: anoniem,
     melder_naam: anoniem ? null : ((document.getElementById('mNaam')||{}).value || '').trim() || null,
@@ -927,8 +1351,14 @@ function submitMelding(){
   };
 
   var saved = DS.add('meldingen', melding);
-  toast('Melding gepubliceerd!');
+  toast('Melding gepubliceerd! Samen bouwen we het dossier op.');
+  // Reset
   _namen = [{naam:'',functie:''}];
+  _meldStap = 1;
+  _meldFotos = {};
+  _meldInstantie = '';
+  _meldVerhaal = '';
+  _meldTitel = '';
   go('/melding/' + saved.id);
 }
 
@@ -2750,7 +3180,7 @@ function pgRechtspraak(){
       '</div>' +
       '<div style="text-align:center;padding-top:8px">' +
         '<button class="btn btn-red btn-lg" onclick="go(\'/melden\')" style="background:var(--green);margin-right:8px"><span class="mi">add_circle</span> Doe een melding</button>' +
-        '<button class="btn btn-ghost btn-lg" onclick="go(\'/meldingen\')"><span class="mi mi-sm">badge</span> Ben je ambtenaar?</button>' +
+        '<button class="btn btn-ghost btn-lg" onclick="go(\'/melden\')"><span class="mi mi-sm">badge</span> Ben je ambtenaar?</button>' +
       '</div>' +
     '</div>';
 
