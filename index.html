@@ -1015,24 +1015,9 @@ function pgMelden(){
     // ---- STAP 1: WIE ----
     var namenHtml = '';
     _namen.forEach(function(n, i){
-      var heeftFoto = _meldFotos[i];
       namenHtml += '<div class="persoon-entry">' +
         (i > 0 ? '<button class="pe-rm" onclick="verwijderNaam(' + i + ')"><span class="mi">close</span></button>' : '') +
         '<div style="display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap">' +
-          // Foto kolom
-          '<div style="flex-shrink:0;text-align:center">' +
-            (heeftFoto ?
-              '<div class="foto-preview">' +
-                '<img src="' + esc(_meldFotos[i]) + '" onerror="this.src=\'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 80 80%22><rect fill=%22%231e293b%22 width=%2280%22 height=%2280%22/><text x=%2240%22 y=%2248%22 text-anchor=%22middle%22 fill=%22%2394a3b8%22 font-size=%2228%22>?</text></svg>\'">' +
-                '<button class="foto-rm" onclick="verwijderFoto(' + i + ')">×</button>' +
-              '</div>' :
-              '<div class="foto-drop" id="fotoDrop' + i + '" onclick="document.getElementById(\'fotoFile' + i + '\').click()">' +
-                '<span class="mi">add_a_photo</span>' +
-                '<div style="font-size:11px;color:var(--tx3)">Sleep foto<br>hierheen</div>' +
-                '<input type="file" id="fotoFile' + i + '" accept="image/*" style="display:none" onchange="uploadFotoFile(' + i + ',this.files)">' +
-              '</div>'
-            ) +
-          '</div>' +
           // Naam + functie kolom
           '<div style="flex:1;min-width:200px">' +
             '<div style="position:relative">' +
@@ -1040,10 +1025,6 @@ function pgMelden(){
               '<div id="nSug' + i + '" style="display:none" class="naam-suggest"></div>' +
             '</div>' +
             '<input class="fi" id="nFunc' + i + '" value="' + esc(n.functie) + '" placeholder="Functie (optioneel)" oninput="updateNaam(' + i + ',\'functie\',this.value)" style="margin-top:8px">' +
-            '<div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap">' +
-              '<button class="btn btn-sm btn-ghost" onclick="zoekFoto(' + i + ')"><span class="mi mi-sm">image_search</span> Zoek foto</button>' +
-              '<button class="btn btn-sm btn-ghost" onclick="plakFotoUrl(' + i + ')"><span class="mi mi-sm">link</span> Plak URL</button>' +
-            '</div>' +
           '</div>' +
         '</div>' +
       '</div>';
@@ -1051,7 +1032,7 @@ function pgMelden(){
 
     stepHtml = '<div class="wiz-step">' +
       '<h3 style="font-size:18px;font-weight:700;margin-bottom:4px"><span class="mi" style="color:var(--accent);vertical-align:-3px">person_search</span> Wie wil je melden?</h3>' +
-      '<p style="font-size:13px;color:var(--tx2);margin-bottom:16px">Vul de naam in van de ambtenaar. Zoek een foto zodat anderen de juiste persoon herkennen.</p>' +
+      '<p style="font-size:13px;color:var(--tx2);margin-bottom:16px">Vul de naam in van de ambtenaar die je wilt melden. Wij zoeken zelf de juiste foto erbij als het een publiek persoon betreft.</p>' +
       namenHtml +
       '<button class="btn btn-sm btn-ghost" onclick="voegNaamToe()" style="margin-bottom:4px"><span class="mi mi-sm">person_add</span> Nog een persoon</button>' +
       '<div class="wiz-nav">' +
@@ -1128,10 +1109,7 @@ function pgMelden(){
     var prevHtml = '';
     namenPreview.forEach(function(n, i){
       prevHtml += '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">' +
-        (_meldFotos[i] ?
-          '<img src="' + esc(_meldFotos[i]) + '" style="width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid var(--accent);filter:saturate(.4)" onerror="this.style.display=\'none\'">' :
-          '<div style="width:40px;height:40px;border-radius:50%;background:var(--bg2);display:flex;align-items:center;justify-content:center"><span class="mi" style="color:var(--tx3)">person</span></div>'
-        ) +
+        '<div style="width:40px;height:40px;border-radius:50%;background:var(--bg2);display:flex;align-items:center;justify-content:center"><span class="mi" style="color:var(--tx3)">person</span></div>' +
         '<div><div style="font-weight:700;font-size:14px">' + esc(n.naam) + '</div>' +
           (n.functie ? '<div style="font-size:12px;color:var(--tx3)">' + esc(n.functie) + '</div>' : '') +
         '</div>' +
@@ -1157,6 +1135,17 @@ function pgMelden(){
       '<div id="melderVelden" style="display:none">' +
         '<div class="fg"><label class="fl">Je naam</label><input class="fi" id="mNaam" placeholder="Optioneel"></div>' +
         '<div class="fg"><label class="fl">E-mail</label><input class="fi" id="mEmail" type="email" placeholder="Optioneel — voor opvolging"></div>' +
+      '</div>' +
+
+      // LEGALITEIT
+      '<div class="card" style="padding:14px;margin-bottom:16px;border-left:3px solid var(--blue);background:linear-gradient(135deg,rgba(59,130,246,.06),transparent)">' +
+        '<div style="font-size:12px;font-weight:700;color:var(--blue);margin-bottom:4px"><span class="mi mi-sm">gavel</span> Dit is legaal</div>' +
+        '<div style="font-size:12px;color:var(--tx2);line-height:1.6">' +
+          'Het melden van machtsmisbruik door ambtenaren is beschermd onder <strong>artikel 7 Grondwet</strong> (vrijheid van meningsuiting), ' +
+          '<strong>artikel 10 EVRM</strong> (expressievrijheid) en de <strong>Wet bescherming klokkenluiders</strong> (Wbk). ' +
+          'Publieke ambtenaren hebben een verminderd recht op privacy wanneer het hun ambtelijk functioneren betreft ' +
+          '(<strong>EHRM Lingens v. Austria</strong>). Wij publiceren uitsluitend informatie over publiek handelen — geen privegegevens.' +
+        '</div>' +
       '</div>' +
 
       // VEILIGHEID
@@ -3745,6 +3734,86 @@ function pgOplossing(){
       '</div>' +
     '</div>' +
 
+    // EXTRA BOETES: DUUR, LIEGEN, OBSTRUCTIE, UITHUISPLAATSINGEN
+    '<div class="card" style="padding:24px;margin-bottom:16px;border-left:4px solid var(--yellow)">' +
+      '<h2 style="font-size:19px;margin-bottom:10px"><span class="mi mi-sm" style="color:var(--yellow)">add_circle</span> De boetes die niet zijn opgelegd</h2>' +
+      '<p style="font-size:14px;line-height:1.8;color:var(--tx);margin-bottom:14px">' +
+        'De AP legde alleen boetes op voor de "kale" overtredingen — alsof het om een eenmalige fout ging. Maar de AVG (art. 83 lid 2) verplicht de toezichthouder om <strong>verzwarende omstandigheden</strong> mee te wegen: de duur, het opzettelijke karakter, het liegen, de obstructie en de ernst van de schade. Dat is nooit gebeurd.' +
+      '</p>' +
+
+      // 1. DUUR
+      '<div style="background:var(--bg2);border-radius:var(--rs);padding:16px;margin-bottom:12px">' +
+        '<div style="font-size:12px;font-weight:700;color:var(--yellow);text-transform:uppercase;margin-bottom:8px"><span class="mi mi-sm">schedule</span> 1. Duur: 7+ jaar illegale verwerking</div>' +
+        '<div style="font-size:13px;color:var(--tx);line-height:1.8">' +
+          'De FSV was actief van <strong>4 november 2013 tot 27 februari 2020</strong> — meer dan 6 jaar. De discriminerende algoritmes bij Toeslagen draaiden van <strong>2012 tot 2019</strong>. Sommige illegale algoritmes draaien <strong>nog steeds</strong> (50+ volgens Follow the Money, nov. 2025).' + bron('FTM, nov 2025', 'https://www.ftm.nl/artikelen/meer-dan-50-algoritmes-van-de-belasting-dienst-zijn-onrechtmatig') + '<br><br>' +
+          'Onder de <strong>EDPB-richtlijnen voor boeteberekening</strong> (mei 2023) is duur een sleutelfactor bij Stap 2: hoe langer de overtreding, hoe zwaarder de boete.' + bron('EDPB Guidelines 04/2022', 'https://www.edpb.europa.eu/system/files/2023-06/edpb_guidelines_042022_calculationofadministrativefines_en.pdf') + ' Bij 7 jaar in plaats van 1 jaar had de AP de boetes moeten <strong>verveelvoudigen</strong>.' +
+        '</div>' +
+      '</div>' +
+
+      // 2. LIEGEN
+      '<div style="background:var(--bg2);border-radius:var(--rs);padding:16px;margin-bottom:12px">' +
+        '<div style="font-size:12px;font-weight:700;color:var(--accent);text-transform:uppercase;margin-bottom:8px"><span class="mi mi-sm">report</span> 2. Liegen tegen de toezichthouder en het Parlement</div>' +
+        '<div style="font-size:13px;color:var(--tx);line-height:1.8">' +
+          '<strong>18 juli 2017:</strong> de directeur-generaal verklaarde aan de AP dat de Belastingdienst <strong>geen gegevens had</strong> over dubbele nationaliteit en nationaliteit <strong>niet gebruikte</strong> als selectiecriterium. Beide verklaringen waren <strong>aantoonbaar onwaar</strong>. In mei 2018 stonden nog 1,4 miljoen mensen met dubbele nationaliteit geregistreerd.' + bron('AP onderzoeksrapport', 'https://autoriteitpersoonsgegevens.nl/uploads/imported/onderzoek_belastingdienst_kinderopvangtoeslag.pdf') + '<br><br>' +
+          '<strong>Juli 2020:</strong> Kamerlid Pieter Omtzigt diende vragen in getiteld "Het keihard liegen door de Belastingdienst/Toeslagen." De BD had al in 2019 intern erkend dat etnisch profileren plaatsvond.' + bron('Kamervragen 2020Z14309', 'https://www.tweedekamer.nl/kamerstukken/kamervragen/detail?id=2020Z14309&did=2020D30461') + '<br><br>' +
+          'AP-voorzitter Aleid Wolfsen: <em>"Wij zijn meerdere malen misleid door de Belastingdienst."</em> Hij dreigde met dwangsommen als de obstructie zou doorgaan.' + bron('Nextens', 'https://www.nextens.nl/economie-en-politiek/fiscus-werkte-tegen-in-het-onderzoek-van-de-autoriteit-persoonsgegevens/') + '<br><br>' +
+          '<strong>Dit is een zelfstandige overtreding</strong> van art. 58 lid 1 AVG (obstructie toezichthouder), beboetbaar met <strong>€20 miljoen per geval</strong> onder art. 83 lid 5(e).' +
+        '</div>' +
+      '</div>' +
+
+      // 3. VERNIETIGEN BEWIJS
+      '<div style="background:var(--bg2);border-radius:var(--rs);padding:16px;margin-bottom:12px">' +
+        '<div style="font-size:12px;font-weight:700;color:var(--accent);text-transform:uppercase;margin-bottom:8px"><span class="mi mi-sm">delete_forever</span> 3. Vernietigen van bewijs (Rutte-doctrine)</div>' +
+        '<div style="font-size:13px;color:var(--tx);line-height:1.8">' +
+          'Premier Rutte wiste dagelijks zijn SMS-berichten van zijn Nokia-telefoon. De <strong>Inspectie Overheidsinformatie en Erfgoed</strong> concludeerde in oktober 2022 dat hij hiermee de <strong>Archiefwet</strong> overtrad.' + bron('NOS', 'https://nos.nl/l/2429354') + '<br><br>' +
+          'Bewijsstukken van ouders waren "structureel niet meer beschikbaar." Bezwaarschriften werden routinematig "weggetikt" — als afgehandeld gemarkeerd zonder beoordeling. Dossiers uit 2009-2012 werden "per ongeluk te vroeg vernietigd."<br><br>' +
+          '<strong>Januari 2026:</strong> NOS onthulde dat Dienst Toeslagen nog steeds <strong>bewust documenten achterhield</strong> die uitlegden waarom ouders het O/GS-label kregen — vijf jaar na de start van de hersteloperatie.' + bron('NOS, jan 2026', 'https://nos.nl/artikel/2599959') +
+        '</div>' +
+      '</div>' +
+
+      // 4. NIET MELDEN AAN SLACHTOFFERS
+      '<div style="background:var(--bg2);border-radius:var(--rs);padding:16px;margin-bottom:12px">' +
+        '<div style="font-size:12px;font-weight:700;color:var(--yellow);text-transform:uppercase;margin-bottom:8px"><span class="mi mi-sm">notifications_off</span> 4. Niet melden aan 270.000 slachtoffers</div>' +
+        '<div style="font-size:13px;color:var(--tx);line-height:1.8">' +
+          'Art. 34 AVG verplicht de verwerkingsverantwoordelijke om betrokkenen <strong>onverwijld</strong> te informeren over een datalek met hoog risico. De 270.000 mensen op de FSV-lijst werden <strong>niet</strong> door de Belastingdienst geinformeerd. Pas na Kamervragen en AP-interventie begon de notificatie — en de <strong>laatste brieven werden pas in januari 2025</strong> verstuurd, vijf jaar na sluiting van FSV.' + bron('BNR', 'https://www.bnr.nl/nieuws/media/10311151/belastingdienst-informeerde-slachtoffers-datalek-niet') + '<br><br>' +
+          '<strong>Overtreding art. 34 AVG</strong>: beboetbaar met <strong>€10 miljoen</strong> (art. 83 lid 4).' +
+        '</div>' +
+      '</div>' +
+
+      // 5. UITHUISPLAATSINGEN
+      '<div style="background:var(--bg2);border-radius:var(--rs);padding:16px;margin-bottom:12px;border-left:3px solid var(--accent)">' +
+        '<div style="font-size:12px;font-weight:700;color:var(--accent);text-transform:uppercase;margin-bottom:8px"><span class="mi mi-sm">family_restroom</span> 5. Staatsontvoeringen: 2.090+ kinderen uit huis geplaatst</div>' +
+        '<div style="font-size:13px;color:var(--tx);line-height:1.8">' +
+          'De illegale dataverwerking leidde tot valse fraudebeschuldigingen → onmogelijke schulden → armoede → gezinscrises → uithuisplaatsingen. Het CBS telde <strong>2.090 kinderen</strong> die uit huis werden geplaatst (periode 2015-juni 2022). Het ministerie van J&V telt <strong>3.058</strong>.' + bron('CBS, nov 2022', 'https://www.cbs.nl/nl-nl/maatwerk/2022/48/actualisatie-uithuisplaatsingen-toeslagenaffaire-2015-t-m-juni-2022') + '<br><br>' +
+          'De <strong>Commissie Hamer</strong> concludeerde in maart 2025: de toeslagenaffaire speelde een grote rol bij <strong>bijna alle</strong> onderzochte uithuisplaatsingen. <strong>Alle onderzochte kinderen zouden waarschijnlijk niet uit huis zijn geplaatst</strong> als de gevolgen van de affaire eerder waren aangepakt. Bij twee derde van de gezinnen waren er <strong>geen grote problemen voor de affaire</strong>.' + bron('Rapport "Erfenis van Onrecht", mrt 2025', 'https://www.rijksoverheid.nl/documenten/rapporten/2025/03/27/tk-aanbieding-rapportage-erfenis-van-onrecht-van-de-commissie-toeslagen-en-uithuisplaatsingen-over-uithuisplaatsingen-in-de-toeslagenaffaire') + '<br><br>' +
+          'Per juni 2022 waren nog <strong>645 kinderen niet terug</strong> bij hun ouders. Slechts <strong>30 gezinnen</strong> kregen formeel het ouderlijk gezag hersteld. Veel kinderen "groeiden uit" het systeem — ze werden 18 zonder ooit herenigd te zijn.' + bron('Rijksoverheid, juni 2025', 'https://www.rijksoverheid.nl/actueel/nieuws/2025/06/30/kabinet-erkent-extra-leed-uithuisgeplaatste-kinderen') + '<br><br>' +
+          'Dit is een schending van <strong>art. 8 EVRM</strong> (recht op gezinsleven), <strong>art. 9 IVRK</strong> (VN-Kinderrechtenverdrag) en de <strong>Grondwet</strong>. Het EHRM oordeelde in <strong>Van Slooten v. Nederland</strong> (april 2025) dat Nederland te snel opgeeft bij hereniging.' + bron('Defence for Children', 'https://www.defenceforchildren.nl/actueel/nieuws/familie/2025/toeslagenschandaal-veroorzaakte-onnodige-uithuisplaatsingen/') + '<br><br>' +
+          '<strong style="color:var(--accent)">Onder art. 83 lid 2(a) AVG moet de "ernst van de schade" worden meegewogen bij de boeteberekening. Kinderen permanent scheiden van hun gezin is de zwaarst denkbare schade van een dataverwerking.</strong>' +
+        '</div>' +
+      '</div>' +
+
+      // TOTAALBEREKENING
+      '<div style="background:var(--accent-soft);border:1px solid rgba(239,68,68,.2);border-radius:var(--rs);padding:16px;margin-bottom:0">' +
+        '<div style="font-size:12px;font-weight:700;color:var(--accent);text-transform:uppercase;margin-bottom:10px"><span class="mi mi-sm">functions</span> Wat de Belastingdienst had moeten betalen</div>' +
+        '<table style="width:100%;border-collapse:collapse;font-size:12px;margin-bottom:12px">' +
+          '<tr style="border-bottom:2px solid var(--glass-bd);font-weight:700"><td style="padding:6px">Overtreding</td><td style="padding:6px;text-align:right">Opgelegd</td><td style="padding:6px;text-align:right">Had moeten zijn</td></tr>' +
+          '<tr style="border-bottom:1px solid var(--glass-bd)"><td style="padding:6px">9 vastgestelde AVG-overtredingen</td><td style="padding:6px;text-align:right">€6,45 mln</td><td style="padding:6px;text-align:right">€170 mln (max)</td></tr>' +
+          '<tr style="border-bottom:1px solid var(--glass-bd)"><td style="padding:6px">Verzwaring voor duur (7 jaar i.p.v. eenmalig)</td><td style="padding:6px;text-align:right">—</td><td style="padding:6px;text-align:right">×3 tot ×5</td></tr>' +
+          '<tr style="border-bottom:1px solid var(--glass-bd)"><td style="padding:6px">Liegen tegen AP (art. 58/83(5)(e)) — min. 2 gevallen</td><td style="padding:6px;text-align:right">—</td><td style="padding:6px;text-align:right">€40 mln</td></tr>' +
+          '<tr style="border-bottom:1px solid var(--glass-bd)"><td style="padding:6px">Niet-melden datalek 270.000 personen (art. 34)</td><td style="padding:6px;text-align:right">—</td><td style="padding:6px;text-align:right">€10 mln</td></tr>' +
+          '<tr style="border-bottom:1px solid var(--glass-bd)"><td style="padding:6px">Vernietigen bewijs / obstructie onderzoek</td><td style="padding:6px;text-align:right">—</td><td style="padding:6px;text-align:right">€20 mln</td></tr>' +
+          '<tr style="border-bottom:1px solid var(--glass-bd)"><td style="padding:6px">Recidive-opslag (50% bij herhaling binnen 5 jaar)</td><td style="padding:6px;text-align:right">—</td><td style="padding:6px;text-align:right">×1,5</td></tr>' +
+          '<tr style="border-bottom:1px solid var(--glass-bd)"><td style="padding:6px">50+ illegale algoritmes (art. 22 AVG)</td><td style="padding:6px;text-align:right">—</td><td style="padding:6px;text-align:right">€1,0 mrd</td></tr>' +
+          '<tr style="border-bottom:2px solid var(--glass-bd);background:var(--bg2)"><td style="padding:6px;font-weight:700">Subtotaal conservatief (9 × max + verzwarend)</td><td style="padding:6px;text-align:right;font-weight:700;color:var(--accent)">€6,45 mln</td><td style="padding:6px;text-align:right;font-weight:700;color:var(--yellow)">€400–580 mln</td></tr>' +
+          '<tr style="background:var(--accent-soft)"><td style="padding:6px;font-weight:800">Totaal incl. 50+ algoritmes + alle verzwarende factoren</td><td style="padding:6px;text-align:right;font-weight:800;color:var(--accent)">€6,45 mln</td><td style="padding:6px;text-align:right;font-weight:800;color:var(--accent)">€1,4 – 1,6 mrd</td></tr>' +
+        '</table>' +
+        '<div style="font-size:13px;color:var(--tx);line-height:1.8">' +
+          'De AP legde <strong>€6,45 miljoen</strong> op. Met alle verzwarende factoren die de AVG voorschrijft — duur, opzet, liegen, obstructie, recidive, 270.000 slachtoffers, 2.090 uit huis geplaatste kinderen — had dat <strong>€1,4 tot €1,6 miljard</strong> moeten zijn.<br><br>' +
+          'Maar de AP koos ervoor de Belastingdienst te behandelen als een welwillende organisatie die een paar "foutjes" maakte. AP-voorzitter Wolfsen werd zelf "meerdere malen misleid" en legde alsnog een fractie van het maximum op. In 2024 sloot de AP zelfs een <strong>"toezichtarrangement"</strong> met de Belastingdienst — een soort consultancy-contract van <strong>€2 miljoen per jaar</strong> — waarmee de toezichthouder de facto adviseur van de overtreder werd.' + bron('Bits of Freedom, okt 2025', 'https://www.bitsoffreedom.nl/2025/10/30/hoe-de-ap-consultant-van-de-belastingdienst-werd/') +
+        '</div>' +
+      '</div>' +
+    '</div>' +
+
     // DE GROTE VERGELIJKING
     '<div class="card" style="padding:24px;margin-bottom:16px;border-left:4px solid var(--accent)">' +
       '<h2 style="font-size:19px;margin-bottom:10px"><span class="mi mi-sm" style="color:var(--accent)">compare_arrows</span> De grote vergelijking: boetes vs. herstelkosten</h2>' +
@@ -3758,8 +3827,9 @@ function pgOplossing(){
         '<table style="width:100%;border-collapse:collapse;font-size:13px">' +
           '<tr style="border-bottom:2px solid var(--glass-bd);font-weight:700"><td style="padding:8px 6px">Scenario</td><td style="padding:8px 6px;text-align:right">Bedrag</td><td style="padding:8px 6px;text-align:right">% van herstelkosten</td></tr>' +
           '<tr style="border-bottom:1px solid var(--glass-bd)"><td style="padding:8px 6px">Daadwerkelijk opgelegde boetes</td><td style="padding:8px 6px;text-align:right;font-weight:700">€6,45 mln</td><td style="padding:8px 6px;text-align:right;color:var(--accent);font-weight:700">0,056%</td></tr>' +
-          '<tr style="border-bottom:1px solid var(--glass-bd)"><td style="padding:8px 6px">Maximum voor dezelfde 9 overtredingen</td><td style="padding:8px 6px;text-align:right">€170 mln</td><td style="padding:8px 6px;text-align:right;color:var(--yellow)">1,5%</td></tr>' +
-          '<tr style="border-bottom:1px solid var(--glass-bd)"><td style="padding:8px 6px">+ 50 illegale algoritmes (potentieel)</td><td style="padding:8px 6px;text-align:right">€1,18 mrd</td><td style="padding:8px 6px;text-align:right;color:var(--yellow)">10,2%</td></tr>' +
+          '<tr style="border-bottom:1px solid var(--glass-bd)"><td style="padding:8px 6px">Maximum 9 overtredingen (zonder verzwaring)</td><td style="padding:8px 6px;text-align:right">€170 mln</td><td style="padding:8px 6px;text-align:right;color:var(--yellow)">1,5%</td></tr>' +
+          '<tr style="border-bottom:1px solid var(--glass-bd)"><td style="padding:8px 6px">+ duur, liegen, obstructie, recidive, uithuisplaatsingen</td><td style="padding:8px 6px;text-align:right">€400–580 mln</td><td style="padding:8px 6px;text-align:right;color:var(--yellow)">3,5–5,0%</td></tr>' +
+          '<tr style="border-bottom:1px solid var(--glass-bd)"><td style="padding:8px 6px">+ 50 illegale algoritmes + alle verzwarende factoren</td><td style="padding:8px 6px;text-align:right;font-weight:700">€1,4–1,6 mrd</td><td style="padding:8px 6px;text-align:right;color:var(--yellow);font-weight:700">12–14%</td></tr>' +
           '<tr style="border-bottom:1px solid var(--glass-bd);background:var(--bg2)"><td style="padding:8px 6px;font-weight:700">Totale herstelkosten (raming 2025)</td><td style="padding:8px 6px;text-align:right;font-weight:800;color:var(--accent)">€11,6 mrd</td><td style="padding:8px 6px;text-align:right">100%</td></tr>' +
           '<tr style="background:var(--bg2)"><td style="padding:8px 6px;font-weight:700">Worst-case scenario</td><td style="padding:8px 6px;text-align:right;font-weight:800;color:var(--accent)">€14 mrd</td><td style="padding:8px 6px;text-align:right">—</td></tr>' +
         '</table>' +
