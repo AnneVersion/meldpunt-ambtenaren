@@ -354,7 +354,6 @@ sup a[title], sup[title] { border-bottom: 1px dotted var(--blue); }
         <button class="nav-btn" data-r="/organigram" onclick="go('/organigram')"><span class="mi mi-sm">account_tree</span> Daders</button>
         <button class="nav-btn" data-r="/rechtspraak" onclick="go('/rechtspraak')"><span class="mi mi-sm">gavel</span> Rechters</button>
         <button class="nav-btn" data-r="/tijdlijn" onclick="go('/tijdlijn')"><span class="mi mi-sm">timeline</span> Tijdlijn</button>
-        <button class="nav-btn" data-r="/documentatie" onclick="go('/documentatie')"><span class="mi mi-sm">menu_book</span> Bronnen</button>
         <button class="nav-btn" data-r="/oplossing" onclick="go('/oplossing')"><span class="mi mi-sm">verified</span> Oplossing</button>
         <button class="nav-btn" data-r="/geld" onclick="go('/geld')"><span class="mi mi-sm">payments</span> Geld</button>
         <button class="nav-btn cta" data-r="/melden" onclick="go('/melden')"><span class="mi mi-sm">add_circle</span> Meld</button>
@@ -546,11 +545,34 @@ function toast(msg){
 function esc(s){ return s ? String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;') : ''; }
 function trunc(s,n){ return s && s.length > n ? s.substring(0,n) + '...' : (s||''); }
 function fmtDate(ts){ return ts ? new Date(ts).toLocaleDateString('nl-NL',{day:'numeric',month:'long',year:'numeric'}) : '-'; }
-// Bron-verwijzing helper: genereert inline superscript bron-link
+// Bron-verwijzing helper: genereert inline superscript bron-link + verzamelt voor footer
+var _pageBronnen = [];
 function bron(tekst, url){
+  // Voeg toe aan verzameling als uniek (op url of tekst)
+  var key = url || tekst;
+  var exists = _pageBronnen.some(function(b){ return (b.url || b.tekst) === key; });
+  if(!exists) _pageBronnen.push({ tekst: tekst, url: url });
   if(!url) return ' <sup style="font-size:9px;color:var(--blue);cursor:help" title="' + esc(tekst) + '">[' + tekst + ']</sup>';
   return ' <sup style="font-size:9px"><a href="' + url + '" target="_blank" rel="noopener" style="color:var(--blue);text-decoration:none" title="' + esc(tekst) + '">[bron]</a></sup>';
 }
+function bronnenFooter(){
+  if(_pageBronnen.length === 0) return '';
+  var items = _pageBronnen.slice();
+  _pageBronnen = [];
+  var html = '<div style="margin-top:32px;padding:20px;border-top:1px solid var(--glass-bd)">' +
+    '<div style="font-size:13px;font-weight:700;color:var(--tx2);margin-bottom:10px"><span class="mi mi-sm">link</span> Bronnen op deze pagina (' + items.length + ')</div>' +
+    '<div style="column-count:2;column-gap:24px;font-size:11px;line-height:2;color:var(--tx3)">';
+  items.forEach(function(b, i){
+    if(b.url){
+      html += '<div style="break-inside:avoid">' + (i+1) + '. <a href="' + b.url + '" target="_blank" rel="noopener" style="color:var(--blue)">' + esc(b.tekst) + '</a></div>';
+    } else {
+      html += '<div style="break-inside:avoid">' + (i+1) + '. ' + esc(b.tekst) + '</div>';
+    }
+  });
+  html += '</div></div>';
+  return html;
+}
+function resetBronnen(){ _pageBronnen = []; }
 
 function bronnenContext(m){
   var inst = ((m.instantie||'')+(m.verhaal||'')).toLowerCase();
@@ -991,12 +1013,13 @@ function deel(id, platform){
 }
 
 // ============ PAGE: MELDEN (WIZARD + DOSSIERS) ============
-var _namen = [{ naam: '', functie: '' }];
+var _namen = [{ naam: '', functie: '', email: '' }];
 var _meldStap = 1;
 var _meldFotos = {};
 var _meldInstantie = '';
 var _meldVerhaal = '';
 var _meldTitel = '';
+var _melderEmail = '';
 var _naamSugVisible = -1;
 
 var INSTANTIES = [
@@ -1029,13 +1052,14 @@ function pgMelden(){
       namenHtml += '<div class="persoon-entry">' +
         (i > 0 ? '<button class="pe-rm" onclick="verwijderNaam(' + i + ')"><span class="mi">close</span></button>' : '') +
         '<div style="display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap">' +
-          // Naam + functie kolom
+          // Naam + functie + email kolom
           '<div style="flex:1;min-width:200px">' +
             '<div style="position:relative">' +
               '<input class="fi" id="nNaam' + i + '" value="' + esc(n.naam) + '" placeholder="Naam ambtenaar" oninput="updateNaam(' + i + ',\'naam\',this.value); toonSuggesties(' + i + ',this.value)" autocomplete="off">' +
               '<div id="nSug' + i + '" style="display:none" class="naam-suggest"></div>' +
             '</div>' +
             '<input class="fi" id="nFunc' + i + '" value="' + esc(n.functie) + '" placeholder="Functie (optioneel)" oninput="updateNaam(' + i + ',\'functie\',this.value)" style="margin-top:8px">' +
+            '<input class="fi" id="nEmail' + i + '" value="' + esc(n.email || '') + '" type="email" placeholder="E-mail ambtenaar (optioneel)" oninput="updateNaam(' + i + ',\'email\',this.value)" style="margin-top:8px">' +
           '</div>' +
         '</div>' +
       '</div>';
@@ -1045,7 +1069,43 @@ function pgMelden(){
       '<h3 style="font-size:18px;font-weight:700;margin-bottom:4px"><span class="mi" style="color:var(--accent);vertical-align:-3px">person_search</span> Wie wil je melden?</h3>' +
       '<p style="font-size:13px;color:var(--tx2);margin-bottom:16px">Vul de naam in van de ambtenaar die je wilt melden. Wij zoeken zelf de juiste foto erbij als het een publiek persoon betreft.</p>' +
       namenHtml +
-      '<button class="btn btn-sm btn-ghost" onclick="voegNaamToe()" style="margin-bottom:4px"><span class="mi mi-sm">person_add</span> Nog een persoon</button>' +
+      '<button class="btn btn-sm btn-ghost" onclick="voegNaamToe()" style="margin-bottom:16px"><span class="mi mi-sm">person_add</span> Nog een persoon</button>' +
+
+      // Instantie dropdown
+      '<div style="margin-top:8px;padding-top:16px;border-top:1px solid var(--glass-bd)">' +
+        '<h3 style="font-size:16px;font-weight:700;margin-bottom:4px"><span class="mi" style="color:var(--blue);vertical-align:-3px;font-size:20px">business</span> Bij welke instantie?</h3>' +
+        '<p style="font-size:13px;color:var(--tx2);margin-bottom:12px">Kies de organisatie waar deze ambtenaar werkt, of typ een andere.</p>' +
+        '<div class="fg">' +
+          '<select class="fi" id="mInstantieS1" onchange="_meldInstantie=this.value; if(this.value===\'__anders__\'){document.getElementById(\'mInstAndersS1\').style.display=\'block\';this.value=\'\';_meldInstantie=\'\'}else{document.getElementById(\'mInstAndersS1\').style.display=\'none\'}" style="cursor:pointer">' +
+            '<option value=""' + (!_meldInstantie ? ' selected' : '') + '>— Kies een instantie —</option>' +
+            INSTANTIES.map(function(inst){ return '<option value="' + inst + '"' + (_meldInstantie === inst ? ' selected' : '') + '>' + inst + '</option>'; }).join('') +
+            '<option value="__anders__">Anders...</option>' +
+          '</select>' +
+          '<input class="fi" id="mInstAndersS1" placeholder="Typ de instantie / afdeling..." value="' + esc(INSTANTIES.indexOf(_meldInstantie) === -1 && _meldInstantie ? _meldInstantie : '') + '" oninput="_meldInstantie=this.value" style="margin-top:8px;display:' + (INSTANTIES.indexOf(_meldInstantie) === -1 && _meldInstantie ? 'block' : 'none') + '">' +
+        '</div>' +
+      '</div>' +
+
+      // Je verhaal
+      '<div style="margin-top:8px;padding-top:16px;border-top:1px solid var(--glass-bd)">' +
+        '<h3 style="font-size:16px;font-weight:700;margin-bottom:4px"><span class="mi" style="color:var(--yellow);vertical-align:-3px;font-size:20px">description</span> Je verhaal</h3>' +
+        '<p style="font-size:13px;color:var(--tx2);margin-bottom:12px">Vertel wat er is gebeurd. Noem data, feiten, gevolgen. <strong>Dit is optioneel</strong> — je kunt het later aanvullen.</p>' +
+        '<div class="fg">' +
+          '<input class="fi" id="mTitelS1" placeholder="Korte titel, bijv. \'Jarenlang dossier genegeerd\'" value="' + esc(_meldTitel) + '" oninput="_meldTitel=this.value">' +
+        '</div>' +
+        '<div class="fg">' +
+          '<textarea class="ft" id="mVerhaalS1" style="min-height:120px" placeholder="Wat heeft deze persoon gedaan? Noem data, feiten, gevolgen.\n\nJe mag ook alleen de naam noemen — elke melding telt." oninput="_meldVerhaal=this.value">' + esc(_meldVerhaal) + '</textarea>' +
+        '</div>' +
+      '</div>' +
+
+      // Je e-mailadres
+      '<div style="margin-top:8px;padding-top:16px;border-top:1px solid var(--glass-bd)">' +
+        '<h3 style="font-size:16px;font-weight:700;margin-bottom:4px"><span class="mi" style="color:var(--blue);vertical-align:-3px;font-size:20px">email</span> Je e-mailadres</h3>' +
+        '<p style="font-size:13px;color:var(--tx2);margin-bottom:12px">Optioneel — zodat wij je kunnen bereiken voor opvolging.</p>' +
+        '<div class="fg">' +
+          '<input class="fi" id="mMelderEmail" type="email" placeholder="jouw@email.nl (optioneel)" value="' + esc(_melderEmail) + '" oninput="_melderEmail=this.value">' +
+        '</div>' +
+      '</div>' +
+
       '<div class="wiz-nav">' +
         '<div></div>' +
         '<button class="btn btn-blue" onclick="meldVolgende()"><span class="mi mi-sm">arrow_forward</span> Volgende</button>' +
@@ -1123,6 +1183,7 @@ function pgMelden(){
         '<div style="width:40px;height:40px;border-radius:50%;background:var(--bg2);display:flex;align-items:center;justify-content:center"><span class="mi" style="color:var(--tx3)">person</span></div>' +
         '<div><div style="font-weight:700;font-size:14px">' + esc(n.naam) + '</div>' +
           (n.functie ? '<div style="font-size:12px;color:var(--tx3)">' + esc(n.functie) + '</div>' : '') +
+          (n.email ? '<div style="font-size:12px;color:var(--blue)"><span class="mi mi-sm" style="font-size:11px">email</span> ' + esc(n.email) + '</div>' : '') +
         '</div>' +
       '</div>';
     });
@@ -1137,6 +1198,7 @@ function pgMelden(){
         (_meldInstantie ? '<div style="font-size:13px;margin-top:6px"><span class="mi mi-sm" style="color:var(--blue)">business</span> ' + esc(_meldInstantie) + '</div>' : '') +
         (_meldTitel ? '<div style="font-size:14px;font-weight:600;margin-top:8px">' + esc(_meldTitel) + '</div>' : '') +
         (_meldVerhaal ? '<div style="font-size:13px;color:var(--tx2);margin-top:4px;line-height:1.5">' + esc(trunc(_meldVerhaal, 300)) + '</div>' : '<div style="font-size:12px;color:var(--tx3);margin-top:4px;font-style:italic">Geen verhaal ingevuld (kan later)</div>') +
+        (_melderEmail ? '<div style="font-size:12px;color:var(--blue);margin-top:8px"><span class="mi mi-sm" style="font-size:11px">email</span> Je e-mail: ' + esc(_melderEmail) + '</div>' : '') +
       '</div>' +
 
       '<div style="margin-bottom:16px">' +
@@ -1145,7 +1207,7 @@ function pgMelden(){
       '</div>' +
       '<div id="melderVelden" style="display:none">' +
         '<div class="fg"><label class="fl">Je naam</label><input class="fi" id="mNaam" placeholder="Optioneel"></div>' +
-        '<div class="fg"><label class="fl">E-mail</label><input class="fi" id="mEmail" type="email" placeholder="Optioneel — voor opvolging"></div>' +
+        '<div class="fg"><label class="fl">E-mail</label><input class="fi" id="mEmail" type="email" placeholder="Optioneel — voor opvolging" value="' + esc(_melderEmail) + '"></div>' +
       '</div>' +
 
       // LEGALITEIT
@@ -1175,13 +1237,65 @@ function pgMelden(){
     '</div>';
   }
 
+  // Opslag-vermelding
+  var listHtml = '<div style="margin-top:24px;padding:14px;border-radius:var(--r);background:linear-gradient(135deg,rgba(34,197,94,.05),transparent);border:1px solid rgba(34,197,94,.15)">' +
+    '<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">' +
+      '<span class="mi" style="color:var(--green);font-size:18px">security</span>' +
+      '<span style="font-size:13px;font-weight:700;color:var(--green)">Veilige opslag</span>' +
+    '</div>' +
+    '<div style="font-size:12px;color:var(--tx2);line-height:1.6">' +
+      'Meldingen worden opgeslagen in een <strong>beveiligde database</strong> op onze server. ' +
+      'Persoonlijke gegevens van melders worden versleuteld. ' +
+      'Er wordt geen IP-adres geregistreerd. ' +
+      'De server draait op een beveiligde omgeving met SSL-encryptie.' +
+    '</div>' +
+  '</div>';
+
   // Meldingen-lijst (onder wizard)
-  var listHtml = '';
   if(meldingen.length > 0){
-    listHtml = '<div style="margin-top:32px;padding-top:24px;border-top:1px solid var(--glass-bd)">';
+    listHtml += '<div style="margin-top:32px;padding-top:24px;border-top:1px solid var(--glass-bd)">';
+
+    // Zoekbalk + lijst
+    listHtml += '<h2 style="font-size:18px;font-weight:700;margin-bottom:12px"><span class="mi">folder_open</span> Gemelde ambtenaren <span style="font-size:14px;color:var(--tx3);font-weight:400">(' + meldingen.length + ')</span></h2>' +
+      '<div class="search-wrap"><span class="mi">search</span><input class="search-input" placeholder="Zoek op naam, instantie, verhaal..." value="' + esc(_zoek) + '" oninput="zoekMeldingen(this.value)"></div>';
+
+    if(_zoek){
+      var z = _zoek.toLowerCase();
+      meldingen = meldingen.filter(function(m){
+        var tekst = (m.titel||'') + ' ' + (m.verhaal||'') + ' ' + (m.instantie||'') + ' ' + (m.namen||[]).map(function(n){return n.naam;}).join(' ');
+        return tekst.toLowerCase().indexOf(z) >= 0;
+      });
+    }
+
+    if(meldingen.length === 0){
+      listHtml += '<div class="empty"><span class="mi">search_off</span><p>Geen meldingen gevonden.</p></div>';
+    } else {
+      // Tabel-achtige lijst met naam, verhaal, datum
+      listHtml += '<div style="display:flex;flex-direction:column;gap:1px;background:var(--glass-bd);border:1px solid var(--glass-bd);border-radius:var(--r);overflow:hidden">';
+      // Header
+      listHtml += '<div style="display:grid;grid-template-columns:200px 1fr 100px;gap:16px;padding:10px 16px;background:var(--bg2);font-size:11px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.5px">' +
+        '<div>Naam</div><div>Verhaal</div><div>Datum</div>' +
+      '</div>';
+      meldingen.forEach(function(m){
+        var namenStr = (m.namen || []).map(function(n){ return esc(n.naam); }).join(', ') || 'Onbekend';
+        var instantieStr = m.instantie ? ' <span style="color:var(--tx3)">(' + esc(m.instantie) + ')</span>' : '';
+        var verhaalStr = m.verhaal ? esc(trunc(m.verhaal, 150)) : '<span style="color:var(--tx3);font-style:italic">Nog geen verhaal</span>';
+        var datum = m.ts ? new Date(m.ts).toLocaleDateString('nl-NL', {day:'numeric',month:'short',year:'numeric'}) : '—';
+
+        listHtml += '<div class="card" style="border:0;border-radius:0;padding:12px 16px;display:grid;grid-template-columns:200px 1fr 100px;gap:16px;align-items:start;cursor:pointer;transition:background .15s" onclick="go(\'/melding/' + m.id + '\')" onmouseover="this.style.background=\'var(--bg3)\'" onmouseout="this.style.background=\'\'">' +
+          '<div>' +
+            '<div style="font-weight:700;font-size:13px;color:var(--accent)">' + namenStr + '</div>' +
+            instantieStr +
+          '</div>' +
+          '<div style="font-size:13px;color:var(--tx2);line-height:1.5">' + verhaalStr + '</div>' +
+          '<div style="font-size:12px;color:var(--tx3);white-space:nowrap">' + datum + '</div>' +
+        '</div>';
+      });
+      listHtml += '</div>';
+    }
 
     // Ambtenaren: kom zelf naar voren
-    listHtml += '<div class="card" style="padding:20px;margin-bottom:20px;border:2px solid var(--green);background:linear-gradient(135deg,rgba(34,197,94,.06),transparent)">' +
+    listHtml += '<div class="card" style="padding:20px;margin-top:20px;margin-bottom:20px;border:2px solid var(--green);background:linear-gradient(135deg,rgba(34,197,94,.06),transparent)">' +
       '<div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">' +
         '<span class="mi" style="font-size:36px;color:var(--green)">handshake</span>' +
         '<div style="flex:1;min-width:240px">' +
@@ -1208,41 +1322,6 @@ function pgMelden(){
       '</div>' +
     '</div>';
 
-    // Collectieve actie uitleg
-    listHtml += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-bottom:20px">' +
-      '<div class="card" style="padding:16px;border-left:3px solid var(--accent)">' +
-        '<div style="font-size:14px;font-weight:700;margin-bottom:4px"><span class="mi mi-sm" style="color:var(--accent)">groups</span> Samen sterker</div>' +
-        '<div style="font-size:12px;color:var(--tx2);line-height:1.6">Klagen meerdere mensen over dezelfde persoon? Dan kunnen we samen ons recht halen. Elke melding versterkt het dossier.</div>' +
-      '</div>' +
-      '<div class="card" style="padding:16px;border-left:3px solid var(--yellow)">' +
-        '<div style="font-size:14px;font-weight:700;margin-bottom:4px"><span class="mi mi-sm" style="color:var(--yellow)">folder_shared</span> Dossieropbouw</div>' +
-        '<div style="font-size:12px;color:var(--tx2);line-height:1.6">Upload bewijs, voeg details toe. Wij bouwen per persoon een dossier op. Transparantie is ons wapen.</div>' +
-      '</div>' +
-      '<div class="card" style="padding:16px;border-left:3px solid var(--green)">' +
-        '<div style="font-size:14px;font-weight:700;margin-bottom:4px"><span class="mi mi-sm" style="color:var(--green)">gavel</span> Recht is recht</div>' +
-        '<div style="font-size:12px;color:var(--tx2);line-height:1.6">Het publiceren van namen van ambtenaren in hun publieke functie is rechtmatig. Wij handelen in het kader van maatschappelijk belang.</div>' +
-      '</div>' +
-    '</div>';
-
-    // Zoekbalk + lijst
-    listHtml += '<h2 style="font-size:18px;font-weight:700;margin-bottom:12px"><span class="mi">folder_open</span> Dossiers <span style="font-size:14px;color:var(--tx3);font-weight:400">(' + meldingen.length + ')</span></h2>' +
-      '<div class="search-wrap"><span class="mi">search</span><input class="search-input" placeholder="Zoek op naam, instantie, verhaal..." value="' + esc(_zoek) + '" oninput="zoekMeldingen(this.value)"></div>';
-
-    if(_zoek){
-      var z = _zoek.toLowerCase();
-      meldingen = meldingen.filter(function(m){
-        var tekst = (m.titel||'') + ' ' + (m.verhaal||'') + ' ' + (m.instantie||'') + ' ' + (m.namen||[]).map(function(n){return n.naam;}).join(' ');
-        return tekst.toLowerCase().indexOf(z) >= 0;
-      });
-    }
-
-    if(meldingen.length === 0){
-      listHtml += '<div class="empty"><span class="mi">search_off</span><p>Geen meldingen gevonden.</p></div>';
-    } else {
-      listHtml += '<div class="card-grid">';
-      meldingen.forEach(function(m){ listHtml += meldingCard(m); });
-      listHtml += '</div>';
-    }
     listHtml += '</div>';
   }
 
@@ -1284,19 +1363,25 @@ function syncMeldVelden(){
   _namen.forEach(function(n,i){
     var nEl = document.getElementById('nNaam'+i);
     var fEl = document.getElementById('nFunc'+i);
+    var eEl = document.getElementById('nEmail'+i);
     if(nEl) n.naam = nEl.value.trim();
     if(fEl) n.functie = fEl.value.trim();
+    if(eEl) n.email = eEl.value.trim();
   });
-  var inst = document.getElementById('mInstantie');
-  if(inst) _meldInstantie = inst.value;
-  var tit = document.getElementById('mTitel');
+  var inst = document.getElementById('mInstantie') || document.getElementById('mInstantieS1');
+  if(inst && inst.value && inst.value !== '__anders__') _meldInstantie = inst.value;
+  var instAnders = document.getElementById('mInstAndersS1');
+  if(instAnders && instAnders.style.display !== 'none' && instAnders.value.trim()) _meldInstantie = instAnders.value.trim();
+  var tit = document.getElementById('mTitel') || document.getElementById('mTitelS1');
   if(tit) _meldTitel = tit.value;
-  var ver = document.getElementById('mVerhaal');
+  var ver = document.getElementById('mVerhaal') || document.getElementById('mVerhaalS1');
   if(ver) _meldVerhaal = ver.value;
+  var me = document.getElementById('mMelderEmail');
+  if(me) _melderEmail = me.value.trim();
 }
 
 // ---- NAAM FUNCTIES ----
-function voegNaamToe(){ _namen.push({naam:'',functie:''}); syncMeldVelden(); render(); initMeldListeners(); }
+function voegNaamToe(){ _namen.push({naam:'',functie:'',email:''}); syncMeldVelden(); render(); initMeldListeners(); }
 function verwijderNaam(i){ _namen.splice(i,1); delete _meldFotos[i]; reindexFotos(i); syncMeldVelden(); render(); initMeldListeners(); }
 function updateNaam(i,field,val){ _namen[i][field] = val; }
 function reindexFotos(removed){
@@ -1410,7 +1495,7 @@ function submitMelding(){
   syncMeldVelden();
 
   var namen = _namen.filter(function(n){ return n.naam.trim(); }).map(function(n,i){
-    return { naam: n.naam.trim(), functie: n.functie.trim(), foto: _meldFotos[i] || '' };
+    return { naam: n.naam.trim(), functie: n.functie.trim(), email: (n.email||'').trim(), foto: _meldFotos[i] || '' };
   });
 
   if(namen.length === 0){ toast('Vul minstens één naam in'); return; }
@@ -1425,7 +1510,7 @@ function submitMelding(){
     namen: namen,
     anoniem: anoniem,
     melder_naam: anoniem ? null : ((document.getElementById('mNaam')||{}).value || '').trim() || null,
-    melder_email: anoniem ? null : ((document.getElementById('mEmail')||{}).value || '').trim() || null,
+    melder_email: _melderEmail || (anoniem ? null : ((document.getElementById('mEmail')||{}).value || '').trim() || null),
     klokkenluider: false,
     ts: Date.now(),
     views: 0
@@ -1436,12 +1521,13 @@ function submitMelding(){
     // Toon claimCode popup met status
     toonClaimCode(data.claimCode, data.id, data.status);
     // Reset
-    _namen = [{naam:'',functie:''}];
+    _namen = [{naam:'',functie:'',email:''}];
     _meldStap = 1;
     _meldFotos = {};
     _meldInstantie = '';
     _meldVerhaal = '';
     _meldTitel = '';
+    _melderEmail = '';
   });
 }
 
@@ -1636,7 +1722,7 @@ function combineerBriefResultaten(){
 
   // Vul formuliervelden in
   if(alleNamen.length > 0){
-    _namen = alleNamen.map(function(n){ return {naam: n, functie: ''}; });
+    _namen = alleNamen.map(function(n){ return {naam: n, functie: '', email: ''}; });
   }
   setTimeout(function(){
     var el = document.getElementById('mInstantie');
@@ -1931,6 +2017,7 @@ function aiSubmit(){
 
 // ============ PAGE: STAATSONTVOERINGEN ============
 function pgStaatsontvoeringen(){
+  resetBronnen();
   return '<div class="page">' +
 
     // HEADER
@@ -2099,25 +2186,7 @@ function pgStaatsontvoeringen(){
       '</div>' +
     '</div>' +
 
-    // BRONNEN OVERZICHT
-    '<div class="card" style="padding:20px;margin-bottom:16px;background:var(--glass)">' +
-      '<h2 style="font-size:16px;font-weight:700;margin-bottom:10px"><span class="mi mi-sm">source</span> Bronnen op deze pagina</h2>' +
-      '<div style="font-size:12px;color:var(--tx2);line-height:2">' +
-        '&bull; CBS — <a href="https://www.cbs.nl/nl-nl/maatwerk/2022/19/actualisatie-uithuisplaatsingen-toeslagenaffaire-2015-t-m-2021" target="_blank">Actualisatie uithuisplaatsingen 2015–2021</a> (apr 2022)<br>' +
-        '&bull; CBS — <a href="https://www.cbs.nl/nl-nl/maatwerk/2022/48/actualisatie-uithuisplaatsingen-toeslagenaffaire-2015-t-m-juni-2022" target="_blank">Actualisatie uithuisplaatsingen 2015–jun 2022</a> (nov 2022)<br>' +
-        '&bull; Commissie-Hamer — <a href="https://www.rijksoverheid.nl/documenten/rapporten/2025/03/27/tk-bijlage-1-rapportage-commissie-toeslagen-en-uithuisplaatsingen-erfenis-van-onrecht" target="_blank">Erfenis van onrecht</a> (mrt 2025)<br>' +
-        '&bull; Rijksoverheid — <a href="https://www.rijksoverheid.nl/actueel/nieuws/2025/06/30/kabinet-erkent-extra-leed-uithuisgeplaatste-kinderen" target="_blank">Kabinet erkent extra leed uithuisgeplaatste kinderen</a> (jun 2025)<br>' +
-        '&bull; Defence for Children — <a href="https://www.defenceforchildren.nl/actueel/nieuws/familie/2025/toeslagenschandaal-veroorzaakte-onnodige-uithuisplaatsingen/" target="_blank">Toeslagenschandaal veroorzaakte onnodige uithuisplaatsingen</a> (2025)<br>' +
-        '&bull; Follow the Money — <a href="https://www.ftm.nl/artikelen/uithuisplaatsingen-cijfers-feiten-fabels" target="_blank">Fabels en feiten over de staatsontvoeringen</a> (nov 2023)<br>' +
-        '&bull; Follow the Money — <a href="https://www.ftm.nl/artikelen/hersteloperatie-toeslagenschandaal-methode-laurentien" target="_blank">Methode Laurentien: goedkoper en beter</a> (mrt 2025)<br>' +
-        '&bull; Follow the Money — <a href="https://www.ftm.nl/artikelen/reconstructie-conflict-financien-en-stichting-gelijkwaardig-herstel" target="_blank">De strijd over de methode Laurentien</a> (mrt 2025)<br>' +
-        '&bull; NOS — <a href="https://nos.nl/artikel/2520340" target="_blank">Herstel toeslagenaffaire dreigt ongekende strop te worden</a> (mei 2024)<br>' +
-        '&bull; Hart van Nederland — <a href="https://www.hartvannederland.nl/politiek/artikelen/peter-pannenkoek-schreeuwt-rutte-toe-toeslagenaffaire-heeft-gezorgd-voor-staatsontvoeringen" target="_blank">Peter Pannekoek over staatsontvoeringen</a> (mrt 2022)<br>' +
-        '&bull; College voor de Rechten van de Mens — <a href="https://oordelen.mensenrechten.nl/oordeel/2023-103" target="_blank">Oordeel 2023-103: discriminatie op ras</a><br>' +
-        '&bull; Enquêtecommissie — <a href="https://www.tweedekamer.nl/kamerstukken/detail?id=2024Z02942&did=2024D06757" target="_blank">Blind voor mens en recht</a> (feb 2024)' +
-      '</div>' +
-    '</div>' +
-
+    bronnenFooter() +
   '</div>';
 }
 
@@ -2261,6 +2330,7 @@ function submitKlokkenluider(){
 
 // ============ PAGE: MISSIE ============
 function pgMissie(){
+  resetBronnen();
   return '<div class="page">' +
     '<div style="text-align:center;padding:28px 0 20px">' +
       '<span class="mi" style="font-size:48px;color:var(--accent);display:block;margin-bottom:8px">local_fire_department</span>' +
@@ -2496,11 +2566,13 @@ function pgMissie(){
         '<button class="btn btn-purple" onclick="go(\'/klokkenluider\')"><span class="mi mi-sm">shield</span> Klokkenluider</button>' +
       '</div>' +
     '</div>' +
+    bronnenFooter() +
   '</div>';
 }
 
 // ============ PAGE: ORGANIGRAM ============
 function pgOrganigram(){
+  resetBronnen();
   // Node helper: visueel organigram met hover tooltip
   function node(d, isTop){
     var cls = isTop ? 'org-node top' : 'org-node';
@@ -2913,6 +2985,7 @@ function pgOrganigram(){
       '<button class="btn btn-red" onclick="go(\'/tijdlijn\')"><span class="mi mi-sm">timeline</span> Volledige tijdlijn</button> ' +
       '<button class="btn btn-ghost" onclick="go(\'/melden\')"><span class="mi mi-sm">add_circle</span> Doe een melding</button>' +
     '</div>' +
+    bronnenFooter() +
   '</div>';
 
   return html;
@@ -2920,6 +2993,7 @@ function pgOrganigram(){
 
 // ============ PAGE: TIJDLIJN ============
 function pgTijdlijn(){
+  resetBronnen();
   var events = [
     { jaar: '2003', titel: 'Rutte\'s eerste discriminatieschandaal: de Somaliërs', tekst: 'Staatssecretaris Mark Rutte schrijft een brief aan alle gemeenten om Somalische Nederlanders te traceren via hun geboorteplaats (Mogadishu) voor extra controles op uitkeringsfraude. De rechtbank Haarlem oordeelt later (2007) dat dit <strong>rassendiscriminatie</strong> is.' + bron('VN Speciaal Rapporteur 2019', 'https://www.ohchr.org/en/press-releases/2019/10/netherlands-building-surveillance-state-poor-says-un-rights-expert') + ' Het patroon begint hier.', kleur: 'var(--yellow)' },
     { jaar: '2013', titel: 'Bulgarenfraude & start harde aanpak', tekst: 'Na berichten over misbruik door Bulgaren richt premier Rutte de Ministeriële Commissie Fraude op. Hij wordt persoonlijk voorzitter. Staatssecretaris Frans Weekers voert de Fraudewet in. Dezelfde Rutte die in 2003 al veroordeeld was voor discriminatie op afkomst, lanceert nu een fraudejacht die disproportioneel mensen met een migratieachtergrond treft.' + bron('Enquêtecommissie 2024', 'https://www.tweedekamer.nl/kamerstukken/detail?id=2024Z02942&did=2024D06757') + '', kleur: 'var(--tx3)' },
@@ -2987,13 +3061,14 @@ function pgTijdlijn(){
     '<p style="font-size:14px;color:var(--tx2);margin-bottom:12px">Dit mag nooit meer gebeuren. Help het zichtbaar houden.</p>' +
     '<button class="btn btn-red btn-lg" onclick="go(\'/melden\')"><span class="mi">add_circle</span> Doe een melding</button> ' +
     '<button class="btn btn-ghost" onclick="go(\'/organigram\')"><span class="mi mi-sm">account_tree</span> Bekijk de daders</button>' +
-  '</div></div>';
+  '</div>' + bronnenFooter() + '</div>';
 
   return html;
 }
 
 // ============ PAGE: RECHTSPRAAK ============
 function pgRechtspraak(){
+  resetBronnen();
   var rechters = [
     {
       naam: 'Jaap Polak',
@@ -3474,6 +3549,7 @@ function pgRechtspraak(){
 
   html += '</div>';
 
+  html += bronnenFooter();
   html += '</div>';
   return html;
 }
@@ -3481,6 +3557,7 @@ function pgRechtspraak(){
 // ============ DEMO DATA ============
 // ============ PAGE: DOCUMENTATIE ============
 function pgDocumentatie(){
+  resetBronnen();
   var bronnen = {
     parlementair: [
       { titel: 'Rapport "Ongekend Onrecht"', bron: 'Parlementaire ondervragingscommissie Kinderopvangtoeslag', jaar: '2020', url: 'https://www.parlement.com/parlementaire-ondervraging-kinderopvangtoeslag' },
@@ -3609,11 +3686,13 @@ function pgDocumentatie(){
       '<button class="btn btn-ghost" onclick="go(\'/organigram\')"><span class="mi mi-sm">account_tree</span> Bekijk de daders</button> ' +
       '<button class="btn btn-ghost" onclick="go(\'/tijdlijn\')"><span class="mi mi-sm">timeline</span> Tijdlijn</button>' +
     '</div>' +
+    bronnenFooter() +
   '</div>';
 }
 
 // ============ PAGE: OPLOSSING — NIEUW BSN & VERGOEDING ============
 function pgOplossing(){
+  resetBronnen();
   return '<div class="page">' +
 
     // HERO
@@ -4251,11 +4330,13 @@ function pgOplossing(){
         '<button class="btn btn-ghost" onclick="go(\'/geld\')"><span class="mi mi-sm">payments</span> Waar gaat het geld heen?</button>' +
       '</div>' +
     '</div>' +
+    bronnenFooter() +
   '</div>';
 }
 
 // ============ PAGE: GELD — HET VERDIENMODEL VAN DE CRISIS ============
 function pgGeld(){
+  resetBronnen();
   // Consultancy data
   var firms = [
     { naam:'PwC', toeslagen:true, groningen:true, uwv:true, bd_it:true, omschrijving:'FSV-onderzoeken (€15+ mln), diverse audits Belastingdienst, IT-reviews' },
@@ -4496,6 +4577,7 @@ function pgGeld(){
         '<button class="btn btn-ghost" onclick="go(\'/documentatie\')"><span class="mi mi-sm">menu_book</span> Alle bronnen</button>' +
       '</div>' +
     '</div>' +
+    bronnenFooter() +
   '</div>';
 }
 
