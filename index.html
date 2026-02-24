@@ -34,12 +34,21 @@
   --r: 14px;
   --rs: 8px;
   --font: 'DM Sans', system-ui, sans-serif;
-  --max-w: 860px;
+  --max-w: 1080px;
   --tr: .2s cubic-bezier(.4,0,.2,1);
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
 body { font-family: var(--font); background: var(--bg); color: var(--tx); line-height: 1.6; min-height: 100vh; -webkit-font-smoothing: antialiased; }
+
+/* CUSTOM SCROLLBAR */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(148,163,184,.25); border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(148,163,184,.45); }
+@supports (scrollbar-color: auto) {
+  * { scrollbar-width: thin; scrollbar-color: rgba(148,163,184,.25) transparent; }
+}
 a { color: var(--blue); text-decoration: none; }
 a:hover { text-decoration: underline; }
 .mi { font-family: 'Material Icons Round'; font-size: 20px; vertical-align: -4px; }
