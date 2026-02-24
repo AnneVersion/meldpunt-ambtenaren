@@ -538,11 +538,67 @@ function submitViaGitHub(melding, cb){
       melding.id = id;
       melding.status = 'submitted';
       DS.push('meldingen', melding);
+      // Stuur email notificaties (naar eigenaar + melder, NOOIT naar ambtenaar)
+      stuurEmailNotificatie(melding);
       cb(null, {id: id, claimCode: 'GH-' + issue.number, status: 'submitted'});
     } else {
       cb(issue.message || 'GitHub fout');
     }
   }).catch(function(e){ cb('Versleuteling/verzending mislukt: ' + e.message); });
+}
+
+// ============ EMAIL NOTIFICATIES ============
+var OWNER_EMAIL = 'a.spijker@live.nl';
+// FormSubmit.co: eerste keer moet je email bevestigen via link die ze sturen
+function stuurEmailNotificatie(melding){
+  var namen = (melding.namen||[]).map(function(n){ return n.naam; }).join(', ');
+  var datum = new Date().toLocaleDateString('nl-NL', {day:'numeric',month:'long',year:'numeric'});
+  var melderEmail = melding.melder_email || '';
+
+  // 1. Email naar eigenaar (a.spijker@live.nl)
+  var ownerData = {
+    _subject: 'Nieuwe melding: ' + namen,
+    _template: 'table',
+    Naam_ambtenaar: namen,
+    Instantie: melding.instantie || '—',
+    Plaats: melding.plaats || '—',
+    Datum: datum,
+    Verhaal: melding.verhaal ? melding.verhaal.substring(0, 500) : 'Niet ingevuld',
+    Email_melder: melderEmail || 'Anoniem',
+    Melder_naam: melding.melder_naam || 'Anoniem'
+  };
+  // Email ambtenaar NOOIT meesturen
+  fetch('https://formsubmit.co/ajax/' + OWNER_EMAIL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+    body: JSON.stringify(ownerData)
+  }).then(function(r){ return r.json(); }).then(function(d){
+    console.log('Owner email:', d.success ? 'verzonden' : 'mislukt');
+  }).catch(function(e){ console.warn('Owner email fout:', e); });
+
+  // 2. Bevestigingsmail naar melder (als email ingevuld)
+  if(melderEmail){
+    var melderData = {
+      _subject: 'Bevestiging: je melding over ' + namen + ' is ontvangen',
+      _template: 'table',
+      _replyto: OWNER_EMAIL,
+      Bericht: 'Bedankt voor je melding bij het Meldpunt Ambtenaren.',
+      Naam_ambtenaar: namen,
+      Instantie: melding.instantie || '—',
+      Plaats: melding.plaats || '—',
+      Datum_melding: datum,
+      Je_verhaal: melding.verhaal ? melding.verhaal.substring(0, 500) : 'Niet ingevuld',
+      Status: 'Je melding is ontvangen en wordt verwerkt.',
+      Contact: 'Als je vragen hebt, antwoord dan op deze email.'
+    };
+    fetch('https://formsubmit.co/ajax/' + melderEmail, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify(melderData)
+    }).then(function(r){ return r.json(); }).then(function(d){
+      console.log('Melder email:', d.success ? 'verzonden' : 'mislukt');
+    }).catch(function(e){ console.warn('Melder email fout:', e); });
+  }
 }
 
 // Laad meldingen van GitHub Issues (publiek, geen token nodig)
