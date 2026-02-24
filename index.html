@@ -2000,22 +2000,50 @@ function pgStaatsontvoeringen(){
 
     // NOS NEKSLAG
     '<div class="card" style="padding:20px;margin-bottom:16px;border-left:3px solid var(--yellow)">' +
-      '<h2 style="font-size:16px;font-weight:700;margin-bottom:10px;color:var(--yellow)"><span class="mi mi-sm">tv</span> De NOS-nekslag: "methode Laurentien" (13 mei 2024)</h2>' +
+      '<h2 style="font-size:16px;font-weight:700;margin-bottom:10px;color:var(--yellow)"><span class="mi mi-sm">tv</span> De NOS-nekslag: hoe twee correspondenten de slachtoffers een nekslag gaven</h2>' +
+      '<div style="font-size:14px;font-weight:600;color:var(--tx);margin-bottom:12px">13 mei 2024 — NOS Achtuurjournaal</div>' +
       '<div style="font-size:13px;color:var(--tx);line-height:1.8">' +
-        'NOS-correspondenten <strong>Marleen de Rooy</strong> en <strong>Jorn Jonker</strong> publiceren een item op basis van een gelekte geheime notitie van het ministerie van Financiën: ' +
-        'de hersteloperatie zou <strong>€5 miljard extra</strong> kosten, grotendeels door de "methode-Laurentien" — de herstelroute van Stichting (Gelijk)waardig Herstel (SGH), opgezet door prinses Laurentien.' +
+
+        // WAT ER GEBEURDE
+        '<strong style="color:var(--yellow)">Wat er gebeurde:</strong><br>' +
+        'NOS-correspondenten <strong>Marleen de Rooy</strong> en <strong>Jorn Jonker</strong> publiceren een item op basis van een <strong>gelekte geheime notitie</strong> van het ministerie van Financiën — hetzelfde ministerie dat de toeslagenaffaire had veroorzaakt. ' +
+        'De claim: de hersteloperatie zou <strong>€5 miljard extra</strong> kosten, grotendeels door de "methode-Laurentien" van Stichting (Gelijk)waardig Herstel (SGH).' +
         bron('NOS, 13 mei 2024', 'https://nos.nl/artikel/2520340') + '<br><br>' +
-        'Een anonieme UHT-ambtenaar verschijnt met <strong>pruik en stemvervormer</strong> in het Achtuurjournaal om de methode aan te vallen. ' +
-        'SGH krijgt slechts <strong>75 minuten</strong> voor wederhoor — een item van deze impact, gebaseerd op een eenzijdige overheidsbron.' +
-        bron('FTM, mrt 2025', 'https://www.ftm.nl/artikelen/reconstructie-conflict-financien-en-stichting-gelijkwaardig-herstel') + '<br><br>' +
-        '<strong>Follow the Money toont later aan dat de NOS het verhaal verkeerd had:</strong><br>' +
-        '&bull; <strong>SGH-route:</strong> €3.555 uitvoeringskosten per dossier<br>' +
-        '&bull; <strong>Overheidsroute (CWS):</strong> €36.000 per dossier — <strong>tien keer zo duur</strong><br>' +
-        '&bull; Staatssecretaris De Vries erkende zelf: SGH heeft "lage uitvoeringskosten" en "hoge oudertevredenheid"' +
-        bron('FTM, mrt 2025', 'https://www.ftm.nl/artikelen/hersteloperatie-toeslagenschandaal-methode-laurentien') + '<br><br>' +
-        'Het NOS-item verscheen midden in de kabinetsformatie. NSC-leider Omtzigt zei "zeer onaangenaam verrast" te zijn. ' +
-        'Het resultaat: de methode die <strong>goedkoper, sneller en beter</strong> werkte dan de overheidsroute werd politiek onhoudbaar. ' +
-        'De slachtoffers kregen opnieuw de rekening.' +
+
+        // HOE HET WERD GEBRACHT
+        '<strong style="color:var(--yellow)">Hoe het werd gebracht:</strong><br>' +
+        '&bull; Een <strong>anonieme UHT-ambtenaar</strong> — een medewerker van dezelfde Dienst Toeslagen die de affaire veroorzaakte — verschijnt met <strong>pruik en stemvervormer</strong> op het Achtuurjournaal om de methode aan te vallen. Geen naam, geen verantwoording, maar wel primetime.<br>' +
+        '&bull; SGH krijgt slechts <strong>1 uur en 18 minuten</strong> voor wederhoor — om 16:42 gebeld, publicatie dezelfde avond.<br>' +
+        '&bull; De NOS presenteert de gelekte overheidsnotitie als objectief feit, zonder kritische vraag bij de bron: het ministerie dat <em>zelf</em> het probleem had gecreëerd.<br>' +
+        '&bull; Letselschade-advocaat Derk-Jan van der Kolk verwees de bewering van de anonieme ambtenaar naar "het rijk der fabelen."' +
+        bron('FTM — reconstructie conflict, apr 2025', 'https://kindertoeslagaffaire.nl/2025/04/01/hoe-fel-de-strijd-over-de-methode-laurentien-was-blijkt-uit-correspondentie-met-het-ministerie-van-financien/') + '<br><br>' +
+
+        // WAT DE FEITEN WAREN
+        '<strong style="color:var(--accent)">Wat de feiten waren (Follow the Money):</strong><br>' +
+        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:8px 0">' +
+          '<div class="card" style="padding:12px;text-align:center;background:var(--green-soft);border:1px solid rgba(34,197,94,.2)">' +
+            '<div style="font-size:11px;color:var(--tx3)">SGH-ROUTE (methode Laurentien)</div>' +
+            '<div style="font-size:22px;font-weight:800;color:var(--green)">€3.555</div>' +
+            '<div style="font-size:11px;color:var(--tx2)">per dossier</div>' +
+          '</div>' +
+          '<div class="card" style="padding:12px;text-align:center;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2)">' +
+            '<div style="font-size:11px;color:var(--tx3)">OVERHEIDSROUTE (CWS)</div>' +
+            '<div style="font-size:22px;font-weight:800;color:var(--accent)">€36.000</div>' +
+            '<div style="font-size:11px;color:var(--tx2)">per dossier — 10&times; duurder</div>' +
+          '</div>' +
+        '</div>' +
+        'De methode die de NOS als "strop" presenteerde was <strong>tien keer goedkoper</strong>, sneller en had een <strong>hogere oudertevredenheid</strong> dan de overheidsroute. ' +
+        'Staatssecretaris De Vries erkende dit zelf: SGH heeft "lage uitvoeringskosten" en "hoge oudertevredenheid."' +
+        bron('FTM — methode Laurentien, mrt 2025', 'https://www.ftm.nl/artikelen/hersteloperatie-toeslagenschandaal-methode-laurentien') + '<br><br>' +
+
+        // TIMING EN GEVOLGEN
+        '<strong style="color:var(--yellow)">De timing — en het gevolg:</strong><br>' +
+        'Het item verscheen <strong>midden in de kabinetsformatie</strong>, op het moment van maximale politieke impact. NSC-leider Omtzigt zei "zeer onaangenaam verrast" te zijn.' +
+        bron('NOS, 14 mei 2024', 'https://nos.nl/l/2520487') + '<br><br>' +
+        'Het resultaat: de <strong>enige herstelroute die werkte</strong> voor gedupeerden werd politiek onhoudbaar. ' +
+        'De methode die goedkoper, sneller en beter was dan alles wat de overheid zelf produceerde, werd gesaboteerd — ' +
+        'op basis van een eenzijdig lek vanuit diezelfde overheid, kritiekloos overgenomen door de publieke omroep.<br><br>' +
+        'De slachtoffers — ouders en kinderen — kregen voor de zoveelste keer de rekening.' +
       '</div>' +
     '</div>' +
 
