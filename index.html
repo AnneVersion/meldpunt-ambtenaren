@@ -731,7 +731,12 @@ function render(){
       break;
     case '/melding':
       API.getMelding(_params.id, function(err, data){
-        if(err){ _currentMelding = null; app.innerHTML = pgMelding(); return; }
+        if(err){
+          // Fallback: probeer uit localStorage
+          var local = DS.get('meldingen', _params.id);
+          if(local){ _currentMelding = local; _currentMelding._reacties = []; app.innerHTML = pgMelding(); return; }
+          _currentMelding = null; app.innerHTML = pgMelding(); return;
+        }
         _currentMelding = data;
         // Laad ook reacties
         API.getReacties(_params.id, function(err2, reacties){
@@ -1166,6 +1171,21 @@ function pgMelding(){
       return h;
     })() +
 
+    // Gelinkte melding
+    (function(){
+      if(!m.linked_to) return '';
+      var linked = DS.get('meldingen', m.linked_to);
+      if(!linked) return '';
+      var linkLabel = (linked.instantie || 'Melding') + (linked.plaats ? ' — ' + linked.plaats : '') +
+        ' (' + (linked.ts ? new Date(linked.ts).toLocaleDateString('nl-NL',{day:'numeric',month:'short',year:'numeric'}) : '?') + ')';
+      var relatieText = m.link_relatie === 'voor' ? 'Dit gebeurde v\u00f3\u00f3r:' : (m.link_relatie === 'na' ? 'Dit gebeurde n\u00e1:' : 'Gerelateerd aan:');
+      return '<div class="card" style="padding:14px;margin-bottom:16px;border-left:3px solid var(--purple);cursor:pointer" onclick="go(\'/melding/' + linked.id + '\')">' +
+        '<div style="font-size:12px;font-weight:700;color:var(--purple);margin-bottom:4px"><span class="mi mi-sm">link</span> ' + relatieText + '</div>' +
+        '<div style="font-size:14px;font-weight:600">' + esc(linked.titel || linkLabel) + '</div>' +
+        '<div style="font-size:12px;color:var(--tx3);margin-top:2px">' + esc(linkLabel) + '</div>' +
+      '</div>';
+    })() +
+
     // Relevante bronnen & documentatie (context)
     bronnenContext(m) +
 
@@ -1224,6 +1244,8 @@ var _meldTitel = '';
 var _meldPlaats = '';
 var _meldFeiten = [];
 var _melderEmail = '';
+var _meldLinkedId = '';
+var _meldLinkRelatie = '';
 var _naamSugVisible = -1;
 
 // Alle mogelijke ambtelijke feiten — herkenbare taal + juridische term + wettelijke basis + sancties
@@ -1446,6 +1468,34 @@ function pgMelden(){
           '<input class="fi" id="mMelderEmail" type="email" placeholder="jouw@email.nl (optioneel)" value="' + esc(_melderEmail) + '" oninput="_melderEmail=this.value">' +
         '</div>' +
       '</div>' +
+
+      // Koppelen aan eerdere melding
+      (function(){
+        var bestaande = DS.all('meldingen');
+        if(bestaande.length === 0) return '';
+        return '<div style="margin-top:8px;padding-top:16px;border-top:1px solid var(--glass-bd)">' +
+          '<h3 style="font-size:16px;font-weight:700;margin-bottom:4px"><span class="mi" style="color:var(--purple);vertical-align:-3px;font-size:20px">link</span> Koppelen aan eerdere melding</h3>' +
+          '<p style="font-size:13px;color:var(--tx2);margin-bottom:12px">Heb je eerder een melding gedaan die hiermee te maken heeft? Koppel ze aan elkaar.</p>' +
+          '<select class="fi" id="mLinkedId" onchange="_meldLinkedId=this.value;if(this.value){document.getElementById(\'linkRelatieWrap\').style.display=\'block\'}else{document.getElementById(\'linkRelatieWrap\').style.display=\'none\';_meldLinkRelatie=\'\'}" style="cursor:pointer">' +
+            '<option value=""' + (!_meldLinkedId ? ' selected' : '') + '>— Niet koppelen —</option>' +
+            bestaande.map(function(m){
+              var label = (m.instantie || 'Melding') + (m.plaats ? ' — ' + m.plaats : '') + ' (' + (m.ts ? new Date(m.ts).toLocaleDateString('nl-NL',{day:'numeric',month:'short',year:'numeric'}) : '?') + ')';
+              return '<option value="' + esc(m.id) + '"' + (_meldLinkedId === m.id ? ' selected' : '') + '>' + esc(label) + '</option>';
+            }).join('') +
+          '</select>' +
+          '<div id="linkRelatieWrap" style="display:' + (_meldLinkedId ? 'block' : 'none') + ';margin-top:10px">' +
+            '<div style="font-size:13px;color:var(--tx2);margin-bottom:8px">Wanneer gebeurde dit nieuwe feit?</div>' +
+            '<div style="display:flex;gap:10px">' +
+              '<label style="display:flex;align-items:center;gap:6px;padding:8px 14px;border-radius:var(--rs);border:1px solid var(--glass-bd);cursor:pointer;font-size:13px;transition:background .15s' + (_meldLinkRelatie === 'voor' ? ';background:var(--bg3);border-color:var(--purple)' : '') + '" onclick="_meldLinkRelatie=\'voor\';render();initMeldListeners()">' +
+                '<input type="radio" name="linkRelatie" value="voor"' + (_meldLinkRelatie === 'voor' ? ' checked' : '') + ' style="accent-color:var(--purple)"> <span class="mi mi-sm" style="font-size:16px">arrow_back</span> Ervoor' +
+              '</label>' +
+              '<label style="display:flex;align-items:center;gap:6px;padding:8px 14px;border-radius:var(--rs);border:1px solid var(--glass-bd);cursor:pointer;font-size:13px;transition:background .15s' + (_meldLinkRelatie === 'na' ? ';background:var(--bg3);border-color:var(--purple)' : '') + '" onclick="_meldLinkRelatie=\'na\';render();initMeldListeners()">' +
+                '<input type="radio" name="linkRelatie" value="na"' + (_meldLinkRelatie === 'na' ? ' checked' : '') + ' style="accent-color:var(--purple)"> <span class="mi mi-sm" style="font-size:16px">arrow_forward</span> Erna' +
+              '</label>' +
+            '</div>' +
+          '</div>' +
+        '</div>';
+      })() +
 
       '<div class="wiz-nav">' +
         '<div></div>' +
@@ -1799,6 +1849,8 @@ function submitMelding(){
     anoniem: anoniem,
     melder_naam: anoniem ? null : ((document.getElementById('mNaam')||{}).value || '').trim() || null,
     melder_email: _melderEmail || (anoniem ? null : ((document.getElementById('mEmail')||{}).value || '').trim() || null),
+    linked_to: _meldLinkedId || null,
+    link_relatie: _meldLinkRelatie || null,
     klokkenluider: false,
     ts: Date.now(),
     views: 0
@@ -1818,6 +1870,8 @@ function submitMelding(){
     _meldPlaats = '';
     _meldFeiten = [];
     _melderEmail = '';
+    _meldLinkedId = '';
+    _meldLinkRelatie = '';
   });
 }
 
@@ -5190,35 +5244,17 @@ function adminExportJSON(){
 
 // ============ SEED DATA ============
 function seedDemo(){
-  // Versie-check: wis oude demo-data en vervang door echte meldingen
-  var SEED_VERSION = 4;
+  // Wis alle oude demo-data
+  var SEED_VERSION = 5;
   var curVer = parseInt(localStorage.getItem('ma_seed_version') || '0');
   if(curVer < SEED_VERSION){
-    // Verwijder alle oude demo-meldingen
     var alle = DS.all('meldingen');
     alle.forEach(function(m){
-      if(m.melder_naam === 'Meldpunt Ambtenaren') DS.del('meldingen', m.id);
+      if(m.melder_naam === 'Meldpunt Ambtenaren' || (m.id && m.id.indexOf('seed_') === 0)) DS.del('meldingen', m.id);
     });
     localStorage.setItem('ma_seed_version', String(SEED_VERSION));
-  } else if(DS.count('meldingen') > 0) return;
-
-  DS.add('meldingen', {
-    titel: 'Kentekenbewijzen geweigerd na betaling leges',
-    verhaal: 'Op 27 mei 2025 zijn vijf bromfietsen aangeboden voor inschrijving. Er is \u20ac598 aan leges betaald (5x inschrijving + overige kosten). De instantie weigert de kentekenbewijzen te verstrekken. Ze willen slechts \u20ac250 terugstorten (de inschrijvingskosten), maar houden \u20ac282,50 in voor "eerder uitgevoerde werkzaamheden". Er is dus betaald, er worden geen kentekens verstrekt, en het geld wordt niet volledig teruggestort.',
-    instantie: 'RDW',
-    plaats: 'Arnhem',
-    namen: [],
-    feiten: [
-      { feit: 'Alles terugvorderen bij kleine fout', juridisch: 'Disproportionele terugvordering', wet: 'Art. 3:4 Awb', sanctie: 'Vernietiging + compensatie', categorie: 'Geld & terugvordering' },
-      { feit: 'Zaak eindeloos doorschuiven', juridisch: 'Schending zorgvuldigheidsbeginsel', wet: 'Art. 3:2 Awb', sanctie: 'Dwangsom + schadevergoeding', categorie: 'Negeren & traineren' },
-      { feit: 'Toezegging niet nakomen', juridisch: 'Schending vertrouwensbeginsel', wet: 'Art. 3:2 Awb + vertrouwensbeginsel', sanctie: 'Vernietiging besluit + schadevergoeding', categorie: 'Negeren & traineren' },
-      { feit: 'Klacht afwijzen zonder onderbouwing', juridisch: 'Onzorgvuldige klachtbehandeling', wet: 'Art. 9:12 Awb', sanctie: 'Klacht bij Nationale Ombudsman', categorie: 'Klachten & bezwaar' },
-      { feit: 'Besluit niet uitleggen', juridisch: 'Motiveringsgebrek', wet: 'Art. 3:46 Awb', sanctie: 'Vernietiging besluit', categorie: 'Klachten & bezwaar' },
-      { feit: 'Vernederend of respectloos behandeld', juridisch: 'Onmenselijke/vernederende behandeling', wet: 'Art. 3 EVRM', sanctie: 'Schadevergoeding via EHRM (\u20ac25.000+)', categorie: 'Oneerlijk behandeld' }
-    ],
-    anoniem: true, melder_naam: null, klokkenluider: false,
-    ts: Date.now(), views: 0
-  });
+  }
+  // Geen seed-data meer — meldingen komen alleen via het formulier
 }
 
 // ============ INIT ============
