@@ -510,11 +510,16 @@ function submitViaGitHub(melding, cb){
   var title = publicData.datum + ' | ' + publicData.namen.join(', ') + (publicData.plaats ? ' | ' + publicData.plaats : '');
 
   encryptData(sensitiveData).then(function(encrypted){
+    var feitenStr = (melding.feiten && melding.feiten.length > 0)
+      ? melding.feiten.map(function(f){ return '- **' + f.feit + '** (' + f.wet + ') — _' + f.sanctie + '_'; }).join('\n')
+      : '—';
+
     var body = '<!-- ENCRYPTED MELDING v1 -->\n' +
       '**Datum:** ' + publicData.datum + '\n' +
       '**Namen:** ' + publicData.namen.join(', ') + '\n' +
       '**Instantie:** ' + (publicData.instantie || '—') + '\n' +
       '**Plaats:** ' + (publicData.plaats || '—') + '\n\n' +
+      '**Gemelde feiten:**\n' + feitenStr + '\n\n' +
       '---\n\n' +
       '```encrypted\n' + JSON.stringify(encrypted) + '\n```';
 
@@ -563,6 +568,7 @@ function stuurEmailNotificatie(melding){
     Instantie: melding.instantie || '—',
     Plaats: melding.plaats || '—',
     Datum: datum,
+    Feiten: (melding.feiten && melding.feiten.length > 0) ? melding.feiten.map(function(f){ return f.feit + ' (' + f.wet + ') — ' + f.sanctie; }).join('\n') : 'Geen feiten geselecteerd',
     Verhaal: melding.verhaal ? melding.verhaal.substring(0, 500) : 'Niet ingevuld',
     Email_melder: melderEmail || 'Anoniem',
     Melder_naam: melding.melder_naam || 'Anoniem'
@@ -1252,8 +1258,63 @@ var _meldInstantie = '';
 var _meldVerhaal = '';
 var _meldTitel = '';
 var _meldPlaats = '';
+var _meldFeiten = [];
 var _melderEmail = '';
 var _naamSugVisible = -1;
+
+// Ambtelijke feiten met wettelijke basis en sancties
+var FEITEN = [
+  // --- STRAFRECHT ---
+  { cat: 'Strafrecht', feit: 'Knevelarij', wet: 'Art. 366 Sr', sanctie: 'Max 6 jaar gevangenisstraf', toelichting: 'Als ambtenaar onrechtmatig geld of voordeel afdwingen van burgers' },
+  { cat: 'Strafrecht', feit: 'Ambtelijke omkoping (passief)', wet: 'Art. 363 Sr', sanctie: 'Max 6 jaar gevangenisstraf + boete', toelichting: 'Steekpenningen of giften aannemen in ruil voor ambtelijk handelen' },
+  { cat: 'Strafrecht', feit: 'Ambtsdwang / afpersing', wet: 'Art. 365 Sr', sanctie: 'Max 4 jaar gevangenisstraf', toelichting: 'Door misbruik van gezag iemand dwingen iets te doen of nalaten' },
+  { cat: 'Strafrecht', feit: 'Meineed / valse verklaring', wet: 'Art. 207 Sr', sanctie: 'Max 6 jaar gevangenisstraf', toelichting: 'Onder ede opzettelijk een valse verklaring afleggen (bijv. voor enquêtecommissie)' },
+  { cat: 'Strafrecht', feit: 'Valsheid in geschrifte', wet: 'Art. 225 Sr', sanctie: 'Max 6 jaar gevangenisstraf', toelichting: 'Opzettelijk vervalsen van documenten, beschikkingen of dossiers' },
+  { cat: 'Strafrecht', feit: 'Discriminatie', wet: 'Art. 137d Sr', sanctie: 'Max 1 jaar gevangenisstraf of boete cat. 3', toelichting: 'Aanzetten tot of plegen van discriminatie op grond van ras, nationaliteit, afkomst' },
+  { cat: 'Strafrecht', feit: 'Etnisch profileren', wet: 'Art. 137d Sr + Art. 1 Gw', sanctie: 'Max 1 jaar gevangenisstraf + schadevergoeding', toelichting: 'Selectie of behandeling op basis van afkomst, nationaliteit of huidskleur' },
+  { cat: 'Strafrecht', feit: 'Schending ambtsgeheim', wet: 'Art. 272 Sr', sanctie: 'Max 1 jaar gevangenisstraf of boete cat. 4', toelichting: 'Opzettelijk bekendmaken van vertrouwelijke overheidsinformatie' },
+  { cat: 'Strafrecht', feit: 'Verduistering in dienstbetrekking', wet: 'Art. 322 Sr', sanctie: 'Max 5 jaar gevangenisstraf', toelichting: 'Overheidsgelden of -goederen voor eigen gebruik aanwenden' },
+  { cat: 'Strafrecht', feit: 'Vernietiging van bewijsmateriaal', wet: 'Art. 361 Sr', sanctie: 'Max 5 jaar gevangenisstraf', toelichting: 'Opzettelijk vernietigen of wegmaken van stukken/dossiers' },
+  { cat: 'Strafrecht', feit: 'Computervredebreuk', wet: 'Art. 138ab Sr', sanctie: 'Max 4 jaar gevangenisstraf', toelichting: 'Onrechtmatig binnendringen in computersystemen of databases (bijv. FSV)' },
+  { cat: 'Strafrecht', feit: 'Dood door schuld', wet: 'Art. 307 Sr', sanctie: 'Max 2 jaar gevangenisstraf', toelichting: 'Door nalatigheid of schuld de dood van een ander veroorzaken' },
+  { cat: 'Strafrecht', feit: 'Misleiding van het parlement', wet: 'Art. 355 Sr', sanctie: 'Max 3 jaar gevangenisstraf', toelichting: 'Als minister/staatssecretaris het parlement opzettelijk verkeerd informeren' },
+
+  // --- BESTUURSRECHT ---
+  { cat: 'Bestuursrecht', feit: 'Onrechtmatig besluit', wet: 'Art. 8:88 Awb', sanctie: 'Vernietiging besluit + schadevergoeding', toelichting: 'Besluit in strijd met de wet of algemene beginselen van behoorlijk bestuur' },
+  { cat: 'Bestuursrecht', feit: 'Schending zorgvuldigheidsbeginsel', wet: 'Art. 3:2 Awb', sanctie: 'Vernietiging besluit + schadevergoeding', toelichting: 'Onvoldoende onderzoek of zorgvuldigheid bij het nemen van besluiten' },
+  { cat: 'Bestuursrecht', feit: 'Schending evenredigheidsbeginsel', wet: 'Art. 3:4 Awb', sanctie: 'Vernietiging besluit + schadevergoeding', toelichting: 'Besluit is onevenredig zwaar in verhouding tot het doel (bijv. alles terugvorderen)' },
+  { cat: 'Bestuursrecht', feit: 'Schending motiveringsbeginsel', wet: 'Art. 3:46 Awb', sanctie: 'Vernietiging besluit', toelichting: 'Besluit onvoldoende of onjuist gemotiveerd' },
+  { cat: 'Bestuursrecht', feit: 'Detournement de pouvoir', wet: 'Art. 3:3 Awb', sanctie: 'Vernietiging besluit + schadevergoeding', toelichting: 'Bevoegdheid gebruiken voor een ander doel dan waarvoor deze is verleend' },
+  { cat: 'Bestuursrecht', feit: 'Schending vertrouwensbeginsel', wet: 'Art. 3:4 Awb (ongeschreven)', sanctie: 'Vernietiging besluit + schadevergoeding', toelichting: 'Terugkomen op gedane toezeggingen of gewekte verwachtingen' },
+  { cat: 'Bestuursrecht', feit: 'Willekeur', wet: 'Art. 3:3/3:4 Awb', sanctie: 'Vernietiging besluit + schadevergoeding', toelichting: 'Zonder redelijke grond burgers anders behandelen of irrationeel besluiten nemen' },
+  { cat: 'Bestuursrecht', feit: 'Niet tijdig beslissen', wet: 'Art. 6:2 Awb', sanctie: 'Dwangsom (max €1.442)', toelichting: 'Niet binnen de wettelijke termijn reageren op aanvragen of bezwaren' },
+
+  // --- MENSENRECHTEN ---
+  { cat: 'Mensenrechten', feit: 'Schending recht op gezinsleven', wet: 'Art. 8 EVRM', sanctie: 'Schadevergoeding via EHRM (€10.000-€100.000+)', toelichting: 'Onrechtmatige uithuisplaatsing van kinderen of scheiding van gezinnen' },
+  { cat: 'Mensenrechten', feit: 'Schending recht op eerlijk proces', wet: 'Art. 6 EVRM', sanctie: 'Schadevergoeding + herziening', toelichting: 'Geen eerlijke behandeling, geen toegang tot rechter, geen hoor en wederhoor' },
+  { cat: 'Mensenrechten', feit: 'Schending recht op eigendom', wet: 'Art. 1 EP EVRM', sanctie: 'Schadevergoeding via EHRM', toelichting: 'Onrechtmatig afnemen van bezittingen, toeslagen, uitkeringen' },
+  { cat: 'Mensenrechten', feit: 'Schending discriminatieverbod', wet: 'Art. 14 EVRM + Art. 1 Gw', sanctie: 'Schadevergoeding + correctie beleid', toelichting: 'Ongelijke behandeling op grond van ras, afkomst, nationaliteit, religie' },
+  { cat: 'Mensenrechten', feit: 'Schending kinderrechten', wet: 'IVRK Art. 3, 7, 8, 9', sanctie: 'Schadevergoeding + terugplaatsing', toelichting: 'Niet handelen in belang van het kind, scheiden van ouders zonder grond' },
+  { cat: 'Mensenrechten', feit: 'Onmenselijke behandeling', wet: 'Art. 3 EVRM', sanctie: 'Schadevergoeding via EHRM (€25.000+)', toelichting: 'Vernederende of onmenselijke behandeling door overheidsinstanties' },
+
+  // --- AMBTENARENWET / TUCHTRECHT ---
+  { cat: 'Ambtenarenrecht', feit: 'Ernstig plichtsverzuim', wet: 'Art. 80-81 ARAR / CAO Rijk', sanctie: 'Ontslag + eventueel strafrechtelijke vervolging', toelichting: 'Grovelijk tekortschieten in ambtelijke verplichtingen' },
+  { cat: 'Ambtenarenrecht', feit: 'Integriteitsschending', wet: 'Art. 6 Ambtenarenwet', sanctie: 'Schorsing, ontslag, terugvordering', toelichting: 'Handelen in strijd met de ambtseed of integriteitsregels' },
+  { cat: 'Ambtenarenrecht', feit: 'Nalatigheid / onzorgvuldigheid', wet: 'Art. 6 Ambtenarenwet', sanctie: 'Berisping, schorsing, overplaatsing', toelichting: 'Structureel onzorgvuldig handelen met ernstige gevolgen voor burgers' },
+  { cat: 'Ambtenarenrecht', feit: 'Ongeoorloofd nevenwerkzaamheden', wet: 'Art. 61 ARAR', sanctie: 'Berisping, schorsing, ontslag', toelichting: 'Verboden nevenactiviteiten die belangenverstrengeling opleveren' },
+
+  // --- PRIVACYRECHT ---
+  { cat: 'Privacyrecht', feit: 'Schending AVG / onrechtmatige dataverwerking', wet: 'AVG Art. 5, 6 + UAVG', sanctie: 'Boete tot €20 miljoen of 4% omzet', toelichting: 'Onrechtmatig verzamelen, verwerken of delen van persoonsgegevens (bijv. FSV-lijst)' },
+  { cat: 'Privacyrecht', feit: 'Onrechtmatige zwarte lijst', wet: 'AVG Art. 5, 22 + AP-richtlijnen', sanctie: 'Boete + verwijdering + schadevergoeding', toelichting: 'Bijhouden van zwarte lijsten zonder wettelijke grondslag (bijv. FSV met 270.000 burgers)' },
+  { cat: 'Privacyrecht', feit: 'Profilering zonder grondslag', wet: 'AVG Art. 22', sanctie: 'Boete + rectificatie', toelichting: 'Geautomatiseerde besluitvorming of risicoprofilering zonder wettelijke basis' },
+
+  // --- SPECIFIEK TOESLAGENAFFAIRE ---
+  { cat: 'Toeslagenaffaire', feit: 'Onrechtmatige uithuisplaatsing', wet: 'Art. 8 EVRM + BW Boek 1', sanctie: 'Schadevergoeding + terugplaatsing kind', toelichting: 'Uithuisplaatsing van kinderen als gevolg van schulden veroorzaakt door de overheid' },
+  { cat: 'Toeslagenaffaire', feit: 'Alles-of-niets terugvordering', wet: 'Strijd met Art. 3:4 Awb', sanctie: 'Vernietiging + compensatie (€30.000 forfaitair)', toelichting: 'Volledige terugvordering van kinderopvangtoeslag bij kleine fouten' },
+  { cat: 'Toeslagenaffaire', feit: 'Opzet/grove schuld constructie', wet: 'Strijd met Art. 3:2/3:4 Awb', sanctie: 'Vernietiging kwalificatie + compensatie', toelichting: 'Onterecht kwalificeren als fraudeur (O/GS) zonder bewijs' },
+  { cat: 'Toeslagenaffaire', feit: 'Institutionele vooringenomenheid', wet: 'Strijd met Art. 2:4 Awb', sanctie: 'Vernietiging alle besluiten + compensatie', toelichting: 'Structureel bevooroordeeld handelen tegen bepaalde groepen burgers' },
+  { cat: 'Toeslagenaffaire', feit: 'Tegenwerking hersteloperatie', wet: 'Art. 6 Ambtenarenwet', sanctie: 'Ontslag + tuchtmaatregelen', toelichting: 'Bewust vertragen of tegenwerken van de hersteloperatie voor gedupeerden' }
+];
 
 var INSTANTIES = [
   'Belastingdienst','Toeslagen','UWV','DUO','IND','SVB',
@@ -1319,6 +1380,41 @@ function pgMelden(){
         '<div class="fg" style="margin-top:10px">' +
           '<input class="fi" id="mPlaats" placeholder="Plaatsnaam (bijv. Den Haag, Rotterdam)" value="' + esc(_meldPlaats) + '" oninput="_meldPlaats=this.value">' +
         '</div>' +
+      '</div>' +
+
+      // Feiten dropdown (meerdere selecteerbaar)
+      '<div style="margin-top:8px;padding-top:16px;border-top:1px solid var(--glass-bd)">' +
+        '<h3 style="font-size:16px;font-weight:700;margin-bottom:4px"><span class="mi" style="color:var(--accent);vertical-align:-3px;font-size:20px">gavel</span> Welk feit is gepleegd?</h3>' +
+        '<p style="font-size:13px;color:var(--tx2);margin-bottom:12px">Selecteer één of meer feiten. Per feit zie je de wettelijke basis en mogelijke sanctie.</p>' +
+        '<div id="feitenContainer">' +
+          (function(){
+            var cats = {};
+            FEITEN.forEach(function(f){ if(!cats[f.cat]) cats[f.cat] = []; cats[f.cat].push(f); });
+            var h = '';
+            Object.keys(cats).forEach(function(cat){
+              h += '<div style="margin-bottom:12px">' +
+                '<div style="font-size:11px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;padding-bottom:4px;border-bottom:1px solid var(--glass-bd)">' + cat + '</div>';
+              cats[cat].forEach(function(f, i){
+                var idx = FEITEN.indexOf(f);
+                var checked = _meldFeiten.indexOf(idx) >= 0;
+                h += '<label style="display:flex;gap:8px;align-items:flex-start;padding:8px 10px;border-radius:var(--rs);cursor:pointer;transition:background .15s;margin-bottom:2px" onmouseover="this.style.background=\'var(--bg3)\'" onmouseout="this.style.background=\'\'">' +
+                  '<input type="checkbox" value="' + idx + '" ' + (checked ? 'checked' : '') + ' onchange="toggleFeit(' + idx + ')" style="margin-top:3px;accent-color:var(--accent)">' +
+                  '<div style="flex:1;min-width:0">' +
+                    '<div style="font-size:13px;font-weight:600;color:var(--tx)">' + f.feit + '</div>' +
+                    '<div style="font-size:11px;color:var(--tx3);margin-top:2px">' + f.toelichting + '</div>' +
+                    '<div style="display:flex;gap:12px;margin-top:4px;flex-wrap:wrap">' +
+                      '<span style="font-size:10px;padding:2px 6px;border-radius:4px;background:rgba(59,130,246,.12);color:var(--blue);font-weight:600">' + f.wet + '</span>' +
+                      '<span style="font-size:10px;padding:2px 6px;border-radius:4px;background:rgba(239,68,68,.12);color:var(--accent);font-weight:600">' + f.sanctie + '</span>' +
+                    '</div>' +
+                  '</div>' +
+                '</label>';
+              });
+              h += '</div>';
+            });
+            return h;
+          })() +
+        '</div>' +
+        (_meldFeiten.length > 0 ? '<div style="margin-top:8px;font-size:12px;color:var(--accent);font-weight:600">' + _meldFeiten.length + ' feit' + (_meldFeiten.length > 1 ? 'en' : '') + ' geselecteerd</div>' : '') +
       '</div>' +
 
       // Je verhaal
@@ -1434,6 +1530,7 @@ function pgMelden(){
         (_meldInstantie ? '<div style="font-size:13px;margin-top:6px"><span class="mi mi-sm" style="color:var(--blue)">business</span> ' + esc(_meldInstantie) + '</div>' : '') +
         (_meldTitel ? '<div style="font-size:14px;font-weight:600;margin-top:8px">' + esc(_meldTitel) + '</div>' : '') +
         (_meldVerhaal ? '<div style="font-size:13px;color:var(--tx2);margin-top:4px;line-height:1.5">' + esc(trunc(_meldVerhaal, 300)) + '</div>' : '<div style="font-size:12px;color:var(--tx3);margin-top:4px;font-style:italic">Geen verhaal ingevuld (kan later)</div>') +
+        (_meldFeiten.length > 0 ? '<div style="margin-top:8px"><div style="font-size:11px;font-weight:700;color:var(--accent);margin-bottom:4px">Gemelde feiten:</div>' + _meldFeiten.map(function(idx){ var f = FEITEN[idx]; return '<div style="font-size:12px;color:var(--tx2);margin-bottom:2px">• ' + esc(f.feit) + ' <span style="color:var(--blue);font-size:10px">(' + esc(f.wet) + ')</span> — <span style="color:var(--accent);font-size:10px">' + esc(f.sanctie) + '</span></div>'; }).join('') + '</div>' : '') +
         (_melderEmail ? '<div style="font-size:12px;color:var(--blue);margin-top:8px"><span class="mi mi-sm" style="font-size:11px">email</span> Je e-mail: ' + esc(_melderEmail) + '</div>' : '') +
       '</div>' +
 
@@ -1617,6 +1714,12 @@ function syncMeldVelden(){
 function voegNaamToe(){ _namen.push({naam:'',functie:'',email:''}); syncMeldVelden(); render(); initMeldListeners(); }
 function verwijderNaam(i){ _namen.splice(i,1); delete _meldFotos[i]; reindexFotos(i); syncMeldVelden(); render(); initMeldListeners(); }
 function updateNaam(i,field,val){ _namen[i][field] = val; }
+function toggleFeit(idx){
+  var pos = _meldFeiten.indexOf(idx);
+  if(pos >= 0) _meldFeiten.splice(pos, 1);
+  else _meldFeiten.push(idx);
+  render(); initMeldListeners();
+}
 function reindexFotos(removed){
   var nf = {};
   Object.keys(_meldFotos).forEach(function(k){
@@ -1741,6 +1844,7 @@ function submitMelding(){
     verhaal: _meldVerhaal.trim(),
     instantie: _meldInstantie.trim(),
     plaats: _meldPlaats.trim(),
+    feiten: _meldFeiten.map(function(idx){ var f = FEITEN[idx]; return { feit: f.feit, wet: f.wet, sanctie: f.sanctie, categorie: f.cat }; }),
     namen: namen,
     anoniem: anoniem,
     melder_naam: anoniem ? null : ((document.getElementById('mNaam')||{}).value || '').trim() || null,
@@ -1762,6 +1866,7 @@ function submitMelding(){
     _meldVerhaal = '';
     _meldTitel = '';
     _meldPlaats = '';
+    _meldFeiten = [];
     _melderEmail = '';
   });
 }
