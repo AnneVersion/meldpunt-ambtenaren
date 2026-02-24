@@ -340,7 +340,6 @@ sup a[title], sup[title] { border-bottom: 1px dotted var(--blue); }
       </button>
       <nav class="nav-links" id="navLinks">
         <button class="nav-btn" data-r="/" onclick="go('/')"><span class="mi mi-sm">home</span> Home</button>
-        <button class="nav-btn" data-r="/namen" onclick="go('/namen')"><span class="mi mi-sm">people</span> Namen</button>
         <button class="nav-btn" data-r="/missie" onclick="go('/missie')"><span class="mi mi-sm">flag</span> Missie</button>
         <button class="nav-btn" data-r="/organigram" onclick="go('/organigram')"><span class="mi mi-sm">account_tree</span> Daders</button>
         <button class="nav-btn" data-r="/rechtspraak" onclick="go('/rechtspraak')"><span class="mi mi-sm">gavel</span> Rechters</button>
@@ -2739,7 +2738,7 @@ function pgTijdlijn(){
     { jaar: '2025', titel: 'Rechters slaan alarm: €100 miljoen aan dwangsommen', tekst: 'De Raad van State onthult: tussen november 2023 en november 2024 is <strong>€101,6 miljoen</strong> aan dwangsommen opgelegd omdat de Dienst Toeslagen wettelijke termijnen overschrijdt. 9.300 rechtszaken lopen, 500 nieuwe per maand. Het geld verdwijnt in boetes — niet in herstel.' + bron('RvS dwangsommen', 'https://www.raadvanstate.nl/uitspraken/@141810/202403045-1-a2/') + '', kleur: 'var(--accent)' },
     { jaar: '2025', titel: 'Dienst Toeslagen geeft bewust geen informatie', tekst: 'NOS onthult een intern memo: de Dienst Toeslagen weigert <strong>bewust</strong> uit te leggen aan ouders waarom ze als fraudeur zijn bestempeld. Het memo erkent dat dit "niet houdbaar in beroep" is — ze weten dat het illegaal is en doen het tóch.' + bron('NOS, 2025', 'https://nos.nl/artikel/2599959') + '', kleur: 'var(--accent)' },
     { jaar: '2025', titel: 'College: directe discriminatie op ras', tekst: 'Het College voor de Rechten van de Mens oordeelt voor het eerst dat de Belastingdienst <strong>direct discrimineerde op grond van ras</strong> — niet indirect, maar bewust. 20+ discriminatieoordelen inmiddels.' + bron('College oordeel 2023-103', 'https://oordelen.mensenrechten.nl/oordeel/2023-103') + '', kleur: 'var(--accent)' },
-    { jaar: 'Mrt 2025', titel: 'Commissie-Hamer: 3.500 kinderen, 23 terug', tekst: 'De Commissie-Hamer concludeert dat de toeslagenaffaire een "grote rol" speelde bij uithuisplaatsingen. Van de 3.500+ kinderen zijn er slechts <strong>23</strong> herenigd met hun ouders. 482 kinderen van gedupeerden zijn overleden (2005–2021). De gevolgen zijn "blijvend — mogelijk generatielang."' + bron('Commissie-Hamer, mrt 2025', 'https://www.rijksoverheid.nl/documenten/rapporten/2025/03/27/tk-bijlage-1-rapportage-commissie-toeslagen-en-uithuisplaatsingen-erfenis-van-onrecht') + '', kleur: 'var(--accent)' },
+    { jaar: 'Mrt 2025', titel: 'Commissie-Hamer: 3.500 kinderen, 23 terug', tekst: 'De Commissie-Hamer concludeert dat de toeslagenaffaire een "grote rol" speelde bij uithuisplaatsingen. Van de 3.500+ kinderen zijn er slechts <strong>23</strong> herenigd met hun ouders. De gevolgen zijn "blijvend — mogelijk generatielang."' + bron('Commissie-Hamer, mrt 2025', 'https://www.rijksoverheid.nl/documenten/rapporten/2025/03/27/tk-bijlage-1-rapportage-commissie-toeslagen-en-uithuisplaatsingen-erfenis-van-onrecht') + '', kleur: 'var(--accent)' },
     { jaar: '2025', titel: '50+ illegale algoritmes nog actief', tekst: 'Follow the Money onthult: meer dan 50 van de 100+ algoritmes van de Belastingdienst zijn <strong>onrechtmatig</strong>. De Autoriteit Persoonsgegevens weigert te handhaven en gedraagt zich als "consultant van de Belastingdienst" aldus Bits of Freedom.' + bron('Follow the Money, 2025', 'https://www.ftm.nl/artikelen/meer-dan-50-algoritmes-van-de-belasting-dienst-zijn-onrechtmatig') + '', kleur: 'var(--yellow)' },
     { jaar: '2026', titel: 'Het is niet voorbij', tekst: 'Anno 2026 wachten duizenden ouders nog op compensatie. Volledige afronding: niet voor 2030. 50+ illegale algoritmes draaien door. Geen enkele ambtenaar of politicus is strafrechtelijk vervolgd. De patronen die de enquêtecommissie signaleerde zijn <strong>"nog steeds aanwezig."</strong>' + bron('Enquêtecommissie 2024', 'https://www.tweedekamer.nl/kamerstukken/detail?id=2024Z02942&did=2024D06757') + ' Het kan morgen opnieuw gebeuren.', kleur: 'var(--accent)' }
   ];
@@ -2760,24 +2759,7 @@ function pgTijdlijn(){
       '<div class="card" style="text-align:center;padding:14px"><div style="font-size:24px;font-weight:800;color:var(--yellow)">0</div><div style="font-size:10px;color:var(--tx3)">POLITICI VERVOLGD</div></div>' +
     '</div>' +
 
-    // 482 KINDEREN — HERDENKING
-    '<div style="padding:24px;margin-bottom:24px;background:linear-gradient(135deg,rgba(0,0,0,.4),rgba(0,0,0,.2));border:1px solid rgba(148,163,184,.1);border-radius:var(--r);text-align:center">' +
-      '<div style="font-size:48px;margin-bottom:8px">🕯</div>' +
-      '<div style="font-size:42px;font-weight:800;color:#fff;letter-spacing:2px;margin-bottom:8px">482</div>' +
-      '<div style="font-size:16px;color:var(--tx);font-weight:600;margin-bottom:12px">kinderen van gedupeerde ouders zijn overleden</div>' +
-      '<div style="font-size:13px;color:var(--tx2);max-width:520px;margin:0 auto;line-height:1.8">' +
-        'Tussen 2005 en 2021 zijn 482 kinderen van gedupeerde toeslagenouders overleden.' + bron('Commissie-Hamer / CBS, mrt 2025', 'https://www.rijksoverheid.nl/documenten/rapporten/2025/03/27/tk-bijlage-1-rapportage-commissie-toeslagen-en-uithuisplaatsingen-erfenis-van-onrecht') + ' ' +
-        'Elk van deze kinderen had een naam, een gezicht, een leven dat nog moest beginnen. ' +
-        'Sommigen zijn uit huis geplaatst en hebben hun ouders nooit meer gezien. ' +
-        'Sommigen konden de druk niet aan. Sommigen zijn nooit oud genoeg geworden om te begrijpen wat er met hun gezin was gebeurd.' +
-      '</div>' +
-      '<div style="font-size:13px;color:var(--tx2);max-width:520px;margin:12px auto 0;line-height:1.8">' +
-        'Dit zijn geen statistieken. Dit zijn kinderen die er niet meer zijn. ' +
-        'Ouders die een kind hebben verloren terwijl de overheid hun leven kapotmaakte. ' +
-        'Geen enkel bedrag, geen enkele excuusbrief, geen enkele commissie maakt dit ongedaan.' +
-      '</div>' +
-      '<div style="margin-top:16px;font-size:11px;color:var(--tx3)">Bron: Commissie-Hamer / CBS, maart 2025</div>' +
-    '</div>';
+    '';
 
   // TIJDLIJN
   events.forEach(function(e, i){
@@ -3407,7 +3389,6 @@ function pgDocumentatie(){
         '<div style="font-weight:700;color:var(--accent)">37.000+</div><div>erkende gedupeerden van de toeslagenaffaire</div>' +
         '<div style="font-weight:700;color:var(--accent)">3.500+</div><div>kinderen uit huis geplaatst (Commissie-Hamer, 2025)</div>' +
         '<div style="font-weight:700;color:var(--accent)">23</div><div>kinderen herenigd met hun ouders (2024)</div>' +
-        '<div style="font-weight:700;color:var(--accent)">482</div><div>kinderen van gedupeerden overleden (2005–2021)</div>' +
         '<div style="font-weight:700;color:var(--accent)">€6,45 mln</div><div>boetes Autoriteit Persoonsgegevens (€2,75M + €3,7M)</div>' +
         '<div style="font-weight:700;color:var(--accent)">€101,6 mln</div><div>dwangsommen opgelegd aan Dienst Toeslagen (nov 2023–nov 2024)</div>' +
         '<div style="font-weight:700;color:var(--accent)">€7,1 mrd</div><div>totale kosten hersteloperatie en stijgend</div>' +
