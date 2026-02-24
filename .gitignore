@@ -1,0 +1,8 @@
+*.pem
+private_key*
+backend/__pycache__/
+backend/meldpunt.db
+data/
+sync/
+worker/
+.claude/

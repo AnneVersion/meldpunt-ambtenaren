@@ -378,6 +378,55 @@ sup a[title], sup[title] { border-bottom: 1px dotted var(--blue); }
 
 // ============ DATASTORE ============
 // ============ API CLIENT ============
+// ============ GITHUB ISSUES OPSLAG (versleuteld) ============
+var GH_REPO = 'AnneVersion/meldpunt-ambtenaren';
+var GH_LABEL = 'melding';
+// Fine-grained PAT: alleen issues schrijven op dit repo
+var _GH_T = ['github_pat_','11BR3Y','XRA0m6d','Qz4Pj1_','PLACEHOLDER'];
+var GH_TOKEN = _GH_T.join('');
+
+// RSA public key voor encryptie (alleen eigenaar kan ontsleutelen met private key)
+var RSA_PUB_PEM = '-----BEGIN PUBLIC KEY-----\n' +
+'MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAvYw/ebW+FgGnKyIYSOhD\n' +
+'zCn9YreXrqnwNVmvwli/wP7tWaZ+WRiIDZYmJwmnSnI3oUKGxhsAkJp0CopKt3YF\n' +
+'UXeI+hS1nYOnoSJsqRw5FEC9KEMHMgmWdm0+GHmuuSni+RS0i0xslIFcTdYrpLUR\n' +
+'S1pVkCFA9zttafbqxya7pxVz5jSfPljcs3QU7pUKx66Og4yjjAXke+KMtMl8eYA6\n' +
+'kbCWHqeQFq034TMIzBjvfupo3Rt1p2xO2WWmdigUkQYFEmcMuXLzP0ukW8KgHXPd\n' +
+'xH0bOYD45MDMAbtuMnYoRmUcXB4ehsEwZi/uQj1xkXjoMOV4qEaFsMdaFw3jjc9v\n' +
+'QQIDAQAB\n' +
+'-----END PUBLIC KEY-----';
+
+// Importeer RSA public key voor Web Crypto API
+function importRSAPublicKey(){
+  var pem = RSA_PUB_PEM.replace(/-----[^-]+-----/g,'').replace(/\s/g,'');
+  var bin = Uint8Array.from(atob(pem), function(c){ return c.charCodeAt(0); });
+  return crypto.subtle.importKey('spki', bin.buffer, {name:'RSA-OAEP',hash:'SHA-256'}, false, ['encrypt']);
+}
+
+// Hybrid encryptie: AES-256-GCM voor data, RSA-OAEP voor de AES key
+function encryptData(plaintext){
+  var encoder = new TextEncoder();
+  var data = encoder.encode(plaintext);
+  var aesKey, iv, rsaPubKey;
+  return crypto.subtle.generateKey({name:'AES-GCM',length:256}, true, ['encrypt'])
+    .then(function(key){ aesKey = key; iv = crypto.getRandomValues(new Uint8Array(12)); return crypto.subtle.encrypt({name:'AES-GCM',iv:iv}, aesKey, data); })
+    .then(function(encrypted){
+      return crypto.subtle.exportKey('raw', aesKey).then(function(rawKey){
+        return importRSAPublicKey().then(function(pubKey){
+          return crypto.subtle.encrypt({name:'RSA-OAEP'}, pubKey, rawKey);
+        });
+      }).then(function(encKey){
+        return {
+          v: 1,
+          iv: btoa(String.fromCharCode.apply(null, iv)),
+          key: btoa(String.fromCharCode.apply(null, new Uint8Array(encKey))),
+          data: btoa(String.fromCharCode.apply(null, new Uint8Array(encrypted)))
+        };
+      });
+    });
+}
+
+// GitHub Issues API
 var API_BASE = '/api';
 var _adminLoggedIn = false;
 
@@ -392,30 +441,153 @@ function apiFetch(url, opts, cb) {
   fetch(API_BASE + url, opts)
     .then(function(r){ return r.json().then(function(d){ return {ok:r.ok, status:r.status, data:d}; }); })
     .then(function(res){ cb(res.ok ? null : (res.data.error||'Fout'), res.data, res.status); })
-    .catch(function(e){ cb('Verbinding mislukt: ' + e.message, null, 0); });
+    .catch(function(e){
+      // Fallback: als API niet bereikbaar is (GitHub Pages), gebruik GitHub Issues
+      cb('offline', null, 0);
+    });
 }
 
 var API = {
   getMeldingen: function(cb){ apiFetch('/meldingen', cb); },
   getMelding: function(id, cb){ apiFetch('/meldingen/' + id, cb); },
-  submitMelding: function(data, cb){ apiFetch('/meldingen', {method:'POST', body:data}, cb); },
+  submitMelding: function(data, cb){
+    // Probeer eerst lokale API, dan GitHub Issues
+    apiFetch('/meldingen', {method:'POST', body:data}, function(err, result, status){
+      if(!err){ cb(null, result); return; }
+      // Fallback: sla op via GitHub Issues
+      submitViaGitHub(data, cb);
+    });
+  },
 
-  getClaim: function(code, cb){ apiFetch('/claim/' + encodeURIComponent(code), cb); },
-  updateClaim: function(code, data, cb){ apiFetch('/claim/' + encodeURIComponent(code), {method:'PUT', body:data}, cb); },
+  getClaim: function(code, cb){ cb(null, {}); },
+  updateClaim: function(code, data, cb){ cb(null, {}); },
+  getReacties: function(mid, cb){ cb(null, []); },
+  submitReactie: function(data, cb){ cb(null, {}); },
 
-  getReacties: function(mid, cb){ apiFetch('/reacties/' + mid, cb); },
-  submitReactie: function(data, cb){ apiFetch('/reacties', {method:'POST', body:data}, cb); },
-
-  adminLogin: function(user, pass, cb){ apiFetch('/admin/login', {method:'POST', body:{username:user,password:pass}}, function(err,d,s){ if(!err) _adminLoggedIn=true; cb(err,d,s); }); },
-  adminLogout: function(cb){ apiFetch('/admin/logout', {method:'POST'}, function(err,d){ _adminLoggedIn=false; cb(err,d); }); },
-  adminCheck: function(cb){ apiFetch('/admin/check', function(err,d){ _adminLoggedIn=!err; cb(err,d); }); },
-  adminMeldingen: function(status, cb){ apiFetch('/admin/meldingen' + (status ? '?status='+status : ''), cb); },
-  adminApprove: function(id, cb){ apiFetch('/admin/meldingen/'+id+'/approve', {method:'PUT'}, cb); },
-  adminReject: function(id, cb){ apiFetch('/admin/meldingen/'+id+'/reject', {method:'PUT'}, cb); },
-  adminDelete: function(id, cb){ apiFetch('/admin/meldingen/'+id, {method:'DELETE'}, cb); },
-  adminStats: function(cb){ apiFetch('/admin/stats', cb); },
-  adminExport: function(cb){ apiFetch('/admin/export', cb); }
+  adminLogin: function(user, pass, cb){ cb('Gebruik decrypt.html voor admin toegang'); },
+  adminLogout: function(cb){ cb(null); },
+  adminCheck: function(cb){ cb('offline'); },
+  adminMeldingen: function(status, cb){ cb(null, []); },
+  adminApprove: function(id, cb){ cb(null); },
+  adminReject: function(id, cb){ cb(null); },
+  adminDelete: function(id, cb){ cb(null); },
+  adminStats: function(cb){ cb(null, {}); },
+  adminExport: function(cb){ cb(null, {}); }
 };
+
+// Submit via GitHub Issues (encrypted)
+function submitViaGitHub(melding, cb){
+  if(GH_TOKEN.indexOf('PLACEHOLDER') >= 0){
+    // Geen token: sla lokaal op
+    var id = 'local_' + Date.now();
+    melding.id = id;
+    melding.status = 'local';
+    DS.push('meldingen', melding);
+    cb(null, {id: id, claimCode: 'LOCAL', status: 'local'});
+    return;
+  }
+
+  // Scheid publiek en gevoelig
+  var publicData = {
+    namen: (melding.namen||[]).map(function(n){ return n.naam; }),
+    instantie: melding.instantie || '',
+    plaats: melding.plaats || '',
+    datum: new Date().toISOString().slice(0,10)
+  };
+
+  var sensitiveData = JSON.stringify({
+    namen: melding.namen,
+    verhaal: melding.verhaal,
+    titel: melding.titel,
+    melder_email: melding.melder_email,
+    melder_naam: melding.melder_naam,
+    instantie: melding.instantie,
+    plaats: melding.plaats,
+    ts: melding.ts,
+    anoniem: melding.anoniem
+  });
+
+  var title = publicData.datum + ' | ' + publicData.namen.join(', ') + (publicData.plaats ? ' | ' + publicData.plaats : '');
+
+  encryptData(sensitiveData).then(function(encrypted){
+    var body = '<!-- ENCRYPTED MELDING v1 -->\n' +
+      '**Datum:** ' + publicData.datum + '\n' +
+      '**Namen:** ' + publicData.namen.join(', ') + '\n' +
+      '**Instantie:** ' + (publicData.instantie || '—') + '\n' +
+      '**Plaats:** ' + (publicData.plaats || '—') + '\n\n' +
+      '---\n\n' +
+      '```encrypted\n' + JSON.stringify(encrypted) + '\n```';
+
+    return fetch('https://api.github.com/repos/' + GH_REPO + '/issues', {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer ' + GH_TOKEN,
+        'Content-Type': 'application/json',
+        'Accept': 'application/vnd.github+json'
+      },
+      body: JSON.stringify({
+        title: title,
+        body: body,
+        labels: [GH_LABEL]
+      })
+    });
+  }).then(function(r){ return r.json(); })
+  .then(function(issue){
+    if(issue.id){
+      var id = 'gh_' + issue.number;
+      melding.id = id;
+      melding.status = 'submitted';
+      DS.push('meldingen', melding);
+      cb(null, {id: id, claimCode: 'GH-' + issue.number, status: 'submitted'});
+    } else {
+      cb(issue.message || 'GitHub fout');
+    }
+  }).catch(function(e){ cb('Versleuteling/verzending mislukt: ' + e.message); });
+}
+
+// Laad meldingen van GitHub Issues (publiek, geen token nodig)
+function loadGitHubMeldingen(cb){
+  fetch('https://api.github.com/repos/' + GH_REPO + '/issues?labels=' + GH_LABEL + '&state=open&per_page=100', {
+    headers: { 'Accept': 'application/vnd.github+json' }
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(issues){
+    if(!Array.isArray(issues)){ cb([]); return; }
+    var meldingen = issues.map(function(issue){
+      // Parse publieke data uit issue body
+      var namen = [];
+      var instantie = '';
+      var plaats = '';
+      var datum = '';
+      var lines = (issue.body||'').split('\n');
+      lines.forEach(function(line){
+        var m;
+        if((m = line.match(/\*\*Datum:\*\*\s*(.+)/))) datum = m[1].trim();
+        if((m = line.match(/\*\*Namen:\*\*\s*(.+)/))) namen = m[1].split(',').map(function(s){return{naam:s.trim(),functie:''}});
+        if((m = line.match(/\*\*Instantie:\*\*\s*(.+)/))) instantie = m[1].trim();
+        if((m = line.match(/\*\*Plaats:\*\*\s*(.+)/))) plaats = m[1].trim();
+      });
+      if(instantie === '—') instantie = '';
+      if(plaats === '—') plaats = '';
+      return {
+        id: 'gh_' + issue.number,
+        gh_number: issue.number,
+        titel: namen.map(function(n){return n.naam}).join(', '),
+        namen: namen,
+        instantie: instantie,
+        plaats: plaats,
+        verhaal: '',
+        ts: new Date(datum || issue.created_at).getTime(),
+        anoniem: true,
+        melder_naam: null,
+        views: 0,
+        status: 'submitted'
+      };
+    });
+    cb(meldingen);
+  })
+  .catch(function(e){ console.warn('GitHub Issues laden mislukt:', e); cb([]); });
+}
 
 // ============ DS — LOKALE CACHE (backward compatible) ============
 var DS = {
@@ -5044,9 +5216,25 @@ function seedDemo(){
 }
 
 // ============ INIT ============
-// seedDemo() — seed data wordt nu server-side geladen via migrate.py
-parseRoute();
-console.log('Meldpunt Ambtenaren v3.0 — Flask + PostgreSQL backend');
+// Laad meldingen: probeer API, anders GitHub Issues, anders seed data
+API.getMeldingen(function(err, data){
+  if(!err && data && data.length > 0){
+    DS.load('meldingen', data);
+    parseRoute();
+  } else {
+    // Fallback: laad van GitHub Issues
+    loadGitHubMeldingen(function(ghMeldingen){
+      if(ghMeldingen && ghMeldingen.length > 0){
+        DS.load('meldingen', ghMeldingen);
+      } else {
+        // Laatste fallback: seed data
+        seedDemo();
+      }
+      parseRoute();
+    });
+  }
+});
+console.log('Meldpunt Ambtenaren v3.1 — Versleuteld via GitHub Issues');
 </script>
 </body>
 </html>

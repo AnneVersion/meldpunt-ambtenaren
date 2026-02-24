@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meldpunt — Meldingen Ontsleutelen</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family: -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; background:#0f172a; color:#e2e8f0; padding:24px; max-width:900px; margin:0 auto; }
+h1 { font-size:22px; margin-bottom:8px; }
+.sub { font-size:13px; color:#94a3b8; margin-bottom:24px; }
+.card { background:#1e293b; border:1px solid #334155; border-radius:10px; padding:20px; margin-bottom:16px; }
+label { font-size:13px; font-weight:600; color:#94a3b8; display:block; margin-bottom:6px; }
+textarea, input[type=file] { width:100%; padding:10px; background:#0f172a; border:1px solid #334155; border-radius:6px; color:#e2e8f0; font:14px monospace; margin-bottom:12px; }
+textarea { min-height:120px; resize:vertical; }
+button { padding:10px 20px; background:#3b82f6; color:white; border:none; border-radius:6px; font:600 14px sans-serif; cursor:pointer; }
+button:hover { background:#2563eb; }
+.result { margin-top:16px; }
+.melding { background:#1e293b; border:1px solid #334155; border-radius:8px; padding:16px; margin-bottom:12px; }
+.melding h3 { font-size:15px; color:#f97316; margin-bottom:8px; }
+.melding .field { font-size:13px; margin-bottom:4px; }
+.melding .field b { color:#94a3b8; }
+.error { color:#ef4444; font-size:13px; margin-top:8px; }
+.success { color:#22c55e; font-size:13px; margin-top:8px; }
+.info { padding:14px; background:rgba(59,130,246,.1); border:1px solid rgba(59,130,246,.2); border-radius:8px; font-size:12px; color:#94a3b8; margin-bottom:20px; line-height:1.6; }
+#status { margin-top:12px; font-size:13px; }
+.btn-gh { background:#238636; margin-right:8px; }
+.btn-gh:hover { background:#2ea043; }
+</style>
+</head>
+<body>
+
+<h1>🔐 Meldingen Ontsleutelen</h1>
+<p class="sub">Gebruik je private key om versleutelde meldingen van GitHub Issues te lezen.</p>
+
+<div class="info">
+  <strong>Hoe werkt het?</strong><br>
+  1. Laad je private key (private_key.pem) — deze staat in <code>C:\Users\aspij\.meldpunt-keys\</code><br>
+  2. Klik op "Laad van GitHub" om alle versleutelde meldingen op te halen<br>
+  3. De tool ontsleutelt de gevoelige gegevens (emails, verhalen) lokaal in je browser<br>
+  4. <strong>Niets verlaat je computer</strong> — alle decryptie gebeurt client-side
+</div>
+
+<div class="card">
+  <label>1. Private Key (PEM)</label>
+  <input type="file" id="keyFile" accept=".pem">
+  <textarea id="keyText" placeholder="Of plak je private key hier (-----BEGIN PRIVATE KEY----- ...)"></textarea>
+</div>
+
+<div class="card">
+  <label>2. Meldingen laden</label>
+  <button class="btn-gh" onclick="loadFromGitHub()">📥 Laad van GitHub Issues</button>
+  <button onclick="loadManual()">📋 Plak encrypted data</button>
+  <div id="manualInput" style="display:none;margin-top:12px">
+    <textarea id="encData" placeholder='Plak hier het encrypted JSON blok uit een GitHub Issue...'></textarea>
+    <button onclick="decryptManual()">Ontsleutel</button>
+  </div>
+  <div id="status"></div>
+</div>
+
+<div id="results" class="result"></div>
+
+<script>
+var GH_REPO = 'AnneVersion/meldpunt-ambtenaren';
+var GH_LABEL = 'melding';
+var privateKey = null;
+
+// Lees private key
+document.getElementById('keyFile').onchange = function(e){
+  var file = e.target.files[0];
+  if(!file) return;
+  var reader = new FileReader();
+  reader.onload = function(ev){
+    document.getElementById('keyText').value = ev.target.result;
+    importPrivateKey(ev.target.result);
+  };
+  reader.readAsText(file);
+};
+
+document.getElementById('keyText').oninput = function(){
+  if(this.value.indexOf('-----BEGIN') >= 0) importPrivateKey(this.value);
+};
+
+function importPrivateKey(pem){
+  // Support both PKCS#8 and PKCS#1 format
+  var pemClean = pem.replace(/-----[^-]+-----/g,'').replace(/\s/g,'');
+  var bin = Uint8Array.from(atob(pemClean), function(c){ return c.charCodeAt(0); });
+
+  // Try PKCS#8 first, then PKCS#1
+  crypto.subtle.importKey('pkcs8', bin.buffer, {name:'RSA-OAEP',hash:'SHA-256'}, false, ['decrypt'])
+    .then(function(key){
+      privateKey = key;
+      document.getElementById('status').innerHTML = '<span class="success">✅ Private key geladen</span>';
+    })
+    .catch(function(e){
+      document.getElementById('status').innerHTML = '<span class="error">❌ Key importeren mislukt: ' + e.message + '. Converteer eerst: openssl pkcs8 -topk8 -inform PEM -outform PEM -in private_key.pem -out private_key_pkcs8.pem -nocrypt</span>';
+    });
+}
+
+function decryptData(encrypted){
+  if(!privateKey) return Promise.reject(new Error('Geen private key geladen'));
+
+  var encKey = Uint8Array.from(atob(encrypted.key), function(c){ return c.charCodeAt(0); });
+  var iv = Uint8Array.from(atob(encrypted.iv), function(c){ return c.charCodeAt(0); });
+  var data = Uint8Array.from(atob(encrypted.data), function(c){ return c.charCodeAt(0); });
+
+  return crypto.subtle.decrypt({name:'RSA-OAEP'}, privateKey, encKey)
+    .then(function(rawKey){
+      return crypto.subtle.importKey('raw', rawKey, {name:'AES-GCM'}, false, ['decrypt']);
+    })
+    .then(function(aesKey){
+      return crypto.subtle.decrypt({name:'AES-GCM',iv:iv}, aesKey, data);
+    })
+    .then(function(decrypted){
+      return JSON.parse(new TextDecoder().decode(decrypted));
+    });
+}
+
+function loadFromGitHub(){
+  if(!privateKey){ alert('Laad eerst je private key!'); return; }
+  var status = document.getElementById('status');
+  status.innerHTML = '⏳ Laden van GitHub...';
+
+  fetch('https://api.github.com/repos/' + GH_REPO + '/issues?labels=' + GH_LABEL + '&state=open&per_page=100')
+    .then(function(r){ return r.json(); })
+    .then(function(issues){
+      if(!Array.isArray(issues)){ status.innerHTML = '<span class="error">❌ Kan issues niet laden</span>'; return; }
+      status.innerHTML = '🔓 ' + issues.length + ' meldingen gevonden, ontsleutelen...';
+
+      var promises = issues.map(function(issue){
+        // Extract encrypted block from issue body
+        var match = (issue.body||'').match(/```encrypted\n([\s\S]+?)\n```/);
+        if(!match) return Promise.resolve({issue: issue, data: null, error: 'Geen encrypted block gevonden'});
+
+        try {
+          var encrypted = JSON.parse(match[1]);
+          return decryptData(encrypted)
+            .then(function(data){ return {issue: issue, data: data, error: null}; })
+            .catch(function(e){ return {issue: issue, data: null, error: e.message}; });
+        } catch(e){
+          return Promise.resolve({issue: issue, data: null, error: 'JSON parse fout'});
+        }
+      });
+
+      return Promise.all(promises);
+    })
+    .then(function(results){
+      if(!results) return;
+      renderResults(results);
+      status.innerHTML = '<span class="success">✅ ' + results.length + ' meldingen verwerkt</span>';
+    })
+    .catch(function(e){
+      status.innerHTML = '<span class="error">❌ Fout: ' + e.message + '</span>';
+    });
+}
+
+function loadManual(){
+  document.getElementById('manualInput').style.display = 'block';
+}
+
+function decryptManual(){
+  if(!privateKey){ alert('Laad eerst je private key!'); return; }
+  try {
+    var encrypted = JSON.parse(document.getElementById('encData').value);
+    decryptData(encrypted).then(function(data){
+      renderResults([{issue:{number:'handmatig',title:'Handmatige invoer'}, data:data, error:null}]);
+    }).catch(function(e){
+      document.getElementById('status').innerHTML = '<span class="error">❌ Ontsleuteling mislukt: ' + e.message + '</span>';
+    });
+  } catch(e){
+    document.getElementById('status').innerHTML = '<span class="error">❌ Ongeldig JSON: ' + e.message + '</span>';
+  }
+}
+
+function renderResults(results){
+  var html = '<h2 style="font-size:18px;margin-bottom:16px">📋 Ontsleutelde meldingen (' + results.length + ')</h2>';
+
+  results.forEach(function(r){
+    html += '<div class="melding">';
+    html += '<h3>#' + (r.issue.number||'?') + ' — ' + esc(r.issue.title||'') + '</h3>';
+
+    if(r.error){
+      html += '<div class="error">⚠️ ' + esc(r.error) + '</div>';
+    } else if(r.data){
+      var d = r.data;
+      if(d.namen && d.namen.length > 0){
+        d.namen.forEach(function(n){
+          html += '<div class="field"><b>Naam:</b> ' + esc(n.naam) + (n.functie ? ' (' + esc(n.functie) + ')' : '') + (n.email ? ' — <b>Email:</b> ' + esc(n.email) : '') + '</div>';
+        });
+      }
+      if(d.instantie) html += '<div class="field"><b>Instantie:</b> ' + esc(d.instantie) + '</div>';
+      if(d.plaats) html += '<div class="field"><b>Plaats:</b> ' + esc(d.plaats) + '</div>';
+      if(d.melder_email) html += '<div class="field" style="color:#3b82f6"><b>📧 E-mail melder:</b> ' + esc(d.melder_email) + '</div>';
+      if(d.melder_naam) html += '<div class="field"><b>Melder:</b> ' + esc(d.melder_naam) + '</div>';
+      if(d.verhaal) html += '<div class="field" style="margin-top:8px;white-space:pre-wrap;line-height:1.6">' + esc(d.verhaal) + '</div>';
+      if(d.ts) html += '<div class="field" style="margin-top:6px;color:#64748b"><b>Datum:</b> ' + new Date(d.ts).toLocaleString('nl-NL') + '</div>';
+    }
+    html += '</div>';
+  });
+
+  document.getElementById('results').innerHTML = html;
+}
+
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+</script>
+</body>
+</html>
