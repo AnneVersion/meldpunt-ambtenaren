@@ -1367,9 +1367,9 @@ function pgMelden(){
   var meldingen = DS.all('meldingen').sort(function(a,b){ return (b.ts||0)-(a.ts||0); });
   var stap = _meldStap;
 
-  // Progress dots
+  // Progress dots (2 stappen: invullen + bevestigen)
   var progress = '<div class="wiz-progress">';
-  for(var s = 1; s <= 5; s++){
+  for(var s = 1; s <= 2; s++){
     var cls = s < stap ? 'wiz-dot done' : (s === stap ? 'wiz-dot active' : 'wiz-dot');
     progress += (s > 1 ? '<div class="wiz-line' + (s <= stap ? ' done' : '') + '"></div>' : '');
     progress += '<div class="' + cls + '">' + (s < stap ? '<span class="mi" style="font-size:16px">check</span>' : s) + '</div>';
@@ -1491,68 +1491,6 @@ function pgMelden(){
     '</div>';
 
   } else if(stap === 2){
-    // ---- STAP 2: INSTANTIE ----
-    var chipHtml = '';
-    INSTANTIES.forEach(function(inst){
-      var sel = _meldInstantie === inst ? ' sel' : '';
-      chipHtml += '<span class="inst-chip' + sel + '" onclick="kiesInstantie(\'' + inst + '\')">' + inst + '</span>';
-    });
-
-    stepHtml = '<div class="wiz-step">' +
-      '<h3 style="font-size:18px;font-weight:700;margin-bottom:4px"><span class="mi" style="color:var(--blue);vertical-align:-3px">business</span> Bij welke instantie?</h3>' +
-      '<p style="font-size:13px;color:var(--tx2);margin-bottom:16px">Kies of typ de organisatie waar deze ambtenaar werkt.</p>' +
-      '<div class="chip-grid">' + chipHtml + '</div>' +
-      '<div class="fg">' +
-        '<input class="fi" id="mInstantie" placeholder="Of typ een andere instantie / afdeling..." value="' + esc(_meldInstantie) + '" oninput="_meldInstantie=this.value">' +
-      '</div>' +
-      '<div class="wiz-nav">' +
-        '<button class="btn btn-ghost" onclick="meldVorige()"><span class="mi mi-sm">arrow_back</span> Terug</button>' +
-        '<button class="btn btn-blue" onclick="meldVolgende()"><span class="mi mi-sm">arrow_forward</span> Volgende</button>' +
-      '</div>' +
-    '</div>';
-
-  } else if(stap === 3){
-    // ---- STAP 3: WAT IS ER GEBEURD (optioneel) ----
-    stepHtml = '<div class="wiz-step">' +
-      '<h3 style="font-size:18px;font-weight:700;margin-bottom:4px"><span class="mi" style="color:var(--yellow);vertical-align:-3px">description</span> Wat is er gebeurd?</h3>' +
-      '<p style="font-size:13px;color:var(--tx2);margin-bottom:16px">Vertel in een paar zinnen wat deze ambtenaar heeft gedaan. <strong>Dit is optioneel</strong> — je kunt het later altijd aanvullen.</p>' +
-      '<div class="fg">' +
-        '<input class="fi" id="mTitel" placeholder="Korte titel, bijv. \'Jarenlang dossier genegeerd\'" value="' + esc(_meldTitel) + '" oninput="_meldTitel=this.value">' +
-      '</div>' +
-      '<div class="fg">' +
-        '<textarea class="ft" id="mVerhaal" style="min-height:140px" placeholder="Wat heeft deze persoon gedaan? Noem data, feiten, gevolgen.\n\nJe mag ook alleen de naam noemen — elke melding telt." oninput="_meldVerhaal=this.value">' + esc(_meldVerhaal) + '</textarea>' +
-      '</div>' +
-      '<div class="wiz-nav">' +
-        '<button class="btn btn-ghost" onclick="meldVorige()"><span class="mi mi-sm">arrow_back</span> Terug</button>' +
-        '<div style="display:flex;gap:8px">' +
-          '<button class="btn btn-ghost" onclick="meldSkip()">Dit vul ik later aan</button>' +
-          '<button class="btn btn-blue" onclick="meldVolgende()"><span class="mi mi-sm">arrow_forward</span> Volgende</button>' +
-        '</div>' +
-      '</div>' +
-    '</div>';
-
-  } else if(stap === 4){
-    // ---- STAP 4: BEWIJS UPLOADEN (optioneel) ----
-    stepHtml = '<div class="wiz-step">' +
-      '<h3 style="font-size:18px;font-weight:700;margin-bottom:4px"><span class="mi" style="color:var(--purple);vertical-align:-3px">upload_file</span> Heb je bewijs?</h3>' +
-      '<p style="font-size:13px;color:var(--tx2);margin-bottom:16px">Upload brieven, besluiten, e-mails of screenshots. Wij halen automatisch info eruit om het dossier te versterken. <strong>Dit is optioneel.</strong></p>' +
-      '<div style="padding:18px;margin-bottom:12px;border:2px dashed var(--blue);border-radius:var(--r);text-align:center;background:var(--blue-soft);cursor:pointer" onclick="document.getElementById(\'briefUpload\').click()" id="briefDropzone">' +
-        '<span class="mi" style="font-size:36px;color:var(--blue);display:block;margin-bottom:6px">upload_file</span>' +
-        '<div style="font-size:14px;font-weight:700;margin-bottom:4px">Sleep bestanden hierheen</div>' +
-        '<div style="font-size:12px;color:var(--tx2)">PDF, afbeeldingen, tekst. Meerdere bestanden tegelijk kan.</div>' +
-        '<input type="file" id="briefUpload" accept=".pdf,.jpg,.jpeg,.png,.gif,.bmp,.txt,.doc,.docx" style="display:none" multiple onchange="verwerkBrieven(this.files)">' +
-      '</div>' +
-      '<div id="briefResult" style="display:none;margin-bottom:18px"></div>' +
-      '<div class="wiz-nav">' +
-        '<button class="btn btn-ghost" onclick="meldVorige()"><span class="mi mi-sm">arrow_back</span> Terug</button>' +
-        '<div style="display:flex;gap:8px">' +
-          '<button class="btn btn-ghost" onclick="meldSkip()">Ik heb (nog) geen bestanden</button>' +
-          '<button class="btn btn-blue" onclick="meldVolgende()"><span class="mi mi-sm">arrow_forward</span> Volgende</button>' +
-        '</div>' +
-      '</div>' +
-    '</div>';
-
-  } else if(stap === 5){
     // ---- STAP 5: BEVESTIGEN ----
     var namenPreview = _namen.filter(function(n){ return n.naam.trim(); });
     var prevHtml = '';
@@ -1701,7 +1639,7 @@ function pgMelden(){
 
   return '<div class="page">' +
     '<h2 style="font-size:22px;font-weight:800;margin-bottom:4px"><span class="mi" style="vertical-align:-3px">edit_note</span> Doe een melding</h2>' +
-    '<p style="font-size:14px;color:var(--tx2);margin-bottom:20px">Noem de naam. Dat is al genoeg. Wij bouwen samen het dossier op.</p>' +
+    '<p style="font-size:14px;color:var(--tx2);margin-bottom:20px">Noem de naam. Dat is al genoeg.</p>' +
     '<div class="card" style="padding:24px">' +
       progress +
       stepHtml +
@@ -1717,19 +1655,13 @@ function meldVolgende(){
     var namen = _namen.filter(function(n){ return n.naam.trim(); });
     if(namen.length === 0){ toast('Vul minstens één naam in'); return; }
   }
-  if(_meldStap < 5) _meldStap++;
+  if(_meldStap < 2) _meldStap++;
   render();
   initMeldListeners();
 }
 function meldVorige(){
   syncMeldVelden();
   if(_meldStap > 1) _meldStap--;
-  render();
-  initMeldListeners();
-}
-function meldSkip(){
-  syncMeldVelden();
-  _meldStap++;
   render();
   initMeldListeners();
 }
