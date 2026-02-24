@@ -898,14 +898,7 @@ function timeAgo(ts){
 // ============ PAGE: HOME ============
 function pgHome(){
   var meldingen = DS.all('meldingen');
-  var namen = getNamenLijst(meldingen);
   var recent = meldingen.slice().sort(function(a,b){ return (b.ts||0)-(a.ts||0); }).slice(0,4);
-
-  // Naam-tags (top 12)
-  var namenHtml = '';
-  namen.slice(0,12).forEach(function(n){
-    namenHtml += '<span class="naam-tag" onclick="go(\'/namen\')">' + esc(n.naam) + '<span class="count">' + n.count + '</span></span>';
-  });
 
   var recentHtml = '';
   if(recent.length === 0){
@@ -921,7 +914,7 @@ function pgHome(){
     '<div style="text-align:center;padding:40px 0 28px">' +
       '<h1 style="font-size:clamp(26px,5vw,40px);font-weight:800;line-height:1.15;margin-bottom:14px">Wil jij je recht halen?</h1>' +
       '<p style="font-size:17px;color:var(--accent);font-weight:700;margin-bottom:10px">Wij helpen je om de daders verantwoordelijk te houden.</p>' +
-      '<p style="font-size:15px;color:var(--tx2);max-width:560px;margin:0 auto 20px">Dit platform verzamelt namen en verhalen van ambtenaren die burgers benadelen. Anoniem of openbaar. Voor burgers en klokkenluiders.</p>' +
+      '<p style="font-size:15px;color:var(--tx2);max-width:560px;margin:0 auto 20px">Dit platform verzamelt meldingen over ambtenaren die burgers benadelen. Persoonsgegevens worden versleuteld. Voor burgers en klokkenluiders.</p>' +
       '<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">' +
         '<button class="btn btn-red btn-lg" onclick="go(\'/melden\')"><span class="mi">add_circle</span> Doe een melding</button>' +
         '<button class="btn btn-blue btn-lg" onclick="go(\'/melden-ai\')"><span class="mi">smart_toy</span> AI helpt je melden</button>' +
@@ -930,18 +923,9 @@ function pgHome(){
     '</div>' +
 
     // STATS
-    '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px">' +
+    '<div style="display:grid;grid-template-columns:1fr;gap:12px;margin-bottom:24px">' +
       '<div class="card" style="text-align:center;padding:16px"><div style="font-size:28px;font-weight:800">' + meldingen.length + '</div><div style="font-size:11px;color:var(--tx3);text-transform:uppercase">Meldingen</div></div>' +
-      '<div class="card" style="text-align:center;padding:16px"><div style="font-size:28px;font-weight:800;color:var(--accent)">' + namen.length + '</div><div style="font-size:11px;color:var(--tx3);text-transform:uppercase">Namen</div></div>' +
-      '<div class="card" style="text-align:center;padding:16px"><div style="font-size:28px;font-weight:800;color:var(--yellow)">' + namen.filter(function(n){return n.count>=2;}).length + '</div><div style="font-size:11px;color:var(--tx3);text-transform:uppercase">Herhalers</div></div>' +
     '</div>' +
-
-    // NAMEN TICKER
-    (namenHtml ? '<div class="card" style="margin-bottom:20px;padding:16px">' +
-      '<div style="font-size:13px;font-weight:700;margin-bottom:8px"><span class="mi mi-sm" style="color:var(--accent)">people</span> Meest genoemde namen</div>' +
-      '<div style="display:flex;flex-wrap:wrap;gap:0">' + namenHtml + '</div>' +
-      '<div style="text-align:right;margin-top:8px"><a href="#/namen" style="font-size:12px">Bekijk alle namen &rarr;</a></div>' +
-    '</div>' : '') +
 
     // HOE WERKT HET
     '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:24px">' +
@@ -953,7 +937,7 @@ function pgHome(){
       '<div class="card" style="text-align:center;padding:20px">' +
         '<span class="mi" style="font-size:32px;color:var(--accent);display:block;margin-bottom:8px">visibility</span>' +
         '<div style="font-size:14px;font-weight:700;margin-bottom:4px">2. Publiceer</div>' +
-        '<div style="font-size:12px;color:var(--tx2)">Je melding wordt gepubliceerd. Namen worden geregistreerd.</div>' +
+        '<div style="font-size:12px;color:var(--tx2)">Je melding wordt gepubliceerd. Persoonsgegevens worden versleuteld.</div>' +
       '</div>' +
       '<div class="card" style="text-align:center;padding:20px">' +
         '<span class="mi" style="font-size:32px;color:var(--accent);display:block;margin-bottom:8px">trending_up</span>' +
@@ -980,20 +964,13 @@ function pgHome(){
 
 // ============ MELDING CARD ============
 function meldingCard(m){
-  var namenStr = (m.namen || []).map(function(n){ return esc(n.naam); }).join(', ') || 'Geen naam genoemd';
-  // Eerste foto van genoemde personen
-  var fotoUrl = '';
-  (m.namen || []).forEach(function(n){ if(!fotoUrl && n.foto) fotoUrl = n.foto; });
   return '<div class="card m-card" onclick="go(\'/melding/' + m.id + '\')">' +
     '<div style="display:flex;gap:12px;align-items:flex-start">' +
-      (fotoUrl ? '<img src="' + esc(fotoUrl) + '" style="width:48px;height:48px;border-radius:50%;object-fit:cover;border:2px solid var(--accent);filter:saturate(.35) contrast(1.2);flex-shrink:0" onerror="this.style.display=\'none\'">' : '') +
       '<div style="flex:1;min-width:0">' +
         '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:6px">' +
           '<h3 style="font-size:14px;font-weight:700;line-height:1.3">' + esc(m.titel) + '</h3>' +
-          (m.klokkenluider ? '<span class="badge badge-purple"><span class="mi mi-sm">shield</span> Klokkenluider</span>' : '') +
         '</div>' +
-        '<div style="font-size:12px;color:var(--accent);margin-bottom:4px;font-weight:600"><span class="mi mi-sm">person</span> ' + namenStr + '</div>' +
-        (m.instantie ? '<div style="font-size:11px;color:var(--tx3);margin-bottom:6px"><span class="mi mi-sm">business</span> ' + esc(m.instantie) + '</div>' : '') +
+        (m.instantie ? '<div style="font-size:12px;color:var(--accent);margin-bottom:4px;font-weight:600"><span class="mi mi-sm">business</span> ' + esc(m.instantie) + (m.plaats ? ' — ' + esc(m.plaats) : '') + '</div>' : '') +
         '<div style="font-size:13px;color:var(--tx2);line-height:1.5;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden">' + esc(trunc(m.verhaal,200)) + '</div>' +
         '<div style="display:flex;justify-content:space-between;font-size:11px;color:var(--tx3);margin-top:10px;padding-top:8px;border-top:1px solid var(--glass-bd)">' +
           '<span>' + timeAgo(m.ts) + '</span>' +
@@ -1142,18 +1119,7 @@ function pgMelding(){
   var m = _currentMelding;
   if(!m) return '<div class="page"><div class="empty"><span class="mi">error</span><p>Melding niet gevonden.</p></div></div>';
 
-  var namenHtml = '';
-  (m.namen || []).forEach(function(n){
-    namenHtml += '<div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--accent-soft);border-radius:var(--rs);margin-bottom:6px;border-left:3px solid var(--accent)">' +
-      (n.foto ?
-        '<img src="' + esc(n.foto) + '" style="width:48px;height:48px;border-radius:50%;object-fit:cover;border:2px solid var(--accent);filter:saturate(.35) contrast(1.2)" onerror="this.style.display=\'none\'">' :
-        '<span class="mi" style="color:var(--accent);font-size:28px">person</span>') +
-      '<div>' +
-        '<div style="font-size:14px;font-weight:700">' + esc(n.naam) + '</div>' +
-        (n.functie ? '<div style="font-size:12px;color:var(--tx2)">' + esc(n.functie) + '</div>' : '') +
-      '</div>' +
-    '</div>';
-  });
+  // Namen worden NIET publiek getoond — alleen via decrypt.html
 
   var verhaalHtml = (m.verhaal||'').split('\n').filter(function(p){return p.trim();}).map(function(p){return '<p style="margin-bottom:10px">' + esc(p) + '</p>';}).join('');
 
@@ -1179,9 +1145,6 @@ function pgMelding(){
     '</div>' +
 
     '<h1 style="font-size:22px;font-weight:800;margin-bottom:14px;line-height:1.3">' + esc(m.titel) + '</h1>' +
-
-    // Namen
-    (namenHtml ? '<div style="margin-bottom:16px"><div style="font-size:12px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Genoemde namen</div>' + namenHtml + '</div>' : '') +
 
     // Verhaal
     '<div style="font-size:15px;line-height:1.8;margin-bottom:20px">' + verhaalHtml + '</div>' +
@@ -5240,11 +5203,11 @@ function seedDemo(){
   } else if(DS.count('meldingen') > 0) return;
 
   DS.add('meldingen', {
-    titel: 'RDW weigert kentekenbewijzen na betaling leges',
-    verhaal: 'Op 27 mei 2025 heb ik vijf bromfietsen aangeboden voor inschrijving bij RDW Arnhem. Ik heb \u20ac598 aan leges betaald (5x inschrijving + overige kosten). De RDW weigert vervolgens de kentekenbewijzen te verstrekken. Ze willen slechts \u20ac250 terugstorten (de inschrijvingskosten), maar houden \u20ac282,50 in voor "eerder uitgevoerde werkzaamheden". Ik heb dus betaald, krijg geen kentekens, en krijg mijn geld niet volledig terug. Arthur Kluytmans (Locatiemanager a.i.) verwijst mij naar de klachtenprocedure in plaats van het probleem op te lossen.',
+    titel: 'Kentekenbewijzen geweigerd na betaling leges',
+    verhaal: 'Op 27 mei 2025 zijn vijf bromfietsen aangeboden voor inschrijving. Er is \u20ac598 aan leges betaald (5x inschrijving + overige kosten). De instantie weigert de kentekenbewijzen te verstrekken. Ze willen slechts \u20ac250 terugstorten (de inschrijvingskosten), maar houden \u20ac282,50 in voor "eerder uitgevoerde werkzaamheden". Er is dus betaald, er worden geen kentekens verstrekt, en het geld wordt niet volledig teruggestort.',
     instantie: 'RDW',
     plaats: 'Arnhem',
-    namen: [{ naam: 'Arthur Kluytmans', functie: 'Locatiemanager a.i.', email: 'akluytmans@rdw.nl' }],
+    namen: [],
     feiten: [
       { feit: 'Alles terugvorderen bij kleine fout', juridisch: 'Disproportionele terugvordering', wet: 'Art. 3:4 Awb', sanctie: 'Vernietiging + compensatie', categorie: 'Geld & terugvordering' },
       { feit: 'Zaak eindeloos doorschuiven', juridisch: 'Schending zorgvuldigheidsbeginsel', wet: 'Art. 3:2 Awb', sanctie: 'Dwangsom + schadevergoeding', categorie: 'Negeren & traineren' },
@@ -5253,7 +5216,7 @@ function seedDemo(){
       { feit: 'Besluit niet uitleggen', juridisch: 'Motiveringsgebrek', wet: 'Art. 3:46 Awb', sanctie: 'Vernietiging besluit', categorie: 'Klachten & bezwaar' },
       { feit: 'Vernederend of respectloos behandeld', juridisch: 'Onmenselijke/vernederende behandeling', wet: 'Art. 3 EVRM', sanctie: 'Schadevergoeding via EHRM (\u20ac25.000+)', categorie: 'Oneerlijk behandeld' }
     ],
-    anoniem: false, melder_naam: 'Meldpunt Ambtenaren', klokkenluider: false,
+    anoniem: true, melder_naam: null, klokkenluider: false,
     ts: Date.now(), views: 0
   });
 }
