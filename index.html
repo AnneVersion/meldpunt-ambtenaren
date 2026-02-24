@@ -662,6 +662,7 @@ var DS = {
   load: function(c, data){ this._c[c] = data || []; },
   // Voeg lokaal toe aan cache (na succesvolle API call)
   push: function(c, item){ this._c[c].push(item); },
+  add: function(c, item){ if(!item.id) item.id = 'seed_' + Date.now() + '_' + Math.random().toString(36).substr(2,6); this._c[c].push(item); },
   del: function(c, id){ this._c[c] = this._c[c].filter(function(x){ return x.id !== id; }); }
 };
 
@@ -5377,24 +5378,24 @@ function seedDemo(){
 }
 
 // ============ INIT ============
-// Laad meldingen: probeer API, anders GitHub Issues, anders seed data
-API.getMeldingen(function(err, data){
-  if(!err && data && data.length > 0){
-    DS.load('meldingen', data);
-    parseRoute();
-  } else {
-    // Fallback: laad van GitHub Issues
-    loadGitHubMeldingen(function(ghMeldingen){
-      if(ghMeldingen && ghMeldingen.length > 0){
-        DS.load('meldingen', ghMeldingen);
-      } else {
-        // Laatste fallback: seed data
-        seedDemo();
-      }
-      parseRoute();
-    });
-  }
-});
+// Toon pagina direct, laad data op achtergrond
+try { seedDemo(); } catch(e){ console.warn('Seed fout:', e); }
+parseRoute();
+
+// Probeer daarna meldingen van GitHub Issues te laden (verrijkt de lijst)
+try {
+  loadGitHubMeldingen(function(ghMeldingen){
+    if(ghMeldingen && ghMeldingen.length > 0){
+      // Voeg GitHub meldingen toe aan bestaande data (geen duplicaten)
+      var bestaande = DS.all('meldingen').map(function(m){ return m.id; });
+      ghMeldingen.forEach(function(m){
+        if(bestaande.indexOf(m.id) < 0) DS.push('meldingen', m);
+      });
+      render();
+    }
+  });
+} catch(e){ console.warn('GitHub laden mislukt:', e); }
+
 console.log('Meldpunt Ambtenaren v3.1 — Versleuteld via GitHub Issues');
 </script>
 </body>
