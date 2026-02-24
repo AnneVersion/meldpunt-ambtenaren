@@ -1587,14 +1587,14 @@ function pgMelden(){
       listHtml += '<div class="empty"><span class="mi">search_off</span><p>Geen meldingen gevonden.</p></div>';
     } else {
       // Compacte namenlijst in 2 kolommen, verhaal bij hover
-      listHtml += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:4px 16px">';
+      listHtml += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:0 10px">';
       meldingen.forEach(function(m){
         var namenStr = (m.namen || []).map(function(n){ return esc(n.naam); }).join(', ') || 'Onbekend';
         var tooltip = esc(m.verhaal ? trunc(m.verhaal, 200) : (m.titel || 'Geen verhaal'));
-        listHtml += '<div style="position:relative;padding:6px 10px;border-radius:var(--rs);cursor:pointer;transition:background .15s" onclick="go(\'/melding/' + m.id + '\')" ' +
+        listHtml += '<div style="position:relative;padding:2px 4px;cursor:pointer;border-radius:3px;line-height:1.4" onclick="go(\'/melding/' + m.id + '\')" ' +
           'onmouseover="this.style.background=\'var(--bg3)\';this.querySelector(\'.mv-tip\').style.display=\'block\'" ' +
           'onmouseout="this.style.background=\'\';this.querySelector(\'.mv-tip\').style.display=\'none\'">' +
-          '<span style="font-size:13px;font-weight:600;color:var(--accent)">' + namenStr + '</span>' +
+          '<span style="font-size:12px;color:var(--accent)">' + namenStr + '</span>' +
           '<div class="mv-tip" style="display:none;position:absolute;left:0;bottom:100%;margin-bottom:6px;z-index:50;width:280px;max-width:80vw;padding:10px 12px;background:var(--bg2);border:1px solid var(--glass-bd);border-radius:var(--rs);box-shadow:0 4px 20px rgba(0,0,0,.4);font-size:12px;color:var(--tx2);line-height:1.5;pointer-events:none">' +
             tooltip +
           '</div>' +
