@@ -102,3 +102,16 @@ class AdminUser(db.Model):
     username = db.Column(db.String(50), unique=True, nullable=False)
     password_hash = db.Column(db.Text, nullable=False)
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+
+
+class PageView(db.Model):
+    __tablename__ = 'pageviews'
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    page = db.Column(db.String(100), nullable=False, index=True)
+    referrer = db.Column(db.String(500), default='')
+    session_id = db.Column(db.String(50), default='', index=True)
+    screen_w = db.Column(db.Integer)
+    screen_h = db.Column(db.Integer)
+    is_mobile = db.Column(db.Boolean, default=False)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), index=True)

@@ -472,7 +472,8 @@ var API = {
   adminReject: function(id, cb){ cb(null); },
   adminDelete: function(id, cb){ cb(null); },
   adminStats: function(cb){ cb(null, {}); },
-  adminExport: function(cb){ cb(null, {}); }
+  adminExport: function(cb){ cb(null, {}); },
+  adminAnalytics: function(days, cb){ apiFetch('/admin/analytics?days=' + (days||30), cb); }
 };
 
 // Submit via GitHub Issues (encrypted)
@@ -1153,6 +1154,27 @@ function pgMelding(){
 
     // Verhaal
     '<div style="font-size:15px;line-height:1.8;margin-bottom:20px">' + verhaalHtml + '</div>' +
+
+    // Feiten & sancties
+    (function(){
+      var ff = m.feiten || [];
+      if(!ff.length) return '';
+      var h = '<div style="margin-bottom:20px">' +
+        '<h3 style="font-size:15px;font-weight:700;margin-bottom:10px"><span class="mi mi-sm">gavel</span> Gemelde feiten &amp; sancties</h3>';
+      ff.forEach(function(f){
+        h += '<div class="card" style="padding:12px;margin-bottom:8px;border-left:3px solid var(--accent)">' +
+          '<div style="font-size:14px;font-weight:700;margin-bottom:4px">' + esc(f.feit) + '</div>' +
+          '<div style="font-size:12px;color:var(--accent);font-weight:600;margin-bottom:6px">' + esc(f.juridisch || '') + '</div>' +
+          '<div style="display:flex;gap:6px;flex-wrap:wrap">' +
+            (f.wet ? '<span class="badge badge-blue" style="font-size:10px">' + esc(f.wet) + '</span>' : '') +
+            (f.sanctie ? '<span class="badge badge-red" style="font-size:10px">' + esc(f.sanctie) + '</span>' : '') +
+            (f.categorie ? '<span class="badge badge-purple" style="font-size:10px">' + esc(f.categorie) + '</span>' : '') +
+          '</div>' +
+        '</div>';
+      });
+      h += '</div>';
+      return h;
+    })() +
 
     // Directe bronnen van dit verhaal
     (function(){
@@ -4248,6 +4270,114 @@ function pgOplossing(){
       '</div>' +
     '</div>' +
 
+    // ==========================================
+    // SECTIE: AVG-BOETES vs. WERKELIJKE SCHADE — DE REKENSOM
+    // ==========================================
+    '<div class="card" style="padding:24px;margin-bottom:16px;border:2px solid var(--accent);background:linear-gradient(135deg,rgba(239,68,68,.04),rgba(234,179,8,.04))">' +
+      '<h2 style="font-size:19px;margin-bottom:6px"><span class="mi mi-sm" style="color:var(--accent)">functions</span> De rekensom die alles onthult</h2>' +
+      '<p style="font-size:14px;line-height:1.8;color:var(--tx);margin-bottom:16px">' +
+        '6 AVG-overtredingen. 47.000 slachtoffers. 1.675 uit huis geplaatste kinderen. Wat levert het boetesysteem op per persoon — en hoe verhoudt dat zich tot de werkelijke schade?' +
+      '</p>' +
+
+      // STAP 1: De AVG-boetes
+      '<div style="background:var(--bg2);border-radius:var(--rs);padding:16px;margin-bottom:12px">' +
+        '<div style="font-size:12px;font-weight:700;color:var(--blue);text-transform:uppercase;margin-bottom:10px"><span class="mi mi-sm">receipt_long</span> Stap 1 — De AVG-boetes (FSV)</div>' +
+        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">' +
+          '<div style="padding:14px;background:rgba(59,130,246,.08);border-radius:var(--rs);text-align:center">' +
+            '<div style="font-size:11px;color:var(--tx3);text-transform:uppercase;margin-bottom:4px">Opgelegd</div>' +
+            '<div style="font-size:28px;font-weight:800;color:var(--blue)">€3,7 mln</div>' +
+            '<div style="font-size:11px;color:var(--tx2)">6 overtredingen</div>' +
+          '</div>' +
+          '<div style="padding:14px;background:rgba(239,68,68,.08);border-radius:var(--rs);text-align:center">' +
+            '<div style="font-size:11px;color:var(--tx3);text-transform:uppercase;margin-bottom:4px">Wettelijk maximum</div>' +
+            '<div style="font-size:28px;font-weight:800;color:var(--accent)">€100 mln</div>' +
+            '<div style="font-size:11px;color:var(--tx2)">had opgelegd kunnen worden</div>' +
+          '</div>' +
+        '</div>' +
+        '<div style="font-size:13px;color:var(--tx);line-height:1.8">' +
+          'De AP legde slechts <strong>3,7% van het wettelijk maximum</strong> op. De Belastingdienst kwam weg met een symbolische tik op de vingers voor het jarenlang bijhouden van een illegale zwarte lijst met 270.000 namen.' +
+        '</div>' +
+      '</div>' +
+
+      // STAP 2: Per slachtoffer
+      '<div style="background:var(--bg2);border-radius:var(--rs);padding:16px;margin-bottom:12px">' +
+        '<div style="font-size:12px;font-weight:700;color:var(--yellow);text-transform:uppercase;margin-bottom:10px"><span class="mi mi-sm">person</span> Stap 2 — Per slachtoffer</div>' +
+        '<div style="display:grid;grid-template-columns:auto 1fr;gap:6px 16px;font-size:14px;margin-bottom:14px">' +
+          '<div style="font-weight:700;color:var(--tx2)">Boete maximum:</div><div>€100.000.000</div>' +
+          '<div style="font-weight:700;color:var(--tx2)">Slachtoffers:</div><div>47.000 gedupeerde gezinnen</div>' +
+          '<div style="font-weight:700;color:var(--tx2)">UHP-kinderen:</div><div>1.675 uit huis geplaatste kinderen</div>' +
+        '</div>' +
+        '<div style="background:rgba(234,179,8,.1);border-radius:var(--rs);padding:14px;text-align:center;margin-bottom:12px">' +
+          '<div style="font-size:13px;color:var(--tx2);margin-bottom:4px">€100.000.000 &divide; 47.000 slachtoffers =</div>' +
+          '<div style="font-size:36px;font-weight:800;color:var(--yellow)">€2.128</div>' +
+          '<div style="font-size:13px;color:var(--tx2)">per slachtoffer — als het <em>maximum</em> was opgelegd</div>' +
+        '</div>' +
+        '<div style="font-size:13px;color:var(--tx);line-height:1.8">' +
+          'Zelfs als de AP het volledige wettelijke maximum van €100 miljoen had opgelegd, zou elk slachtoffer slechts <strong>€2.128</strong> ontvangen. Voor 25 jaar verwoest leven. Voor verloren kinderen, huizen, huwelijken, gezondheid en toekomst.' +
+        '</div>' +
+      '</div>' +
+
+      // STAP 3: De werkelijke schade
+      '<div style="background:var(--bg2);border-radius:var(--rs);padding:16px;margin-bottom:12px">' +
+        '<div style="font-size:12px;font-weight:700;color:var(--accent);text-transform:uppercase;margin-bottom:10px"><span class="mi mi-sm">calculate</span> Stap 3 — De werkelijke schade</div>' +
+        '<div style="font-size:13px;color:var(--tx);line-height:1.8;margin-bottom:12px">' +
+          'Wat heeft een gemiddeld toeslagengezin werkelijk verloren? Inkomensverlies, woningverlies, schulden, echtscheiding, psychische schade, uithuisplaatsing, verloren pensioenopbouw, advocaatkosten, en tientallen jaren aan gemiste kansen:' +
+        '</div>' +
+        '<div style="display:grid;grid-template-columns:auto 1fr;gap:4px 16px;font-size:13px;margin-bottom:14px;padding:12px;background:rgba(239,68,68,.06);border-radius:var(--rs)">' +
+          '<div style="font-weight:700;color:var(--tx2)">Inkomensverlies:</div><div>~€300.000 <span style="font-size:11px;color:var(--tx3)">(€30k/jaar × 10 jaar)</span></div>' +
+          '<div style="font-weight:700;color:var(--tx2)">Woningverlies:</div><div>~€150.000 <span style="font-size:11px;color:var(--tx3)">(hypotheek, gedwongen verkoop)</span></div>' +
+          '<div style="font-weight:700;color:var(--tx2)">Immaterieel leed:</div><div>~€200.000 <span style="font-size:11px;color:var(--tx3)">(LOVS-norm: €105/dag × jaren)</span></div>' +
+          '<div style="font-weight:700;color:var(--tx2)">Overige schade:</div><div>~€100.000 <span style="font-size:11px;color:var(--tx3)">(echtscheiding, gezondheid, advocaten)</span></div>' +
+        '</div>' +
+        '<div style="background:rgba(239,68,68,.1);border-radius:var(--rs);padding:14px;text-align:center;margin-bottom:12px">' +
+          '<div style="font-size:13px;color:var(--tx2);margin-bottom:4px">Gemiddelde werkelijke schade per gezin:</div>' +
+          '<div style="font-size:36px;font-weight:800;color:var(--accent)">~€750.000</div>' +
+          '<div style="font-size:13px;color:var(--tx2);margin-top:6px">× 47.000 gezinnen = <strong style="color:var(--accent);font-size:15px">€35,25 miljard</strong> totale schade</div>' +
+        '</div>' +
+      '</div>' +
+
+      // STAP 4: Het contrast
+      '<div style="background:var(--accent-soft);border:2px solid rgba(239,68,68,.3);border-radius:var(--rs);padding:16px;margin-bottom:0">' +
+        '<div style="font-size:12px;font-weight:700;color:var(--accent);text-transform:uppercase;margin-bottom:12px"><span class="mi mi-sm">compare_arrows</span> Het verpletterende contrast</div>' +
+
+        // Vergelijkingsbalk
+        '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:16px;text-align:center">' +
+          '<div style="padding:12px;background:var(--bg2);border-radius:var(--rs)">' +
+            '<div style="font-size:10px;color:var(--tx3);text-transform:uppercase;margin-bottom:4px">AVG-boete max</div>' +
+            '<div style="font-size:22px;font-weight:800;color:var(--blue)">€2.128</div>' +
+            '<div style="font-size:10px;color:var(--tx3)">per slachtoffer</div>' +
+          '</div>' +
+          '<div style="padding:12px;background:var(--bg2);border-radius:var(--rs)">' +
+            '<div style="font-size:10px;color:var(--tx3);text-transform:uppercase;margin-bottom:4px">Compensatie</div>' +
+            '<div style="font-size:22px;font-weight:800;color:var(--yellow)">€30.000</div>' +
+            '<div style="font-size:10px;color:var(--tx3)">aangeboden</div>' +
+          '</div>' +
+          '<div style="padding:12px;background:var(--bg2);border-radius:var(--rs)">' +
+            '<div style="font-size:10px;color:var(--tx3);text-transform:uppercase;margin-bottom:4px">Werkelijke schade</div>' +
+            '<div style="font-size:22px;font-weight:800;color:var(--accent)">€750.000</div>' +
+            '<div style="font-size:10px;color:var(--tx3)">per gezin</div>' +
+          '</div>' +
+        '</div>' +
+
+        // Visuele balk
+        '<div style="margin-bottom:14px">' +
+          '<div style="font-size:11px;color:var(--tx3);margin-bottom:6px">€30.000 compensatie als percentage van de werkelijke schade:</div>' +
+          '<div style="position:relative;height:32px;background:var(--bg2);border-radius:12px;overflow:hidden">' +
+            '<div style="position:absolute;left:0;top:0;height:100%;width:4%;background:var(--yellow);border-radius:12px;display:flex;align-items:center;justify-content:center;min-width:36px">' +
+              '<span style="font-size:11px;font-weight:800;color:#fff">4%</span>' +
+            '</div>' +
+            '<div style="position:absolute;right:8px;top:50%;transform:translateY(-50%);font-size:11px;color:var(--tx3)">€750.000 werkelijke schade &rarr;</div>' +
+          '</div>' +
+        '</div>' +
+
+        '<div style="font-size:14px;color:var(--tx);line-height:1.8">' +
+          '<strong style="color:var(--accent)">De overheid biedt €30.000.</strong> Dat is <strong>4%</strong> van de werkelijke schade van ~€750.000 per gezin.<br><br>' +
+          'De totale werkelijke schade bedraagt <strong>€35,25 miljard</strong>. De maximale AVG-boete (€100 mln) dekt daarvan <strong>0,28%</strong>. De daadwerkelijk opgelegde boete (€3,7 mln) dekt <strong>0,01%</strong>.<br><br>' +
+          '<strong style="font-size:15px">Het boetesysteem is niet ontworpen voor dit soort overheidscriminaliteit. De schaal van het onrecht overstijgt elk beschikbaar rechtsmiddel.</strong>' +
+        '</div>' +
+      '</div>' +
+    '</div>' +
+
     // WAAROM INDIVIDUEEL CLAIMEN NIET WERKT
     '<div class="card" style="padding:24px;margin-bottom:16px;border-left:4px solid var(--purple)">' +
       '<h2 style="font-size:19px;margin-bottom:10px"><span class="mi mi-sm" style="color:var(--purple)">folder_off</span> Waarom individueel claimen niet werkt</h2>' +
@@ -4275,6 +4405,165 @@ function pgOplossing(){
           '• Categorie 4: Uithuisplaatsing kind(eren) → basisvergoeding + €100.000 per kind<br>' +
           '• Categorie 5: Overlijden kind → basisvergoeding + volledige rehabilitatie nabestaanden<br><br>' +
           'Het basisidee: <strong>de staat bepaalt de categorien, niet het individu.</strong> Wie gedupeerd is, wordt ingedeeld op basis van wat de staat zelf weet — want de staat heeft alle data. De bewijslast verschuift naar waar die hoort: bij de dader.' +
+        '</div>' +
+      '</div>' +
+    '</div>' +
+
+    // ==========================================
+    // BEREKENING: TOTAALBEDRAG PER SLACHTOFFER EN KIND
+    // ==========================================
+    '<div class="card" style="padding:24px;margin-bottom:16px;border:2px solid var(--green);background:linear-gradient(135deg,rgba(34,197,94,.04),rgba(234,179,8,.04))">' +
+      '<h2 style="font-size:19px;margin-bottom:6px"><span class="mi mi-sm" style="color:var(--green)">calculate</span> De berekening: wat zou elk slachtoffer moeten krijgen?</h2>' +
+      '<p style="font-size:14px;line-height:1.8;color:var(--tx);margin-bottom:16px">' +
+        'Op basis van de LOVS-richtlijn, vastgestelde schadecategorieen en gangbare jurisprudentie: dit is wat een eerlijke vergoeding er per persoon uit zou zien.' +
+      '</p>' +
+
+      // === OUDER / SLACHTOFFER ===
+      '<div style="background:var(--bg2);border-radius:var(--rs);padding:16px;margin-bottom:14px">' +
+        '<div style="font-size:12px;font-weight:700;color:var(--accent);text-transform:uppercase;margin-bottom:12px"><span class="mi mi-sm">person</span> Gedupeerde ouder — berekening</div>' +
+        '<table style="width:100%;border-collapse:collapse;font-size:13px">' +
+          '<tr style="border-bottom:2px solid var(--glass-bd)">' +
+            '<td style="padding:8px 6px;font-weight:700;color:var(--tx2)">Schadepost</td>' +
+            '<td style="padding:8px 6px;color:var(--tx3);font-size:11px">Berekening</td>' +
+            '<td style="padding:8px 6px;text-align:right;font-weight:700;color:var(--tx2)">Bedrag</td>' +
+          '</tr>' +
+          '<tr style="border-bottom:1px solid var(--glass-bd)">' +
+            '<td style="padding:8px 6px;font-weight:600">Immaterieel leed</td>' +
+            '<td style="padding:8px 6px;color:var(--tx3);font-size:11px">LOVS €105/dag × 7.300 dagen (20 jaar)</td>' +
+            '<td style="padding:8px 6px;text-align:right;font-weight:700;color:var(--accent)">€766.500</td>' +
+          '</tr>' +
+          '<tr style="border-bottom:1px solid var(--glass-bd)">' +
+            '<td style="padding:8px 6px;font-weight:600">Inkomensverlies</td>' +
+            '<td style="padding:8px 6px;color:var(--tx3);font-size:11px">gem. €30.000/jaar × 10 jaar werkloos</td>' +
+            '<td style="padding:8px 6px;text-align:right;font-weight:700">€300.000</td>' +
+          '</tr>' +
+          '<tr style="border-bottom:1px solid var(--glass-bd)">' +
+            '<td style="padding:8px 6px;font-weight:600">Woningverlies</td>' +
+            '<td style="padding:8px 6px;color:var(--tx3);font-size:11px">gedwongen verkoop, hypotheekschade, verhuizingen</td>' +
+            '<td style="padding:8px 6px;text-align:right;font-weight:700">€150.000</td>' +
+          '</tr>' +
+          '<tr style="border-bottom:1px solid var(--glass-bd)">' +
+            '<td style="padding:8px 6px;font-weight:600">Pensioenschade</td>' +
+            '<td style="padding:8px 6px;color:var(--tx3);font-size:11px">10 jaar geen opbouw, gemiste rendement</td>' +
+            '<td style="padding:8px 6px;text-align:right;font-weight:700">€75.000</td>' +
+          '</tr>' +
+          '<tr style="border-bottom:1px solid var(--glass-bd)">' +
+            '<td style="padding:8px 6px;font-weight:600">Psychische schade</td>' +
+            '<td style="padding:8px 6px;color:var(--tx3);font-size:11px">PTSS, depressie, behandeling, medicatie</td>' +
+            '<td style="padding:8px 6px;text-align:right;font-weight:700">€50.000</td>' +
+          '</tr>' +
+          '<tr style="border-bottom:1px solid var(--glass-bd)">' +
+            '<td style="padding:8px 6px;font-weight:600">Relatieschade</td>' +
+            '<td style="padding:8px 6px;color:var(--tx3);font-size:11px">echtscheiding, gezinsontwrichting</td>' +
+            '<td style="padding:8px 6px;text-align:right;font-weight:700">€50.000</td>' +
+          '</tr>' +
+          '<tr style="border-bottom:1px solid var(--glass-bd)">' +
+            '<td style="padding:8px 6px;font-weight:600">Juridische kosten</td>' +
+            '<td style="padding:8px 6px;color:var(--tx3);font-size:11px">advocaat, bezwaar, procedures, bijstand</td>' +
+            '<td style="padding:8px 6px;text-align:right;font-weight:700">€25.000</td>' +
+          '</tr>' +
+          '<tr style="background:rgba(239,68,68,.1);border-top:2px solid var(--accent)">' +
+            '<td colspan="2" style="padding:10px 6px;font-weight:800;font-size:14px;color:var(--accent)">TOTAAL OUDER</td>' +
+            '<td style="padding:10px 6px;text-align:right;font-weight:800;font-size:20px;color:var(--accent)">€1.416.500</td>' +
+          '</tr>' +
+        '</table>' +
+        '<div style="margin-top:10px;font-size:12px;color:var(--tx3);line-height:1.6">' +
+          'Ter vergelijking: de overheid biedt <strong style="color:var(--yellow)">€30.000</strong> via de Catshuisregeling — dat is <strong>2,1%</strong> van het eerlijke bedrag.' +
+        '</div>' +
+      '</div>' +
+
+      // === KINDSLACHTOFFER (UHP) ===
+      '<div style="background:var(--bg2);border-radius:var(--rs);padding:16px;margin-bottom:14px">' +
+        '<div style="font-size:12px;font-weight:700;color:var(--yellow);text-transform:uppercase;margin-bottom:12px"><span class="mi mi-sm">child_care</span> Kindslachtoffer (uit huis geplaatst) — berekening</div>' +
+        '<table style="width:100%;border-collapse:collapse;font-size:13px">' +
+          '<tr style="border-bottom:2px solid var(--glass-bd)">' +
+            '<td style="padding:8px 6px;font-weight:700;color:var(--tx2)">Schadepost</td>' +
+            '<td style="padding:8px 6px;color:var(--tx3);font-size:11px">Berekening</td>' +
+            '<td style="padding:8px 6px;text-align:right;font-weight:700;color:var(--tx2)">Bedrag</td>' +
+          '</tr>' +
+          '<tr style="border-bottom:1px solid var(--glass-bd)">' +
+            '<td style="padding:8px 6px;font-weight:600">Immaterieel leed UHP</td>' +
+            '<td style="padding:8px 6px;color:var(--tx3);font-size:11px">LOVS €105/dag × 1.460 dagen (gem. 4 jaar UHP)</td>' +
+            '<td style="padding:8px 6px;text-align:right;font-weight:700;color:var(--yellow)">€153.300</td>' +
+          '</tr>' +
+          '<tr style="border-bottom:1px solid var(--glass-bd)">' +
+            '<td style="padding:8px 6px;font-weight:600">Hechtingsschade</td>' +
+            '<td style="padding:8px 6px;color:var(--tx3);font-size:11px">ontwrichting ouder-kind band, langdurige psychische gevolgen</td>' +
+            '<td style="padding:8px 6px;text-align:right;font-weight:700">€100.000</td>' +
+          '</tr>' +
+          '<tr style="border-bottom:1px solid var(--glass-bd)">' +
+            '<td style="padding:8px 6px;font-weight:600">Onderwijsschade</td>' +
+            '<td style="padding:8px 6px;color:var(--tx3);font-size:11px">schoolwisselingen, achterstand, gemiste kansen</td>' +
+            '<td style="padding:8px 6px;text-align:right;font-weight:700">€50.000</td>' +
+          '</tr>' +
+          '<tr style="border-bottom:1px solid var(--glass-bd)">' +
+            '<td style="padding:8px 6px;font-weight:600">Verloren jeugd</td>' +
+            '<td style="padding:8px 6px;color:var(--tx3);font-size:11px">onherstelbaar gemis gezinsleven, identiteitsschade</td>' +
+            '<td style="padding:8px 6px;text-align:right;font-weight:700">€100.000</td>' +
+          '</tr>' +
+          '<tr style="background:rgba(234,179,8,.1);border-top:2px solid var(--yellow)">' +
+            '<td colspan="2" style="padding:10px 6px;font-weight:800;font-size:14px;color:var(--yellow)">TOTAAL PER KIND</td>' +
+            '<td style="padding:10px 6px;text-align:right;font-weight:800;font-size:20px;color:var(--yellow)">€403.300</td>' +
+          '</tr>' +
+        '</table>' +
+        '<div style="margin-top:10px;font-size:12px;color:var(--tx3);line-height:1.6">' +
+          'De kindregeling bood aanvankelijk <strong style="color:var(--yellow)">€10.000</strong> per kind — dat is <strong>2,5%</strong> van het eerlijke bedrag.' +
+        '</div>' +
+      '</div>' +
+
+      // === TOTAAL GEZIN ===
+      '<div style="background:var(--accent-soft);border:2px solid rgba(239,68,68,.3);border-radius:var(--rs);padding:20px;margin-bottom:0">' +
+        '<div style="font-size:12px;font-weight:700;color:var(--accent);text-transform:uppercase;margin-bottom:14px"><span class="mi mi-sm">family_restroom</span> Totaal gezin — voorbeeld: ouder + 2 uit huis geplaatste kinderen</div>' +
+        '<div style="display:grid;gap:8px;margin-bottom:16px">' +
+          '<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:var(--bg2);border-radius:var(--rs)">' +
+            '<div style="font-size:14px;font-weight:600"><span class="mi mi-sm" style="color:var(--accent)">person</span> Ouder</div>' +
+            '<div style="font-size:16px;font-weight:800;color:var(--accent)">€1.416.500</div>' +
+          '</div>' +
+          '<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:var(--bg2);border-radius:var(--rs)">' +
+            '<div style="font-size:14px;font-weight:600"><span class="mi mi-sm" style="color:var(--yellow)">child_care</span> Kind 1 (UHP)</div>' +
+            '<div style="font-size:16px;font-weight:800;color:var(--yellow)">€403.300</div>' +
+          '</div>' +
+          '<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:var(--bg2);border-radius:var(--rs)">' +
+            '<div style="font-size:14px;font-weight:600"><span class="mi mi-sm" style="color:var(--yellow)">child_care</span> Kind 2 (UHP)</div>' +
+            '<div style="font-size:16px;font-weight:800;color:var(--yellow)">€403.300</div>' +
+          '</div>' +
+        '</div>' +
+
+        '<div style="background:rgba(239,68,68,.12);border-radius:var(--rs);padding:18px;text-align:center;margin-bottom:16px">' +
+          '<div style="font-size:13px;color:var(--tx2);margin-bottom:4px">Eerlijke vergoeding voor dit gezin:</div>' +
+          '<div style="font-size:42px;font-weight:900;color:var(--accent);line-height:1">€2.223.100</div>' +
+          '<div style="font-size:13px;color:var(--tx2);margin-top:8px">€1.416.500 + 2 × €403.300</div>' +
+        '</div>' +
+
+        // Vergelijking overheid
+        '<div style="display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:center;margin-bottom:14px">' +
+          '<div style="text-align:center;padding:14px;background:var(--bg2);border-radius:var(--rs)">' +
+            '<div style="font-size:10px;color:var(--tx3);text-transform:uppercase;margin-bottom:4px">Overheid biedt</div>' +
+            '<div style="font-size:24px;font-weight:800;color:var(--yellow)">€50.000</div>' +
+            '<div style="font-size:10px;color:var(--tx3)">€30.000 ouder + 2×€10.000 kind</div>' +
+          '</div>' +
+          '<div style="font-size:24px;color:var(--tx3)">vs.</div>' +
+          '<div style="text-align:center;padding:14px;background:var(--bg2);border-radius:var(--rs)">' +
+            '<div style="font-size:10px;color:var(--tx3);text-transform:uppercase;margin-bottom:4px">Eerlijk bedrag</div>' +
+            '<div style="font-size:24px;font-weight:800;color:var(--accent)">€2.223.100</div>' +
+            '<div style="font-size:10px;color:var(--tx3)">op basis van LOVS + schadecategorieen</div>' +
+          '</div>' +
+        '</div>' +
+
+        // Visuele balk
+        '<div style="margin-bottom:14px">' +
+          '<div style="font-size:11px;color:var(--tx3);margin-bottom:6px">€50.000 van de overheid als percentage van de eerlijke vergoeding:</div>' +
+          '<div style="position:relative;height:32px;background:var(--bg2);border-radius:12px;overflow:hidden">' +
+            '<div style="position:absolute;left:0;top:0;height:100%;width:2.2%;background:var(--yellow);border-radius:12px;display:flex;align-items:center;justify-content:center;min-width:36px">' +
+              '<span style="font-size:11px;font-weight:800;color:#fff">2,2%</span>' +
+            '</div>' +
+            '<div style="position:absolute;right:8px;top:50%;transform:translateY(-50%);font-size:11px;color:var(--tx3)">€2.223.100 eerlijke vergoeding &rarr;</div>' +
+          '</div>' +
+        '</div>' +
+
+        '<div style="font-size:14px;color:var(--tx);line-height:1.8">' +
+          '<strong style="color:var(--accent)">De overheid biedt dit gezin €50.000.</strong> Het eerlijke bedrag is <strong>€2.223.100</strong>. Dat is een factor <strong>44</strong> verschil.<br><br>' +
+          'Dit is geen overdrijving. Dit is precies wat Nederland zou betalen als deze mensen onterecht veroordeeld waren in plaats van onterecht als fraudeur bestempeld. Het verschil: bij een rechterlijke dwaling krijg je ruimhartige compensatie. Bij overheidsonrecht krijg je <strong>een fooi en de opdracht om zelf te bewijzen wat je verloren hebt</strong>.' +
         '</div>' +
       '</div>' +
     '</div>' +
@@ -5084,8 +5373,8 @@ function renderAdmin(){
       _adminLoggedIn = true;
       // Laad stats + meldingen parallel
       var loaded = 0;
-      API.adminStats(function(e, stats){ _adminData.stats = stats; loaded++; if(loaded>=2) app.innerHTML = pgAdmin(); });
-      API.adminMeldingen(_adminData.filter, function(e, m){ _adminData.meldingen = m || []; loaded++; if(loaded>=2) app.innerHTML = pgAdmin(); });
+      API.adminStats(function(e, stats){ _adminData.stats = stats; loaded++; if(loaded>=2){ app.innerHTML = pgAdmin(); loadAnalytics(30); } });
+      API.adminMeldingen(_adminData.filter, function(e, m){ _adminData.meldingen = m || []; loaded++; if(loaded>=2){ app.innerHTML = pgAdmin(); loadAnalytics(30); } });
     }
   });
 }
@@ -5211,7 +5500,179 @@ function pgAdmin(){
         '<button class="btn btn-green btn-sm" style="background:var(--green);color:#fff" onclick="adminExportJSON()"><span class="mi mi-sm">download</span> Download JSON</button>' +
       '</div>' +
     '</div>' +
+
+    // Analytics sectie
+    '<div style="margin-top:28px;border-top:2px solid var(--glass-bd);padding-top:20px">' +
+      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px">' +
+        '<h3 style="font-size:18px;font-weight:800"><span class="mi mi-sm" style="color:var(--blue)">analytics</span> Bezoekersstatistieken</h3>' +
+        '<div style="display:flex;gap:6px">' +
+          '<button class="btn btn-sm btn-ghost" onclick="loadAnalytics(7)">7d</button>' +
+          '<button class="btn btn-sm btn-blue" onclick="loadAnalytics(30)">30d</button>' +
+          '<button class="btn btn-sm btn-ghost" onclick="loadAnalytics(90)">90d</button>' +
+        '</div>' +
+      '</div>' +
+      '<div id="analyticsPanel"><div style="text-align:center;padding:30px;color:var(--tx3)"><span class="mi" style="font-size:32px;display:block;margin-bottom:8px">hourglass_top</span>Laden...</div></div>' +
+    '</div>' +
   '</div>';
+}
+
+// ============ ANALYTICS DASHBOARD ============
+var _analyticsDays = 30;
+
+function loadAnalytics(days){
+  _analyticsDays = days || 30;
+  var panel = document.getElementById('analyticsPanel');
+  if(!panel) return;
+  panel.innerHTML = '<div style="text-align:center;padding:20px;color:var(--tx3)">Laden...</div>';
+  API.adminAnalytics(days, function(err, data){
+    if(err || !data){ panel.innerHTML = '<div style="text-align:center;padding:20px;color:var(--tx3)">Geen analytics data beschikbaar. Start de backend om data te verzamelen.</div>'; return; }
+    panel.innerHTML = renderAnalytics(data);
+    drawDailyChart(data.daily || []);
+  });
+}
+
+function renderAnalytics(data){
+  var d = data.devices || {};
+  var totals = data.totals || {};
+  var daily = data.daily || [];
+  var topPages = data.top_pages || [];
+  var refs = data.referrers || [];
+
+  // Vandaag tellen
+  var today = new Date().toISOString().slice(0,10);
+  var todayData = daily.find(function(r){ return r.dag === today; });
+  var viewsToday = todayData ? todayData.views : 0;
+  var sessiesToday = todayData ? todayData.sessies : 0;
+
+  // Periode totaal
+  var viewsPeriod = daily.reduce(function(s,r){ return s+r.views; },0);
+  var sessiesPeriod = daily.reduce(function(s,r){ return s+r.sessies; },0);
+
+  var h = '';
+
+  // Samenvattingskaarten
+  h += '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;margin-bottom:16px">' +
+    '<div class="card" style="text-align:center;padding:14px;border-bottom:3px solid var(--blue)"><div style="font-size:22px;font-weight:800;color:var(--blue)">' + viewsToday + '</div><div style="font-size:10px;color:var(--tx3);text-transform:uppercase">Views vandaag</div></div>' +
+    '<div class="card" style="text-align:center;padding:14px;border-bottom:3px solid var(--green)"><div style="font-size:22px;font-weight:800;color:var(--green)">' + sessiesToday + '</div><div style="font-size:10px;color:var(--tx3);text-transform:uppercase">Sessies vandaag</div></div>' +
+    '<div class="card" style="text-align:center;padding:14px"><div style="font-size:22px;font-weight:800">' + viewsPeriod + '</div><div style="font-size:10px;color:var(--tx3);text-transform:uppercase">Views ' + _analyticsDays + 'd</div></div>' +
+    '<div class="card" style="text-align:center;padding:14px"><div style="font-size:22px;font-weight:800">' + sessiesPeriod + '</div><div style="font-size:10px;color:var(--tx3);text-transform:uppercase">Sessies ' + _analyticsDays + 'd</div></div>' +
+    '<div class="card" style="text-align:center;padding:14px"><div style="font-size:22px;font-weight:800">' + (totals.views||0) + '</div><div style="font-size:10px;color:var(--tx3);text-transform:uppercase">Views totaal</div></div>' +
+  '</div>';
+
+  // Grafiek container
+  h += '<div class="card" style="padding:16px;margin-bottom:16px">' +
+    '<div style="font-size:12px;font-weight:700;color:var(--blue);text-transform:uppercase;margin-bottom:10px"><span class="mi mi-sm">show_chart</span> Pageviews per dag</div>' +
+    '<canvas id="dailyChart" width="700" height="180" style="width:100%;height:180px"></canvas>' +
+  '</div>';
+
+  // Twee kolommen: Top pagina's + Referrers
+  h += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">';
+
+  // Top pagina's
+  h += '<div class="card" style="padding:16px">' +
+    '<div style="font-size:12px;font-weight:700;color:var(--yellow);text-transform:uppercase;margin-bottom:10px"><span class="mi mi-sm">pages</span> Top pagina\'s</div>';
+  if(topPages.length === 0) h += '<div style="font-size:12px;color:var(--tx3)">Geen data</div>';
+  else {
+    var maxV = topPages[0].views;
+    topPages.forEach(function(p){
+      var pct = maxV > 0 ? Math.round(p.views / maxV * 100) : 0;
+      h += '<div style="margin-bottom:8px">' +
+        '<div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:2px"><span style="color:var(--tx)">' + esc(p.page) + '</span><span style="font-weight:700">' + p.views + '</span></div>' +
+        '<div style="height:4px;background:var(--bg2);border-radius:2px;overflow:hidden"><div style="height:100%;width:' + pct + '%;background:var(--yellow);border-radius:2px"></div></div>' +
+      '</div>';
+    });
+  }
+  h += '</div>';
+
+  // Referrers
+  h += '<div class="card" style="padding:16px">' +
+    '<div style="font-size:12px;font-weight:700;color:var(--green);text-transform:uppercase;margin-bottom:10px"><span class="mi mi-sm">link</span> Referrers</div>';
+  if(refs.length === 0) h += '<div style="font-size:12px;color:var(--tx3)">Geen externe referrers</div>';
+  else {
+    refs.forEach(function(r){
+      var domain = '';
+      try { domain = new URL(r.ref).hostname; } catch(e){ domain = r.ref; }
+      h += '<div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px;padding:4px 0;border-bottom:1px solid var(--glass-bd)">' +
+        '<span style="color:var(--tx);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:70%">' + esc(domain) + '</span>' +
+        '<span style="font-weight:700">' + r.views + '</span>' +
+      '</div>';
+    });
+  }
+  h += '</div></div>';
+
+  // Apparaten
+  h += '<div class="card" style="padding:16px">' +
+    '<div style="font-size:12px;font-weight:700;color:var(--accent);text-transform:uppercase;margin-bottom:10px"><span class="mi mi-sm">devices</span> Apparaten</div>' +
+    '<div style="display:flex;gap:20px;align-items:center">' +
+      '<div style="flex:1">' +
+        '<div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px"><span><span class="mi mi-sm">computer</span> Desktop</span><span style="font-weight:700">' + (d.desktop||0) + '</span></div>' +
+        '<div style="height:6px;background:var(--bg2);border-radius:3px;overflow:hidden;margin-bottom:8px"><div style="height:100%;width:' + (d.total > 0 ? Math.round(d.desktop/d.total*100) : 0) + '%;background:var(--blue);border-radius:3px"></div></div>' +
+        '<div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px"><span><span class="mi mi-sm">phone_iphone</span> Mobiel</span><span style="font-weight:700">' + (d.mobile||0) + '</span></div>' +
+        '<div style="height:6px;background:var(--bg2);border-radius:3px;overflow:hidden"><div style="height:100%;width:' + (d.total > 0 ? Math.round(d.mobile/d.total*100) : 0) + '%;background:var(--yellow);border-radius:3px"></div></div>' +
+      '</div>' +
+    '</div>' +
+  '</div>';
+
+  return h;
+}
+
+function drawDailyChart(daily){
+  var canvas = document.getElementById('dailyChart');
+  if(!canvas || daily.length === 0) return;
+  var ctx = canvas.getContext('2d');
+  var dpr = window.devicePixelRatio || 1;
+  var w = canvas.clientWidth; var h = canvas.clientHeight;
+  canvas.width = w * dpr; canvas.height = h * dpr;
+  ctx.scale(dpr, dpr);
+
+  var pad = {t:10, r:10, b:24, l:40};
+  var cw = w - pad.l - pad.r;
+  var ch = h - pad.t - pad.b;
+
+  var maxV = Math.max.apply(null, daily.map(function(d){ return d.views; })) || 1;
+  maxV = Math.ceil(maxV * 1.1);
+
+  // Grid lijnen
+  ctx.strokeStyle = 'rgba(255,255,255,.06)';
+  ctx.lineWidth = 1;
+  for(var i = 0; i <= 4; i++){
+    var gy = pad.t + ch - (ch * i / 4);
+    ctx.beginPath(); ctx.moveTo(pad.l, gy); ctx.lineTo(w - pad.r, gy); ctx.stroke();
+    ctx.fillStyle = 'rgba(255,255,255,.3)'; ctx.font = '10px DM Sans,sans-serif'; ctx.textAlign = 'right';
+    ctx.fillText(Math.round(maxV * i / 4), pad.l - 6, gy + 3);
+  }
+
+  // Bars
+  var barW = Math.max(2, (cw / daily.length) - 2);
+  daily.forEach(function(d, idx){
+    var x = pad.l + (idx / daily.length) * cw + 1;
+    var bh = (d.views / maxV) * ch;
+    var y = pad.t + ch - bh;
+
+    // Views bar
+    ctx.fillStyle = 'rgba(59,130,246,.7)';
+    ctx.beginPath(); ctx.roundRect(x, y, barW, bh, 2); ctx.fill();
+
+    // Sessies overlay
+    var sh = (d.sessies / maxV) * ch;
+    ctx.fillStyle = 'rgba(34,197,94,.5)';
+    ctx.beginPath(); ctx.roundRect(x, pad.t + ch - sh, barW, sh, 2); ctx.fill();
+
+    // Datum labels (elke 5-7 dagen)
+    if(daily.length <= 14 || idx % Math.ceil(daily.length / 7) === 0){
+      ctx.fillStyle = 'rgba(255,255,255,.35)'; ctx.font = '9px DM Sans,sans-serif'; ctx.textAlign = 'center';
+      var lbl = d.dag.slice(5); // MM-DD
+      ctx.fillText(lbl, x + barW/2, h - 4);
+    }
+  });
+
+  // Legenda
+  ctx.fillStyle = 'rgba(59,130,246,.7)'; ctx.fillRect(w - 120, 4, 8, 8);
+  ctx.fillStyle = 'rgba(255,255,255,.5)'; ctx.font = '9px DM Sans,sans-serif'; ctx.textAlign = 'left';
+  ctx.fillText('Views', w - 108, 12);
+  ctx.fillStyle = 'rgba(34,197,94,.5)'; ctx.fillRect(w - 60, 4, 8, 8);
+  ctx.fillStyle = 'rgba(255,255,255,.5)';
+  ctx.fillText('Sessies', w - 48, 12);
 }
 
 function adminFilter(status){
@@ -5277,6 +5738,37 @@ try {
 } catch(e){ console.warn('GitHub laden mislukt:', e); }
 
 console.log('Meldpunt Ambtenaren v3.1 — Versleuteld via GitHub Issues');
+
+// ============ ANALYTICS — minimale, privacy-vriendelijke pageview tracking ============
+(function(){
+  var _sid = sessionStorage.getItem('_sid');
+  if(!_sid){ _sid = 's_' + Date.now().toString(36) + '_' + Math.random().toString(36).substr(2,6); sessionStorage.setItem('_sid', _sid); }
+  var _isMobile = /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
+  var _firstRef = document.referrer || '';
+  var _sent = {};
+
+  window._trackPV = function(page){
+    if(!page) return;
+    var key = page + '|' + new Date().toISOString().slice(0,13);
+    if(_sent[key]) return;
+    _sent[key] = 1;
+    try {
+      var body = JSON.stringify({p:page, r:_firstRef, s:_sid, sw:screen.width, sh:screen.height, m:_isMobile});
+      if(navigator.sendBeacon){ navigator.sendBeacon(API_BASE + '/pv', new Blob([body],{type:'application/json'})); }
+      else { fetch(API_BASE + '/pv', {method:'POST', body:body, headers:{'Content-Type':'application/json'}, keepalive:true}).catch(function(){}); }
+    } catch(e){}
+    _firstRef = '';
+  };
+
+  // Hook in de router — track bij elke paginanavigatie
+  var _origParseRoute = parseRoute;
+  parseRoute = function(){
+    _origParseRoute();
+    _trackPV(_route);
+  };
+  // Track de eerste pageview
+  _trackPV(_route || '/');
+})();
 </script>
 </body>
 </html>

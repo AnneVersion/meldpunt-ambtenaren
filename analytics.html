@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Analytics Dashboard — Meldpunt & GeoInzicht</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300..800;1,9..40,300..800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0e1a; --bg2: #111827; --bg3: #1e293b;
+  --surface: rgba(30,41,59,.65); --glass: rgba(30,41,59,.45);
+  --glass-bd: rgba(148,163,184,.15);
+  --tx: #f1f5f9; --tx2: #94a3b8; --tx3: #64748b;
+  --accent: #ef4444; --accent2: #dc2626;
+  --blue: #3b82f6; --green: #22c55e; --yellow: #eab308; --purple: #a855f7;
+  --r: 14px; --rs: 8px;
+  --font: 'DM Sans', system-ui, sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: var(--font); background: var(--bg); color: var(--tx); line-height: 1.6; min-height: 100vh; -webkit-font-smoothing: antialiased; }
+::-webkit-scrollbar { width: 8px; } ::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(148,163,184,.25); border-radius: 10px; }
+a { color: var(--blue); text-decoration: none; } a:hover { text-decoration: underline; }
+.mi { font-family: 'Material Icons Round'; font-size: 20px; vertical-align: -4px; }
+
+/* LAYOUT */
+.top { position: sticky; top: 0; z-index: 100; background: rgba(10,14,26,.92); backdrop-filter: blur(16px); border-bottom: 1px solid var(--glass-bd); padding: 0 24px; }
+.top-inner { max-width: 1400px; margin: 0 auto; display: flex; align-items: center; height: 54px; gap: 12px; }
+.logo { font-weight: 700; font-size: 16px; display: flex; align-items: center; gap: 7px; }
+.logo .mi { color: var(--accent); font-size: 24px; }
+.spacer { flex: 1; }
+.status { font-size: 12px; color: var(--tx3); display: flex; align-items: center; gap: 6px; }
+.dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+.dot-green { background: var(--green); } .dot-red { background: var(--accent); } .dot-gray { background: var(--tx3); }
+
+.wrap { max-width: 1400px; margin: 0 auto; padding: 24px; }
+
+/* LOGIN */
+#loginBox { max-width: 400px; margin: 80px auto; }
+.login-card { background: var(--surface); border: 1px solid var(--glass-bd); border-radius: var(--r); padding: 32px; }
+.login-card h2 { font-size: 20px; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+.login-card input { width: 100%; padding: 10px 14px; background: var(--bg2); border: 1px solid var(--glass-bd); border-radius: var(--rs); color: var(--tx); font: 14px var(--font); margin-bottom: 12px; }
+.login-card input:focus { outline: none; border-color: var(--blue); }
+.login-card button { width: 100%; padding: 10px; background: var(--blue); color: #fff; border: none; border-radius: var(--rs); font: 600 14px var(--font); cursor: pointer; }
+.login-card button:hover { background: #2563eb; }
+.login-err { color: var(--accent); font-size: 13px; margin-top: 8px; display: none; }
+
+/* DASHBOARD */
+#dashboard { display: none; }
+.section-title { font-size: 18px; font-weight: 700; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+.section-title .mi { font-size: 22px; }
+
+/* GRID */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px; }
+@media (max-width: 900px) { .grid-2 { grid-template-columns: 1fr; } }
+
+.panel { background: var(--surface); border: 1px solid var(--glass-bd); border-radius: var(--r); padding: 20px; }
+.panel-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--glass-bd); }
+.panel-title { font-size: 15px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+.panel-badge { font-size: 11px; padding: 2px 8px; border-radius: 20px; font-weight: 600; }
+.badge-mp { background: rgba(239,68,68,.15); color: var(--accent); }
+.badge-gi { background: rgba(168,85,247,.15); color: var(--purple); }
+
+/* STATS */
+.stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; margin-bottom: 20px; }
+.stat-card { background: var(--bg2); border: 1px solid var(--glass-bd); border-radius: var(--rs); padding: 14px; text-align: center; }
+.stat-val { font-size: 28px; font-weight: 800; line-height: 1.2; }
+.stat-label { font-size: 11px; color: var(--tx2); margin-top: 2px; }
+.stat-accent { color: var(--accent); }
+.stat-blue { color: var(--blue); }
+.stat-green { color: var(--green); }
+.stat-purple { color: var(--purple); }
+
+/* CHART */
+.chart-wrap { background: var(--bg2); border: 1px solid var(--glass-bd); border-radius: var(--rs); padding: 16px; margin-bottom: 16px; }
+.chart-wrap h4 { font-size: 13px; color: var(--tx2); margin-bottom: 10px; }
+canvas { width: 100%; height: 200px; display: block; }
+
+/* TABLES */
+.mini-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.mini-table th { text-align: left; color: var(--tx3); font-weight: 600; font-size: 11px; text-transform: uppercase; padding: 6px 8px; border-bottom: 1px solid var(--glass-bd); }
+.mini-table td { padding: 6px 8px; border-bottom: 1px solid rgba(148,163,184,.08); }
+.mini-table tr:last-child td { border-bottom: none; }
+.bar-cell { position: relative; }
+.bar-bg { position: absolute; left: 0; top: 2px; bottom: 2px; border-radius: 3px; opacity: .2; }
+
+/* COMPARE CHART */
+.compare-section { margin-top: 24px; }
+.compare-wrap { background: var(--surface); border: 1px solid var(--glass-bd); border-radius: var(--r); padding: 20px; }
+
+/* CONTROLS */
+.controls { display: flex; gap: 8px; align-items: center; }
+.ctrl-btn { padding: 5px 12px; border-radius: var(--rs); font: 500 12px var(--font); color: var(--tx2); cursor: pointer; border: 1px solid var(--glass-bd); background: none; transition: .2s; }
+.ctrl-btn:hover { color: var(--tx); border-color: var(--tx3); }
+.ctrl-btn.active { color: var(--tx); background: var(--glass); border-color: var(--tx3); }
+
+.loading { text-align: center; padding: 40px; color: var(--tx3); }
+.error-msg { color: var(--accent); font-size: 13px; padding: 12px; background: rgba(239,68,68,.08); border-radius: var(--rs); margin-top: 8px; }
+</style>
+</head>
+<body>
+
+<div class="top">
+  <div class="top-inner">
+    <div class="logo"><span class="mi">analytics</span> Analytics Dashboard</div>
+    <div class="spacer"></div>
+    <div id="statusMP" class="status"><span class="dot dot-gray"></span> Meldpunt</div>
+    <div id="statusGI" class="status"><span class="dot dot-gray"></span> GeoInzicht</div>
+  </div>
+</div>
+
+<!-- LOGIN -->
+<div id="loginBox">
+  <div class="login-card">
+    <h2><span class="mi">lock</span> Admin Login</h2>
+    <p style="color:var(--tx2);font-size:13px;margin-bottom:16px">Log in met je Meldpunt admin-account om de statistieken te bekijken.</p>
+    <input type="text" id="loginUser" placeholder="Gebruikersnaam" autocomplete="username">
+    <input type="password" id="loginPass" placeholder="Wachtwoord" autocomplete="current-password">
+    <button onclick="doLogin()">Inloggen</button>
+    <div class="login-err" id="loginErr"></div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard">
+  <div class="wrap">
+
+    <!-- PERIOD CONTROLS -->
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px">
+      <div class="section-title" style="margin-bottom:0"><span class="mi">insights</span> Overzicht</div>
+      <div class="controls">
+        <button class="ctrl-btn" data-days="7" onclick="setPeriod(7)">7 dagen</button>
+        <button class="ctrl-btn active" data-days="30" onclick="setPeriod(30)">30 dagen</button>
+        <button class="ctrl-btn" data-days="90" onclick="setPeriod(90)">90 dagen</button>
+        <button class="ctrl-btn" onclick="refreshAll()"><span class="mi" style="font-size:16px;vertical-align:-3px">refresh</span></button>
+      </div>
+    </div>
+
+    <!-- TWO PANELS SIDE BY SIDE -->
+    <div class="grid-2">
+
+      <!-- MELDPUNT PANEL -->
+      <div class="panel" id="mpPanel">
+        <div class="panel-header">
+          <div class="panel-title"><span class="mi" style="color:var(--accent)">flag</span> Meldpunt Ambtenaren</div>
+          <span class="panel-badge badge-mp">MP</span>
+        </div>
+        <div id="mpContent"><div class="loading">Laden...</div></div>
+      </div>
+
+      <!-- GEOINZICHT PANEL -->
+      <div class="panel" id="giPanel">
+        <div class="panel-header">
+          <div class="panel-title"><span class="mi" style="color:var(--purple)">map</span> GeoInzicht CBS</div>
+          <span class="panel-badge badge-gi">GI</span>
+        </div>
+        <div id="giContent"><div class="loading">Laden...</div></div>
+      </div>
+    </div>
+
+    <!-- COMPARISON CHART -->
+    <div class="compare-section">
+      <div class="compare-wrap">
+        <div class="panel-header">
+          <div class="panel-title"><span class="mi" style="color:var(--blue)">compare_arrows</span> Vergelijking — Bezoekers per dag</div>
+        </div>
+        <div class="chart-wrap" style="background:transparent;border:none;padding:0">
+          <canvas id="compareChart" height="220"></canvas>
+        </div>
+        <div style="display:flex;gap:20px;font-size:12px;color:var(--tx2);margin-top:8px">
+          <span><span style="display:inline-block;width:12px;height:12px;background:var(--accent);border-radius:2px;vertical-align:-2px;margin-right:4px"></span> Meldpunt</span>
+          <span><span style="display:inline-block;width:12px;height:12px;background:var(--purple);border-radius:2px;vertical-align:-2px;margin-right:4px"></span> GeoInzicht</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ============ CONFIG ============
+var MP_BASE = '/api';               // Meldpunt backend
+var GI_BASE = 'http://localhost:5000/api';  // GeoInzicht analytics API
+
+var _days = 30;
+var _mpData = null;
+var _giData = null;
+
+// ============ LOGIN ============
+function doLogin() {
+  var u = document.getElementById('loginUser').value.trim();
+  var p = document.getElementById('loginPass').value;
+  var errEl = document.getElementById('loginErr');
+  errEl.style.display = 'none';
+  if (!u || !p) { errEl.textContent = 'Vul gebruikersnaam en wachtwoord in'; errEl.style.display = 'block'; return; }
+  fetch(MP_BASE + '/admin/login', {
+    method: 'POST', credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username: u, password: p })
+  }).then(function(r) { return r.json().then(function(d) { return { ok: r.ok, data: d }; }); })
+    .then(function(res) {
+      if (res.ok) { showDashboard(); }
+      else { errEl.textContent = res.data.error || 'Inloggen mislukt'; errEl.style.display = 'block'; }
+    }).catch(function() { errEl.textContent = 'Kan niet verbinden met Meldpunt backend'; errEl.style.display = 'block'; });
+}
+
+document.getElementById('loginPass').addEventListener('keydown', function(e) { if (e.key === 'Enter') doLogin(); });
+
+// Check session on load
+fetch(MP_BASE + '/admin/me', { credentials: 'include' })
+  .then(function(r) { if (r.ok) showDashboard(); })
+  .catch(function() {});
+
+function showDashboard() {
+  document.getElementById('loginBox').style.display = 'none';
+  document.getElementById('dashboard').style.display = 'block';
+  refreshAll();
+}
+
+// ============ DATA FETCHING ============
+function setPeriod(d) {
+  _days = d;
+  document.querySelectorAll('.ctrl-btn[data-days]').forEach(function(b) { b.classList.toggle('active', +b.dataset.days === d); });
+  refreshAll();
+}
+
+function refreshAll() {
+  loadMeldpunt();
+  loadGeoInzicht();
+}
+
+function loadMeldpunt() {
+  setStatus('statusMP', 'loading');
+  document.getElementById('mpContent').innerHTML = '<div class="loading">Laden...</div>';
+  fetch(MP_BASE + '/admin/analytics?days=' + _days, { credentials: 'include' })
+    .then(function(r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+    .then(function(data) {
+      _mpData = data;
+      setStatus('statusMP', 'ok');
+      renderMP(data);
+      renderCompare();
+    }).catch(function(e) {
+      setStatus('statusMP', 'error');
+      document.getElementById('mpContent').innerHTML = '<div class="error-msg">Kan Meldpunt data niet laden. Draait de backend? (' + e.message + ')</div>';
+      _mpData = null;
+      renderCompare();
+    });
+}
+
+function loadGeoInzicht() {
+  setStatus('statusGI', 'loading');
+  document.getElementById('giContent').innerHTML = '<div class="loading">Laden...</div>';
+  fetch(GI_BASE + '/admin/stats')
+    .then(function(r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+    .then(function(data) {
+      _giData = data;
+      setStatus('statusGI', 'ok');
+      renderGI(data);
+      renderCompare();
+    }).catch(function(e) {
+      setStatus('statusGI', 'error');
+      document.getElementById('giContent').innerHTML = '<div class="error-msg">Kan GeoInzicht data niet laden. Draait analytics_api.py? (' + e.message + ')</div>';
+      _giData = null;
+      renderCompare();
+    });
+}
+
+function setStatus(id, state) {
+  var el = document.getElementById(id);
+  var dot = el.querySelector('.dot');
+  dot.className = 'dot ' + (state === 'ok' ? 'dot-green' : state === 'error' ? 'dot-red' : 'dot-gray');
+}
+
+// ============ RENDER MELDPUNT ============
+function renderMP(d) {
+  var totalViews = 0, totalSessies = 0;
+  d.daily.forEach(function(r) { totalViews += r.views; totalSessies += r.sessies; });
+  var today = new Date().toISOString().slice(0, 10);
+  var todayRow = d.daily.find(function(r) { return r.dag === today; });
+  var todayViews = todayRow ? todayRow.views : 0;
+
+  var h = '';
+  // Stats
+  h += '<div class="stats-row">';
+  h += statCard(totalViews, 'Views (' + _days + 'd)', 'stat-accent');
+  h += statCard(totalSessies, 'Sessies (' + _days + 'd)', 'stat-blue');
+  h += statCard(todayViews, 'Vandaag', 'stat-green');
+  h += statCard(d.totals.views, 'Totaal views', '');
+  h += '</div>';
+
+  // Chart
+  h += '<div class="chart-wrap"><h4>Pageviews per dag</h4><canvas id="mpChart" height="180"></canvas></div>';
+
+  // Top pages
+  if (d.top_pages.length) {
+    h += '<h4 style="font-size:13px;color:var(--tx2);margin:12px 0 8px">Top pagina\'s</h4>';
+    h += '<table class="mini-table"><thead><tr><th>Pagina</th><th style="text-align:right">Views</th></tr></thead><tbody>';
+    var maxP = d.top_pages[0].views;
+    d.top_pages.slice(0, 10).forEach(function(p) {
+      var pct = (p.views / maxP * 100);
+      h += '<tr><td>' + esc(p.page) + '</td><td style="text-align:right;position:relative"><span style="position:absolute;left:0;top:2px;bottom:2px;width:' + pct + '%;background:var(--accent);border-radius:3px;opacity:.15"></span>' + p.views + '</td></tr>';
+    });
+    h += '</tbody></table>';
+  }
+
+  // Referrers
+  if (d.referrers.length) {
+    h += '<h4 style="font-size:13px;color:var(--tx2);margin:16px 0 8px">Referrers</h4>';
+    h += '<table class="mini-table"><thead><tr><th>Bron</th><th style="text-align:right">Views</th></tr></thead><tbody>';
+    d.referrers.slice(0, 8).forEach(function(r) {
+      var host = ''; try { host = new URL(r.ref).hostname; } catch(e) { host = r.ref; }
+      h += '<tr><td title="' + esc(r.ref) + '">' + esc(host) + '</td><td style="text-align:right">' + r.views + '</td></tr>';
+    });
+    h += '</tbody></table>';
+  }
+
+  // Devices
+  if (d.devices.total > 0) {
+    var mPct = Math.round(d.devices.mobile / d.devices.total * 100);
+    h += '<h4 style="font-size:13px;color:var(--tx2);margin:16px 0 8px">Apparaten</h4>';
+    h += '<div style="display:flex;gap:8px;align-items:center;font-size:13px">';
+    h += '<div style="flex:1;height:8px;background:var(--bg);border-radius:4px;overflow:hidden"><div style="width:' + mPct + '%;height:100%;background:var(--blue);border-radius:4px"></div></div>';
+    h += '<span style="color:var(--blue)">' + mPct + '% mobiel</span>';
+    h += '<span style="color:var(--tx3)">' + (100 - mPct) + '% desktop</span>';
+    h += '</div>';
+  }
+
+  document.getElementById('mpContent').innerHTML = h;
+  // Draw chart after DOM insert
+  setTimeout(function() { drawBarChart('mpChart', d.daily.map(function(r) { return r.dag; }), d.daily.map(function(r) { return r.views; }), 'rgba(239,68,68,.7)', 'rgba(239,68,68,.2)'); }, 50);
+}
+
+// ============ RENDER GEOINZICHT ============
+function renderGI(d) {
+  var h = '';
+  // Stats
+  h += '<div class="stats-row">';
+  h += statCard(d.unique_visitors || 0, 'Unieke bezoekers', 'stat-purple');
+  h += statCard(d.total_sessions || 0, 'Totaal sessies', 'stat-blue');
+  h += statCard(d.today_sessions || 0, 'Vandaag', 'stat-green');
+  h += statCard(fmtDuration(d.avg_duration_seconds || 0), 'Gem. duur', '');
+  h += '</div>';
+
+  // Chart
+  h += '<div class="chart-wrap"><h4>Sessies per dag</h4><canvas id="giChart" height="180"></canvas></div>';
+
+  // Top cities
+  if (d.top_cities && d.top_cities.length) {
+    h += '<h4 style="font-size:13px;color:var(--tx2);margin:12px 0 8px">Top steden</h4>';
+    h += '<table class="mini-table"><thead><tr><th>Stad</th><th style="text-align:right">Sessies</th></tr></thead><tbody>';
+    var maxC = d.top_cities[0].count;
+    d.top_cities.slice(0, 8).forEach(function(c) {
+      var pct = (c.count / maxC * 100);
+      h += '<tr><td>' + esc(c.city) + '</td><td style="text-align:right;position:relative"><span style="position:absolute;left:0;top:2px;bottom:2px;width:' + pct + '%;background:var(--purple);border-radius:3px;opacity:.15"></span>' + c.count + '</td></tr>';
+    });
+    h += '</tbody></table>';
+  }
+
+  // Top browsers
+  if (d.top_browsers && d.top_browsers.length) {
+    h += '<h4 style="font-size:13px;color:var(--tx2);margin:16px 0 8px">Browsers</h4>';
+    h += '<table class="mini-table"><thead><tr><th>Browser</th><th style="text-align:right">Sessies</th></tr></thead><tbody>';
+    d.top_browsers.forEach(function(b) {
+      h += '<tr><td>' + esc(b.browser) + '</td><td style="text-align:right">' + b.count + '</td></tr>';
+    });
+    h += '</tbody></table>';
+  }
+
+  // Top countries
+  if (d.top_countries && d.top_countries.length) {
+    h += '<h4 style="font-size:13px;color:var(--tx2);margin:16px 0 8px">Landen</h4>';
+    h += '<table class="mini-table"><thead><tr><th>Land</th><th style="text-align:right">Sessies</th></tr></thead><tbody>';
+    d.top_countries.forEach(function(c) {
+      h += '<tr><td>' + esc(c.country) + '</td><td style="text-align:right">' + c.count + '</td></tr>';
+    });
+    h += '</tbody></table>';
+  }
+
+  document.getElementById('giContent').innerHTML = h;
+  // Draw chart
+  if (d.daily && d.daily.length) {
+    var sorted = d.daily.slice().sort(function(a, b) { return a.date < b.date ? -1 : 1; });
+    setTimeout(function() { drawBarChart('giChart', sorted.map(function(r) { return r.date; }), sorted.map(function(r) { return r.count; }), 'rgba(168,85,247,.7)', 'rgba(168,85,247,.2)'); }, 50);
+  }
+}
+
+// ============ COMPARISON CHART ============
+function renderCompare() {
+  var canvas = document.getElementById('compareChart');
+  if (!canvas) return;
+  var ctx = canvas.getContext('2d');
+  var dpr = window.devicePixelRatio || 1;
+  var W = canvas.parentElement.clientWidth;
+  var H = 220;
+  canvas.width = W * dpr; canvas.height = H * dpr;
+  canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
+  ctx.scale(dpr, dpr);
+  ctx.clearRect(0, 0, W, H);
+
+  // Build date map for last N days
+  var dates = [];
+  var now = new Date();
+  for (var i = _days - 1; i >= 0; i--) {
+    var d = new Date(now); d.setDate(d.getDate() - i);
+    dates.push(d.toISOString().slice(0, 10));
+  }
+
+  // Map MP data
+  var mpMap = {};
+  if (_mpData && _mpData.daily) _mpData.daily.forEach(function(r) { mpMap[r.dag] = r.views; });
+  var mpVals = dates.map(function(d) { return mpMap[d] || 0; });
+
+  // Map GI data
+  var giMap = {};
+  if (_giData && _giData.daily) _giData.daily.forEach(function(r) { giMap[r.date] = r.count; });
+  var giVals = dates.map(function(d) { return giMap[d] || 0; });
+
+  var allVals = mpVals.concat(giVals);
+  var maxVal = Math.max.apply(null, allVals) || 1;
+
+  var pad = { t: 20, b: 30, l: 40, r: 12 };
+  var cW = W - pad.l - pad.r;
+  var cH = H - pad.t - pad.b;
+  var n = dates.length;
+
+  // Grid
+  ctx.strokeStyle = 'rgba(148,163,184,.1)';
+  ctx.lineWidth = 1;
+  for (var g = 0; g <= 4; g++) {
+    var gy = pad.t + (cH / 4) * g;
+    ctx.beginPath(); ctx.moveTo(pad.l, gy); ctx.lineTo(W - pad.r, gy); ctx.stroke();
+    var lbl = Math.round(maxVal - (maxVal / 4) * g);
+    ctx.fillStyle = '#64748b'; ctx.font = '10px ' + getComputedStyle(document.body).fontFamily;
+    ctx.textAlign = 'right'; ctx.fillText(lbl, pad.l - 6, gy + 4);
+  }
+
+  // Date labels
+  ctx.fillStyle = '#64748b'; ctx.textAlign = 'center'; ctx.font = '10px ' + getComputedStyle(document.body).fontFamily;
+  var step = Math.max(1, Math.floor(n / 8));
+  for (var j = 0; j < n; j += step) {
+    var lx = pad.l + (j / (n - 1)) * cW;
+    ctx.fillText(dates[j].slice(5), lx, H - 8);
+  }
+
+  // Draw lines
+  drawLine(ctx, mpVals, maxVal, pad, cW, cH, n, 'rgba(239,68,68,.9)', 'rgba(239,68,68,.15)');
+  drawLine(ctx, giVals, maxVal, pad, cW, cH, n, 'rgba(168,85,247,.9)', 'rgba(168,85,247,.15)');
+}
+
+function drawLine(ctx, vals, maxVal, pad, cW, cH, n, lineColor, fillColor) {
+  if (n < 2) return;
+  ctx.beginPath();
+  ctx.strokeStyle = lineColor; ctx.lineWidth = 2;
+  for (var i = 0; i < n; i++) {
+    var x = pad.l + (i / (n - 1)) * cW;
+    var y = pad.t + cH - (vals[i] / maxVal) * cH;
+    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+  }
+  ctx.stroke();
+
+  // Fill area
+  ctx.lineTo(pad.l + cW, pad.t + cH);
+  ctx.lineTo(pad.l, pad.t + cH);
+  ctx.closePath();
+  ctx.fillStyle = fillColor;
+  ctx.fill();
+}
+
+// ============ SHARED CHART HELPER ============
+function drawBarChart(canvasId, labels, values, color, bgColor) {
+  var canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+  var ctx = canvas.getContext('2d');
+  var dpr = window.devicePixelRatio || 1;
+  var W = canvas.parentElement.clientWidth - 32;
+  var H = 180;
+  canvas.width = W * dpr; canvas.height = H * dpr;
+  canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
+  ctx.scale(dpr, dpr);
+  ctx.clearRect(0, 0, W, H);
+
+  var maxVal = Math.max.apply(null, values) || 1;
+  var pad = { t: 10, b: 24, l: 36, r: 8 };
+  var cW = W - pad.l - pad.r;
+  var cH = H - pad.t - pad.b;
+  var n = labels.length;
+  if (!n) return;
+  var barW = Math.max(2, (cW / n) - 2);
+
+  // Grid lines
+  ctx.strokeStyle = 'rgba(148,163,184,.08)'; ctx.lineWidth = 1;
+  for (var g = 0; g <= 3; g++) {
+    var gy = pad.t + (cH / 3) * g;
+    ctx.beginPath(); ctx.moveTo(pad.l, gy); ctx.lineTo(W - pad.r, gy); ctx.stroke();
+    ctx.fillStyle = '#64748b'; ctx.font = '10px sans-serif'; ctx.textAlign = 'right';
+    ctx.fillText(Math.round(maxVal - (maxVal / 3) * g), pad.l - 4, gy + 4);
+  }
+
+  // Bars
+  ctx.fillStyle = color;
+  for (var i = 0; i < n; i++) {
+    var x = pad.l + (i / n) * cW + 1;
+    var h = (values[i] / maxVal) * cH;
+    ctx.fillRect(x, pad.t + cH - h, barW, h);
+  }
+
+  // Date labels
+  ctx.fillStyle = '#64748b'; ctx.font = '10px sans-serif'; ctx.textAlign = 'center';
+  var step = Math.max(1, Math.floor(n / 6));
+  for (var j = 0; j < n; j += step) {
+    var lx = pad.l + (j / n) * cW + barW / 2;
+    ctx.fillText(labels[j].slice(5), lx, H - 4);
+  }
+}
+
+// ============ UTILS ============
+function statCard(val, label, cls) {
+  return '<div class="stat-card"><div class="stat-val ' + cls + '">' + val + '</div><div class="stat-label">' + label + '</div></div>';
+}
+
+function fmtDuration(sec) {
+  if (!sec) return '0s';
+  var m = Math.floor(sec / 60);
+  var s = sec % 60;
+  return m > 0 ? m + 'm ' + s + 's' : s + 's';
+}
+
+function esc(s) { var d = document.createElement('div'); d.textContent = s || ''; return d.innerHTML; }
+
+// Resize handler
+window.addEventListener('resize', function() {
+  if (_mpData) renderMP(_mpData);
+  if (_giData) renderGI(_giData);
+  renderCompare();
+});
+</script>
+</body>
+</html>

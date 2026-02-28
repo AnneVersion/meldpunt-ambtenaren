@@ -17,7 +17,7 @@ from flask_limiter.util import get_remote_address
 import bcrypt
 
 from config import Config
-from models import db, Melding, Reactie, Ambtenaar, AdminUser
+from models import db, Melding, Reactie, Ambtenaar, AdminUser, PageView
 
 # ============ APP SETUP ============
 
@@ -470,6 +470,82 @@ def admin_stats():
         'meldingen_rejected': Melding.query.filter_by(status='rejected').count(),
         'reacties_total': Reactie.query.count(),
         'ambtenaren_total': Ambtenaar.query.count()
+    })
+
+
+# ============ ANALYTICS API ============
+
+@app.route('/api/pv', methods=['POST'])
+@limiter.limit("120/minute")
+def track_pageview():
+    """Registreer een pageview (privacy-vriendelijk, geen IP-opslag)."""
+    data = request.get_json(silent=True)
+    if not data or not data.get('p'):
+        return jsonify({'ok': True}), 200  # fail silently
+
+    pv = PageView(
+        page=sanitize_text(data.get('p', ''), 100),
+        referrer=sanitize_text(data.get('r', ''), 500),
+        session_id=sanitize_text(data.get('s', ''), 50),
+        screen_w=int(data['sw']) if str(data.get('sw', '')).isdigit() else None,
+        screen_h=int(data['sh']) if str(data.get('sh', '')).isdigit() else None,
+        is_mobile=bool(data.get('m', False))
+    )
+    db.session.add(pv)
+    db.session.commit()
+    return jsonify({'ok': True}), 200
+
+
+@app.route('/api/admin/analytics', methods=['GET'])
+@admin_required
+def admin_analytics():
+    """Bezoekersstatistieken voor het admin dashboard."""
+    from sqlalchemy import func, cast, Date
+
+    days = int(request.args.get('days', 30))
+    cutoff = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
+    from datetime import timedelta
+    cutoff = cutoff - timedelta(days=days)
+
+    # Pageviews per dag
+    daily = db.session.query(
+        cast(PageView.created_at, Date).label('dag'),
+        func.count().label('views'),
+        func.count(func.distinct(PageView.session_id)).label('sessies')
+    ).filter(PageView.created_at >= cutoff) \
+     .group_by(cast(PageView.created_at, Date)) \
+     .order_by(cast(PageView.created_at, Date)).all()
+
+    # Top pagina's
+    top_pages = db.session.query(
+        PageView.page,
+        func.count().label('views')
+    ).filter(PageView.created_at >= cutoff) \
+     .group_by(PageView.page) \
+     .order_by(func.count().desc()).limit(20).all()
+
+    # Referrers (alleen extern)
+    referrers = db.session.query(
+        PageView.referrer,
+        func.count().label('views')
+    ).filter(PageView.created_at >= cutoff, PageView.referrer != '') \
+     .group_by(PageView.referrer) \
+     .order_by(func.count().desc()).limit(20).all()
+
+    # Apparaten
+    total = PageView.query.filter(PageView.created_at >= cutoff).count()
+    mobile = PageView.query.filter(PageView.created_at >= cutoff, PageView.is_mobile == True).count()
+
+    # Totalen
+    total_all = PageView.query.count()
+    sessions_all = db.session.query(func.count(func.distinct(PageView.session_id))).scalar() or 0
+
+    return jsonify({
+        'daily': [{'dag': str(d.dag), 'views': d.views, 'sessies': d.sessies} for d in daily],
+        'top_pages': [{'page': p.page, 'views': p.views} for p in top_pages],
+        'referrers': [{'ref': r.referrer, 'views': r.views} for r in referrers],
+        'devices': {'total': total, 'mobile': mobile, 'desktop': total - mobile},
+        'totals': {'views': total_all, 'sessions': sessions_all}
     })
 
 
