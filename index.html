@@ -51,7 +51,7 @@ body { font-family: var(--font); background: var(--bg); color: var(--tx); line-h
 }
 a { color: var(--blue); text-decoration: none; }
 a:hover { text-decoration: underline; }
-.mi { font-family: 'Material Icons Round'; font-size: 20px; vertical-align: -4px; }
+.mi { font-family: 'Material Icons Round'; font-size: 20px; vertical-align: -4px; text-transform: none; }
 .mi-sm { font-size: 16px; vertical-align: -3px; }
 
 /* LAYOUT */
@@ -995,9 +995,10 @@ function getNamenLijst(meldingen){
     (m.namen || []).forEach(function(n){
       var key = (n.naam||'').trim().toLowerCase();
       if(!key) return;
-      if(!map[key]) map[key] = { naam: n.naam, count: 0, instanties: {}, meldingIds: [] };
+      if(!map[key]) map[key] = { naam: n.naam, count: 0, instanties: {}, meldingIds: [], email: '' };
       map[key].count++;
       if(n.functie) map[key].functie = n.functie;
+      if(n.email) map[key].email = n.email;
       if(m.instantie) map[key].instanties[m.instantie] = true;
       map[key].meldingIds.push(m.id);
       if(n.naam.length > map[key].naam.length) map[key].naam = n.naam;
@@ -1408,14 +1409,15 @@ function pgMelden(){
 
     stepHtml = '<div class="wiz-step">' +
       '<h3 style="font-size:18px;font-weight:700;margin-bottom:4px"><span class="mi" style="color:var(--accent);vertical-align:-3px">person_search</span> Wie wil je melden?</h3>' +
-      '<p style="font-size:13px;color:var(--tx2);margin-bottom:16px">Vul de naam in van de ambtenaar die je wilt melden.</p>' +
+      '<p style="font-size:13px;color:var(--tx2);margin-bottom:6px">Alleen een <strong>naam</strong> en <strong>organisatie</strong> is al voldoende. De rest mag je invullen, maar hoeft niet.</p>' +
+      '<p style="font-size:12px;color:var(--accent);margin-bottom:16px"><span class="mi mi-sm" style="font-size:14px">info</span> De naam wordt direct gepubliceerd op de pagina <a href="#" onclick="go(\'/namen\');return false" style="color:var(--accent);text-decoration:underline">Daders</a>.</p>' +
       namenHtml +
       '<button class="btn btn-sm btn-ghost" onclick="voegNaamToe()" style="margin-bottom:16px"><span class="mi mi-sm">person_add</span> Nog een persoon</button>' +
 
       // Instantie dropdown
       '<div style="margin-top:8px;padding-top:16px;border-top:1px solid var(--glass-bd)">' +
         '<h3 style="font-size:16px;font-weight:700;margin-bottom:4px"><span class="mi" style="color:var(--blue);vertical-align:-3px;font-size:20px">business</span> Bij welke instantie?</h3>' +
-        '<p style="font-size:13px;color:var(--tx2);margin-bottom:12px">Kies de organisatie waar deze ambtenaar werkt, of typ een andere.</p>' +
+        '<p style="font-size:13px;color:var(--tx2);margin-bottom:12px">Kies de organisatie waar deze ambtenaar werkt(e). <strong style="color:var(--accent)">Verplicht.</strong></p>' +
         '<div class="fg">' +
           '<select class="fi" id="mInstantieS1" onchange="_meldInstantie=this.value; if(this.value===\'__anders__\'){document.getElementById(\'mInstAndersS1\').style.display=\'block\';this.value=\'\';_meldInstantie=\'\'}else{document.getElementById(\'mInstAndersS1\').style.display=\'none\'}" style="cursor:pointer">' +
             '<option value=""' + (!_meldInstantie ? ' selected' : '') + '>— Kies een instantie —</option>' +
@@ -1472,7 +1474,7 @@ function pgMelden(){
 
       // Je verhaal
       '<div style="margin-top:8px;padding-top:16px;border-top:1px solid var(--glass-bd)">' +
-        '<h3 style="font-size:16px;font-weight:700;margin-bottom:4px"><span class="mi" style="color:var(--yellow);vertical-align:-3px;font-size:20px">description</span> Je verhaal</h3>' +
+        '<h3 style="font-size:16px;font-weight:700;margin-bottom:4px"><span class="mi" style="color:var(--yellow);vertical-align:-3px;font-size:20px">edit</span> Je verhaal</h3>' +
         '<p style="font-size:13px;color:var(--tx2);margin-bottom:12px">Vertel wat er is gebeurd. Noem data, feiten, gevolgen. <strong>Dit is optioneel</strong> — je kunt het later aanvullen.</p>' +
         '<div class="fg">' +
           '<input class="fi" id="mTitelS1" placeholder="Korte titel, bijv. \'Jarenlang dossier genegeerd\'" value="' + esc(_meldTitel) + '" oninput="_meldTitel=this.value">' +
@@ -1857,6 +1859,7 @@ function submitMelding(){
   });
 
   if(namen.length === 0){ toast('Vul minstens één naam in'); return; }
+  if(!_meldInstantie.trim()){ toast('Kies een instantie / organisatie'); return; }
 
   var anoniem = (document.getElementById('mAnoniem')||{}).checked !== false;
   var titel = _meldTitel.trim() || namen.map(function(n){return n.naam;}).join(', ');
@@ -2413,7 +2416,7 @@ function pgStaatsontvoeringen(){
 
     // WAAROM VERSCHILLENDE CIJFERS
     '<div class="card" style="padding:20px;margin-bottom:16px">' +
-      '<h2 style="font-size:16px;font-weight:700;margin-bottom:10px;color:var(--accent)"><span class="mi mi-sm">query_stats</span> Waarom verschillende cijfers?</h2>' +
+      '<h2 style="font-size:16px;font-weight:700;margin-bottom:10px;color:var(--accent)"><span class="mi mi-sm">help</span> Waarom verschillende cijfers?</h2>' +
       '<div style="font-size:13px;color:var(--tx);line-height:1.8">' +
         '<strong>CBS (1.675 / 2.090):</strong> telt alleen kinderen die via een <em>rechterlijke machtiging</em> uit huis zijn geplaatst tussen 2015 en 2021 (resp. juni 2022). ' +
         'Het CBS benadrukt dat er geen oorzakelijk verband kan worden aangenomen — alleen een correlatie.' + bron('CBS, nov 2022', 'https://www.cbs.nl/nl-nl/maatwerk/2022/48/actualisatie-uithuisplaatsingen-toeslagenaffaire-2015-t-m-juni-2022') + '<br><br>' +
@@ -2573,7 +2576,8 @@ function pgNamen(){
           '<div>' +
             '<div style="font-size:15px;font-weight:800">' + esc(n.naam) + '</div>' +
             (n.functie ? '<div style="font-size:12px;color:var(--tx2)">' + esc(n.functie) + '</div>' : '') +
-            (orgs ? '<div style="font-size:12px;color:var(--tx3)">' + esc(orgs) + '</div>' : '') +
+            (orgs ? '<div style="font-size:12px;color:var(--tx3)"><span class="mi mi-sm" style="font-size:12px">business</span> ' + esc(orgs) + '</div>' : '') +
+            (n.email ? '<div style="font-size:12px;color:var(--blue);margin-top:2px"><span class="mi mi-sm" style="font-size:12px">email</span> ' + esc(n.email) + '</div>' : '') +
           '</div>' +
           '<div style="text-align:right">' +
             '<div style="font-size:24px;font-weight:800;color:' + kleur + '">' + n.count + '</div>' +
@@ -2591,8 +2595,11 @@ function pgNamen(){
   var herhalers = namen.filter(function(n){ return n.count >= 2; });
 
   return '<div class="page">' +
-    '<h2 style="font-size:20px;font-weight:700;margin-bottom:4px"><span class="mi">people</span> Namen</h2>' +
-    '<p style="font-size:13px;color:var(--tx2);margin-bottom:16px">Alle genoemde namen, gesorteerd op aantal meldingen. Namen die meerdere keren voorkomen wijzen op structureel gedrag.</p>' +
+    '<h2 style="font-size:20px;font-weight:700;margin-bottom:4px"><span class="mi">people</span> Daders</h2>' +
+    '<div style="font-size:14px;color:var(--tx);line-height:1.7;margin-bottom:12px;padding:14px;background:var(--accent-soft);border:1px solid rgba(239,68,68,.2);border-radius:var(--rs)">' +
+      '<strong style="color:var(--accent)">Ambtenaren gaan nog steeds door.</strong> Dossiers worden nog steeds getraineerd, bezwaren genegeerd, slachtoffers weggestuurd. Daarom verzamelen wij namen en e-mailadressen van ambtenaren die betrokken zijn bij het toeslagenschandaal. Niet uit wraak — maar zodat er verantwoording komt.' +
+    '</div>' +
+    '<p style="font-size:13px;color:var(--tx2);margin-bottom:16px">Alle genoemde namen en organisaties, gesorteerd op aantal meldingen. Namen die meerdere keren voorkomen wijzen op structureel gedrag.</p>' +
 
     (herhalers.length > 0 ? '<div class="card" style="border-left:3px solid var(--accent);margin-bottom:14px;background:var(--accent-soft)">' +
       '<div style="font-size:14px;font-weight:700;color:var(--accent)"><span class="mi mi-sm">warning</span> ' + herhalers.length + ' naam/namen bij meerdere meldingen</div>' +
@@ -2797,7 +2804,7 @@ function pgMissie(){
     '</div>' +
 
     '<div class="card" style="padding:24px;margin-bottom:16px;border-left:4px solid var(--accent)">' +
-      '<h2 style="font-size:19px;margin-bottom:10px"><span class="mi mi-sm" style="color:var(--accent)">lightbulb</span> De enige oplossing</h2>' +
+      '<h2 style="font-size:19px;margin-bottom:10px"><span class="mi mi-sm" style="color:var(--accent)">star</span> De enige oplossing</h2>' +
       '<p style="font-size:14px;line-height:1.8;color:var(--tx);margin-bottom:10px">' +
         'Er zijn al genoeg rapporten geschreven. Genoeg commissies geweest. Genoeg excuses gemaakt. <strong>Niets veranderde.</strong> Want er waren geen consequenties.' +
       '</p>' +
@@ -3857,7 +3864,7 @@ function pgRechtspraak(){
 
       // Rechtsbijstand
       '<div style="padding:14px;background:var(--glass);border-radius:var(--rs);margin-top:4px">' +
-        '<div style="font-size:13px;font-weight:700;margin-bottom:6px"><span class="mi mi-sm" style="color:var(--green)">savings</span> Gesubsidieerde rechtsbijstand (2026)</div>' +
+        '<div style="font-size:13px;font-weight:700;margin-bottom:6px"><span class="mi mi-sm" style="color:var(--green)">account_balance</span> Gesubsidieerde rechtsbijstand (2026)</div>' +
         '<div style="font-size:12px;color:var(--tx2);line-height:1.7">' +
           '<strong>Inkomensgrenzen:</strong> alleenstaand max. €35.400, samenwonend max. €50.000.' + bron('Raad voor Rechtsbijstand, 2026', 'https://www.rvr.org/') + '<br>' +
           '<strong>Vermogensgrens:</strong> max. €36.952 per persoon.<br>' +
@@ -3870,7 +3877,7 @@ function pgRechtspraak(){
     // DE OPLOSSING
     '<div class="card" style="padding:24px;background:linear-gradient(135deg,rgba(34,197,94,.08),rgba(34,197,94,.02));border:2px solid var(--green)">' +
       '<h3 style="font-size:18px;font-weight:800;margin-bottom:12px;color:var(--green)">' +
-        '<span class="mi" style="vertical-align:-4px">lightbulb</span> De oplossing' +
+        '<span class="mi" style="vertical-align:-4px">star</span> De oplossing' +
       '</h3>' +
       '<p style="font-size:14px;color:var(--tx);line-height:1.7;margin-bottom:16px">' +
         'Het systeem repareert zichzelf niet. De overheid onderzoekt de overheid, de rechter vertrouwt de overheid, ' +
@@ -4208,219 +4215,227 @@ function pgOplossing(){
       '</div>' +
     '</div>' +
 
+
     // ==========================================
-    // SECTIE 3: FINANCIELE VERGOEDING
+    // SECTIE: FINANCIELE VERGOEDING
     // ==========================================
     '<div style="margin:28px 0 10px;display:flex;align-items:center;gap:10px">' +
       '<div style="height:2px;flex:1;background:linear-gradient(90deg,transparent,var(--accent))"></div>' +
-      '<span style="font-size:12px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:1px;white-space:nowrap">Deel 2 — Financiele vergoeding</span>' +
+      '<span style="font-size:12px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:1px;white-space:nowrap">Deel 2 — Eerlijke vergoeding</span>' +
       '<div style="height:2px;flex:1;background:linear-gradient(90deg,var(--accent),transparent)"></div>' +
     '</div>' +
 
     '<div class="card" style="padding:24px;margin-bottom:16px;border-left:4px solid var(--accent)">' +
-      '<h2 style="font-size:19px;margin-bottom:10px"><span class="mi mi-sm" style="color:var(--accent)">calculate</span> 25 jaar onrecht — wat is dat waard?</h2>' +
+      '<h2 style="font-size:19px;margin-bottom:10px"><span class="mi mi-sm" style="color:var(--accent)">balance</span> Wat krijgt een slachtoffer normaal in Nederland?</h2>' +
       '<p style="font-size:14px;line-height:1.8;color:var(--tx);margin-bottom:14px">' +
-        'De overheid bood slachtoffers €30.000 aan. Dat is het bedrag waarmee 25 jaar verwoest leven moet worden afgekocht. Laten we eens kijken hoe dat zich verhoudt tot wat Nederland betaalt aan mensen die <strong>onterecht zijn veroordeeld</strong> — een situatie die juridisch vergelijkbaar is.' +
+        'In Nederland bestaan vaste normen voor schadevergoeding bij overheidsonrecht. Rechters gebruiken de <strong>LOVS-richtlijn</strong> (Landelijk Overleg Vakinhoud Strafrecht): <strong>\u20ac105 per dag</strong> alleen al voor immaterieel leed. Inkomensverlies, woningverlies en psychische schade komen daar nog bovenop.' +
       '</p>' +
 
-      // VERGELIJKING ONTERECHT VEROORDEELDEN
+      '<div style="display:grid;gap:10px;margin-bottom:14px">' +
+        '<div style="padding:12px;border-left:3px solid var(--blue);background:rgba(59,130,246,.05);border-radius:0 var(--rs) var(--rs) 0">' +
+          '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:4px">' +
+            '<div style="font-size:14px;font-weight:700;color:var(--blue)">Lucia de Berk &mdash; 6,5 jaar onterecht vast</div>' +
+            '<div style="font-size:18px;font-weight:800;color:var(--blue)">\u20ac2+ miljoen</div>' +
+          '</div>' +
+          '<div style="font-size:13px;color:var(--tx);line-height:1.7;margin-top:4px">Onterecht veroordeeld voor moorden die nooit plaatsvonden. Na vrijspraak: ruimhartige compensatie van de staat.</div>' +
+        '</div>' +
+        '<div style="padding:12px;border-left:3px solid var(--blue);background:rgba(59,130,246,.05);border-radius:0 var(--rs) var(--rs) 0">' +
+          '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:4px">' +
+            '<div style="font-size:14px;font-weight:700;color:var(--blue)">Schiedammer Parkmoord &mdash; 3 jaar onterecht vast</div>' +
+            '<div style="font-size:18px;font-weight:800;color:var(--blue)">\u20ac1+ miljoen</div>' +
+          '</div>' +
+          '<div style="font-size:13px;color:var(--tx);line-height:1.7;margin-top:4px">Onschuldige man zat 3 jaar vast. Schadevergoeding: ruim \u20ac1 miljoen inclusief alle schadeposten.</div>' +
+        '</div>' +
+      '</div>' +
+
       '<div style="background:var(--bg2);border-radius:var(--rs);padding:16px;margin-bottom:14px">' +
-        '<div style="font-size:12px;font-weight:700;color:var(--blue);text-transform:uppercase;margin-bottom:10px"><span class="mi mi-sm">balance</span> Vergelijking: onterecht veroordeelden</div>' +
-
-        '<div style="display:grid;gap:10px">' +
-          '<div style="padding:10px;border-left:3px solid var(--blue);background:rgba(59,130,246,.05);border-radius:0 var(--rs) var(--rs) 0">' +
-            '<div style="font-size:13px;font-weight:700;color:var(--blue)">LOVS-richtlijn schadevergoeding</div>' +
-            '<div style="font-size:13px;color:var(--tx);line-height:1.7">De richtlijn van het Landelijk Overleg Vakinhoud Strafrecht (LOVS) bepaalt: <strong>€80–€130 per dag</strong> onterechte detentie voor immaterieel leed. Bij verblijf in een huis van bewaring: €105/dag. Bij een politiecel: €130/dag.</div>' +
+        '<div style="font-size:12px;font-weight:700;color:var(--accent);text-transform:uppercase;margin-bottom:10px"><span class="mi mi-sm">trending_up</span> Toegepast op toeslagenslachtoffers</div>' +
+        '<div style="font-size:14px;color:var(--tx);line-height:1.8;margin-bottom:12px">' +
+          'Toeslagenslachtoffers zijn <strong>10 tot 20+ jaar</strong> benadeeld. Ze verloren hun inkomen, hun huis, hun huwelijk, soms hun kinderen. Volgens dezelfde normen die rechters dagelijks toepassen:' +
+        '</div>' +
+        '<div style="display:grid;gap:8px">' +
+          '<div style="display:flex;justify-content:space-between;align-items:center;padding:12px;background:rgba(239,68,68,.06);border-radius:var(--rs);flex-wrap:wrap;gap:6px">' +
+            '<div style="font-size:14px"><span class="mi mi-sm" style="color:var(--accent)">person</span> <strong>Per gedupeerde ouder</strong><br><span style="font-size:12px;color:var(--tx2)">smartengeld + inkomen + woning + overige schade</span></div>' +
+            '<div style="font-size:22px;font-weight:800;color:var(--accent)">\u20ac750.000 &ndash; \u20ac1.400.000</div>' +
           '</div>' +
-
-          '<div style="padding:10px;border-left:3px solid var(--blue);background:rgba(59,130,246,.05);border-radius:0 var(--rs) var(--rs) 0">' +
-            '<div style="font-size:13px;font-weight:700;color:var(--blue)">Schiedammer Parkmoord (2004)</div>' +
-            '<div style="font-size:13px;color:var(--tx);line-height:1.7">Cees B. zat 3 jaar onterecht vast voor een moord die hij niet had gepleegd. Schadevergoeding: <strong>ruim €1 miljoen</strong> — inclusief immaterieel leed, inkomensverlies en maatschappelijke schade.</div>' +
+          '<div style="display:flex;justify-content:space-between;align-items:center;padding:12px;background:rgba(234,179,8,.06);border-radius:var(--rs);flex-wrap:wrap;gap:6px">' +
+            '<div style="font-size:14px"><span class="mi mi-sm" style="color:var(--yellow)">child_care</span> <strong>Per uit huis geplaatst kind</strong><br><span style="font-size:12px;color:var(--tx2)">hechtingsschade + onderwijs + verloren jeugd</span></div>' +
+            '<div style="font-size:22px;font-weight:800;color:var(--yellow)">~\u20ac400.000</div>' +
           '</div>' +
-
-          '<div style="padding:10px;border-left:3px solid var(--blue);background:rgba(59,130,246,.05);border-radius:0 var(--rs) var(--rs) 0">' +
-            '<div style="font-size:13px;font-weight:700;color:var(--blue)">Lucia de Berk (2010)</div>' +
-            '<div style="font-size:13px;color:var(--tx);line-height:1.7">Verpleegkundige Lucia de Berk zat <strong>6,5 jaar</strong> onterecht vast voor moorden die nooit waren gepleegd. Na vrijspraak ontving ze een schadevergoeding van <strong>meer dan €2 miljoen</strong>. De staat erkende: onterechte veroordeling verdient ruimhartige compensatie.</div>' +
-          '</div>' +
-
-          '<div style="padding:10px;border-left:3px solid var(--yellow);background:rgba(234,179,8,.05);border-radius:0 var(--rs) var(--rs) 0">' +
-            '<div style="font-size:13px;font-weight:700;color:var(--yellow)">Internationaal: Canada & Duitsland</div>' +
-            '<div style="font-size:13px;color:var(--tx);line-height:1.7"><strong>Canada:</strong> compensatie voor onterechte veroordeling varieert van $100.000 tot $500.000 per jaar detentie. David Milgaard (23 jaar onterecht vast): $10 miljoen.<br><strong>Duitsland:</strong> €75 per dag detentie als wettelijk minimum + onbeperkte civiele vordering voor alle gevolgschade. Plus volledige rehabilitatie: naam, eer, toekomst.</div>' +
+          '<div style="display:flex;justify-content:space-between;align-items:center;padding:14px;background:rgba(239,68,68,.12);border-radius:var(--rs);border:1px solid rgba(239,68,68,.2);flex-wrap:wrap;gap:6px">' +
+            '<div style="font-size:14px"><span class="mi mi-sm" style="color:var(--accent)">family_restroom</span> <strong>Gezin met 2 UHP-kinderen</strong></div>' +
+            '<div style="font-size:22px;font-weight:800;color:var(--accent)">~\u20ac2.200.000</div>' +
           '</div>' +
         '</div>' +
       '</div>' +
 
-      // DE REKENSOM
-      '<div style="background:var(--accent-soft);border:1px solid rgba(239,68,68,.2);border-radius:var(--rs);padding:16px;margin-bottom:14px">' +
-        '<div style="font-size:12px;font-weight:700;color:var(--accent);text-transform:uppercase;margin-bottom:10px"><span class="mi mi-sm">calculate</span> De rekensom die Den Haag niet wil maken</div>' +
-        '<div style="font-size:13px;color:var(--tx);line-height:1.8">' +
-          'De toeslagenaffaire begon in 2005. Het is nu 2026. Dat is <strong>minimaal 20 jaar</strong> verwoest leven voor de vroegste slachtoffers. Als we de LOVS-richtlijn toepassen (€105/dag):<br><br>' +
-          '<div style="display:grid;grid-template-columns:auto 1fr;gap:4px 14px;font-size:14px">' +
-            '<div style="font-weight:800;color:var(--accent)">20 jaar</div><div>× 365 dagen × €105/dag = <strong style="color:var(--accent)">€766.500</strong></div>' +
-            '<div style="font-weight:800;color:var(--accent)">25 jaar</div><div>× 365 dagen × €105/dag = <strong style="color:var(--accent)">€958.125</strong></div>' +
+      '<div style="background:var(--accent-soft);border:1px solid rgba(239,68,68,.2);border-radius:var(--rs);padding:16px;margin-bottom:12px">' +
+        '<div style="display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:center;margin-bottom:12px">' +
+          '<div style="text-align:center;padding:14px;background:var(--bg2);border-radius:var(--rs)">' +
+            '<div style="font-size:10px;color:var(--tx3);text-transform:uppercase;margin-bottom:4px">Overheid biedt</div>' +
+            '<div style="font-size:26px;font-weight:800;color:var(--yellow)">\u20ac30.000</div>' +
           '</div>' +
-          '<br>Dit is <strong>alleen</strong> de immaterieel-leed component. Daar bovenop komt:<br>' +
-          '• Verlies van inkomen (gemiddeld €30.000/jaar × 10 jaar = €300.000)<br>' +
-          '• Verlies van woning, hypotheek, pensioenopbouw<br>' +
-          '• Kosten van echtscheiding, psychische hulp, advocaten<br>' +
-          '• Uithuisplaatsing kinderen: onberekenbaar leed<br><br>' +
-          '<strong style="font-size:15px;color:var(--accent)">En wat biedt de overheid? €30.000.</strong><br>' +
-          'Dat is <strong>3%</strong> van wat een onterecht veroordeelde zou krijgen voor dezelfde periode. Terwijl de schade bij toeslagenslachtoffers vaak groter is: zij verloren niet alleen hun vrijheid, maar ook hun kinderen, hun huis, hun huwelijk, hun gezondheid en hun vertrouwen in de rechtsstaat.' +
-        '</div>' +
-      '</div>' +
-    '</div>' +
-
-    // ==========================================
-    // SECTIE: AVG-BOETES vs. WERKELIJKE SCHADE — DE REKENSOM
-    // ==========================================
-    '<div class="card" style="padding:24px;margin-bottom:16px;border:2px solid var(--accent);background:linear-gradient(135deg,rgba(239,68,68,.04),rgba(234,179,8,.04))">' +
-      '<h2 style="font-size:19px;margin-bottom:6px"><span class="mi mi-sm" style="color:var(--accent)">functions</span> De rekensom die alles onthult</h2>' +
-      '<p style="font-size:14px;line-height:1.8;color:var(--tx);margin-bottom:16px">' +
-        '6 AVG-overtredingen. 47.000 slachtoffers. 1.675 uit huis geplaatste kinderen. Wat levert het boetesysteem op per persoon — en hoe verhoudt dat zich tot de werkelijke schade?' +
-      '</p>' +
-
-      // STAP 1: De AVG-boetes
-      '<div style="background:var(--bg2);border-radius:var(--rs);padding:16px;margin-bottom:12px">' +
-        '<div style="font-size:12px;font-weight:700;color:var(--blue);text-transform:uppercase;margin-bottom:10px"><span class="mi mi-sm">receipt_long</span> Stap 1 — De AVG-boetes (FSV)</div>' +
-        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">' +
-          '<div style="padding:14px;background:rgba(59,130,246,.08);border-radius:var(--rs);text-align:center">' +
-            '<div style="font-size:11px;color:var(--tx3);text-transform:uppercase;margin-bottom:4px">Opgelegd</div>' +
-            '<div style="font-size:28px;font-weight:800;color:var(--blue)">€3,7 mln</div>' +
-            '<div style="font-size:11px;color:var(--tx2)">6 overtredingen</div>' +
-          '</div>' +
-          '<div style="padding:14px;background:rgba(239,68,68,.08);border-radius:var(--rs);text-align:center">' +
-            '<div style="font-size:11px;color:var(--tx3);text-transform:uppercase;margin-bottom:4px">Wettelijk maximum</div>' +
-            '<div style="font-size:28px;font-weight:800;color:var(--accent)">€100 mln</div>' +
-            '<div style="font-size:11px;color:var(--tx2)">had opgelegd kunnen worden</div>' +
+          '<div style="font-size:24px;color:var(--tx3)">vs.</div>' +
+          '<div style="text-align:center;padding:14px;background:var(--bg2);border-radius:var(--rs)">' +
+            '<div style="font-size:10px;color:var(--tx3);text-transform:uppercase;margin-bottom:4px">Normaal bij vergelijkbaar onrecht</div>' +
+            '<div style="font-size:26px;font-weight:800;color:var(--accent)">\u20ac750.000+</div>' +
           '</div>' +
         '</div>' +
-        '<div style="font-size:13px;color:var(--tx);line-height:1.8">' +
-          'De AP legde slechts <strong>3,7% van het wettelijk maximum</strong> op. De Belastingdienst kwam weg met een symbolische tik op de vingers voor het jarenlang bijhouden van een illegale zwarte lijst met 270.000 namen.' +
-        '</div>' +
-      '</div>' +
-
-      // STAP 2: Per slachtoffer
-      '<div style="background:var(--bg2);border-radius:var(--rs);padding:16px;margin-bottom:12px">' +
-        '<div style="font-size:12px;font-weight:700;color:var(--yellow);text-transform:uppercase;margin-bottom:10px"><span class="mi mi-sm">person</span> Stap 2 — Per slachtoffer</div>' +
-        '<div style="display:grid;grid-template-columns:auto 1fr;gap:6px 16px;font-size:14px;margin-bottom:14px">' +
-          '<div style="font-weight:700;color:var(--tx2)">Boete maximum:</div><div>€100.000.000</div>' +
-          '<div style="font-weight:700;color:var(--tx2)">Slachtoffers:</div><div>47.000 gedupeerde gezinnen</div>' +
-          '<div style="font-weight:700;color:var(--tx2)">UHP-kinderen:</div><div>1.675 uit huis geplaatste kinderen</div>' +
-        '</div>' +
-        '<div style="background:rgba(234,179,8,.1);border-radius:var(--rs);padding:14px;text-align:center;margin-bottom:12px">' +
-          '<div style="font-size:13px;color:var(--tx2);margin-bottom:4px">€100.000.000 &divide; 47.000 slachtoffers =</div>' +
-          '<div style="font-size:36px;font-weight:800;color:var(--yellow)">€2.128</div>' +
-          '<div style="font-size:13px;color:var(--tx2)">per slachtoffer — als het <em>maximum</em> was opgelegd</div>' +
-        '</div>' +
-        '<div style="font-size:13px;color:var(--tx);line-height:1.8">' +
-          'Zelfs als de AP het volledige wettelijke maximum van €100 miljoen had opgelegd, zou elk slachtoffer slechts <strong>€2.128</strong> ontvangen. Voor 25 jaar verwoest leven. Voor verloren kinderen, huizen, huwelijken, gezondheid en toekomst.' +
-        '</div>' +
-      '</div>' +
-
-      // STAP 3: De werkelijke schade
-      '<div style="background:var(--bg2);border-radius:var(--rs);padding:16px;margin-bottom:12px">' +
-        '<div style="font-size:12px;font-weight:700;color:var(--accent);text-transform:uppercase;margin-bottom:10px"><span class="mi mi-sm">calculate</span> Stap 3 — De werkelijke schade</div>' +
-        '<div style="font-size:13px;color:var(--tx);line-height:1.8;margin-bottom:12px">' +
-          'Wat heeft een gemiddeld toeslagengezin werkelijk verloren? Inkomensverlies, woningverlies, schulden, echtscheiding, psychische schade, uithuisplaatsing, verloren pensioenopbouw, advocaatkosten, en tientallen jaren aan gemiste kansen:' +
-        '</div>' +
-        '<div style="display:grid;grid-template-columns:auto 1fr;gap:4px 16px;font-size:13px;margin-bottom:14px;padding:12px;background:rgba(239,68,68,.06);border-radius:var(--rs)">' +
-          '<div style="font-weight:700;color:var(--tx2)">Inkomensverlies:</div><div>~€300.000 <span style="font-size:11px;color:var(--tx3)">(€30k/jaar × 10 jaar)</span></div>' +
-          '<div style="font-weight:700;color:var(--tx2)">Woningverlies:</div><div>~€150.000 <span style="font-size:11px;color:var(--tx3)">(hypotheek, gedwongen verkoop)</span></div>' +
-          '<div style="font-weight:700;color:var(--tx2)">Immaterieel leed:</div><div>~€200.000 <span style="font-size:11px;color:var(--tx3)">(LOVS-norm: €105/dag × jaren)</span></div>' +
-          '<div style="font-weight:700;color:var(--tx2)">Overige schade:</div><div>~€100.000 <span style="font-size:11px;color:var(--tx3)">(echtscheiding, gezondheid, advocaten)</span></div>' +
-        '</div>' +
-        '<div style="background:rgba(239,68,68,.1);border-radius:var(--rs);padding:14px;text-align:center;margin-bottom:12px">' +
-          '<div style="font-size:13px;color:var(--tx2);margin-bottom:4px">Gemiddelde werkelijke schade per gezin:</div>' +
-          '<div style="font-size:36px;font-weight:800;color:var(--accent)">~€750.000</div>' +
-          '<div style="font-size:13px;color:var(--tx2);margin-top:6px">× 47.000 gezinnen = <strong style="color:var(--accent);font-size:15px">€35,25 miljard</strong> totale schade</div>' +
-        '</div>' +
-      '</div>' +
-
-      // STAP 4: Het contrast
-      '<div style="background:var(--accent-soft);border:2px solid rgba(239,68,68,.3);border-radius:var(--rs);padding:16px;margin-bottom:0">' +
-        '<div style="font-size:12px;font-weight:700;color:var(--accent);text-transform:uppercase;margin-bottom:12px"><span class="mi mi-sm">compare_arrows</span> Het verpletterende contrast</div>' +
-
-        // Vergelijkingsbalk
-        '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:16px;text-align:center">' +
-          '<div style="padding:12px;background:var(--bg2);border-radius:var(--rs)">' +
-            '<div style="font-size:10px;color:var(--tx3);text-transform:uppercase;margin-bottom:4px">AVG-boete max</div>' +
-            '<div style="font-size:22px;font-weight:800;color:var(--blue)">€2.128</div>' +
-            '<div style="font-size:10px;color:var(--tx3)">per slachtoffer</div>' +
+        '<div style="position:relative;height:28px;background:var(--bg2);border-radius:12px;overflow:hidden;margin-bottom:10px">' +
+          '<div style="position:absolute;left:0;top:0;height:100%;width:4%;background:var(--yellow);border-radius:12px;display:flex;align-items:center;justify-content:center;min-width:36px">' +
+            '<span style="font-size:11px;font-weight:800;color:#fff">4%</span>' +
           '</div>' +
-          '<div style="padding:12px;background:var(--bg2);border-radius:var(--rs)">' +
-            '<div style="font-size:10px;color:var(--tx3);text-transform:uppercase;margin-bottom:4px">Compensatie</div>' +
-            '<div style="font-size:22px;font-weight:800;color:var(--yellow)">€30.000</div>' +
-            '<div style="font-size:10px;color:var(--tx3)">aangeboden</div>' +
-          '</div>' +
-          '<div style="padding:12px;background:var(--bg2);border-radius:var(--rs)">' +
-            '<div style="font-size:10px;color:var(--tx3);text-transform:uppercase;margin-bottom:4px">Werkelijke schade</div>' +
-            '<div style="font-size:22px;font-weight:800;color:var(--accent)">€750.000</div>' +
-            '<div style="font-size:10px;color:var(--tx3)">per gezin</div>' +
-          '</div>' +
+          '<div style="position:absolute;right:8px;top:50%;transform:translateY(-50%);font-size:11px;color:var(--tx3)">Eerlijke vergoeding &rarr;</div>' +
         '</div>' +
-
-        // Visuele balk
-        '<div style="margin-bottom:14px">' +
-          '<div style="font-size:11px;color:var(--tx3);margin-bottom:6px">€30.000 compensatie als percentage van de werkelijke schade:</div>' +
-          '<div style="position:relative;height:32px;background:var(--bg2);border-radius:12px;overflow:hidden">' +
-            '<div style="position:absolute;left:0;top:0;height:100%;width:4%;background:var(--yellow);border-radius:12px;display:flex;align-items:center;justify-content:center;min-width:36px">' +
-              '<span style="font-size:11px;font-weight:800;color:#fff">4%</span>' +
-            '</div>' +
-            '<div style="position:absolute;right:8px;top:50%;transform:translateY(-50%);font-size:11px;color:var(--tx3)">€750.000 werkelijke schade &rarr;</div>' +
-          '</div>' +
-        '</div>' +
-
         '<div style="font-size:14px;color:var(--tx);line-height:1.8">' +
-          '<strong style="color:var(--accent)">De overheid biedt €30.000.</strong> Dat is <strong>4%</strong> van de werkelijke schade van ~€750.000 per gezin.<br><br>' +
-          'De totale werkelijke schade bedraagt <strong>€35,25 miljard</strong>. De maximale AVG-boete (€100 mln) dekt daarvan <strong>0,28%</strong>. De daadwerkelijk opgelegde boete (€3,7 mln) dekt <strong>0,01%</strong>.<br><br>' +
-          '<strong style="font-size:15px">Het boetesysteem is niet ontworpen voor dit soort overheidscriminaliteit. De schaal van het onrecht overstijgt elk beschikbaar rechtsmiddel.</strong>' +
+          '<strong style="color:var(--accent)">\u20ac30.000 is 4% van wat een slachtoffer normaal zou krijgen.</strong> Lucia de Berk kreeg \u20ac2+ miljoen voor 6,5 jaar. Een toeslagenslachtoffer met 20 jaar schade krijgt \u20ac30.000.' +
         '</div>' +
+      '</div>' +
+
+      '<div style="text-align:center">' +
+        '<button class="btn btn-ghost" onclick="go(\'/geld\')"><span class="mi mi-sm">payments</span> Volledige financiele onderbouwing</button>' +
       '</div>' +
     '</div>' +
 
     // WAAROM INDIVIDUEEL CLAIMEN NIET WERKT
     '<div class="card" style="padding:24px;margin-bottom:16px;border-left:4px solid var(--purple)">' +
-      '<h2 style="font-size:19px;margin-bottom:10px"><span class="mi mi-sm" style="color:var(--purple)">folder_off</span> Waarom individueel claimen niet werkt</h2>' +
+      '<h2 style="font-size:19px;margin-bottom:10px"><span class="mi mi-sm" style="color:var(--purple)">block</span> Waarom individueel claimen niet werkt</h2>' +
       '<p style="font-size:14px;line-height:1.8;color:var(--tx);margin-bottom:10px">' +
         'De hersteloperatie eist dat slachtoffers per post aantonen wat ze verloren hebben. Elk bedrag, elke schuld, elk verloren inkomen moet worden bewezen met documenten. <strong>Maar de Belastingdienst heeft zelf de administratie vernietigd.</strong>' +
       '</p>' +
 
       '<div style="background:var(--bg2);border-radius:var(--rs);padding:16px;margin-bottom:12px">' +
-        '<div style="font-size:12px;font-weight:700;color:var(--purple);text-transform:uppercase;margin-bottom:8px"><span class="mi mi-sm">description</span> Het bewijsprobleem</div>' +
+        '<div style="font-size:12px;font-weight:700;color:var(--purple);text-transform:uppercase;margin-bottom:8px"><span class="mi mi-sm">find_in_page</span> Het bewijsprobleem</div>' +
         '<div style="font-size:13px;color:var(--tx);line-height:1.8">' +
-          '<strong>De Belastingdienst vernietigde dossiers.</strong> De enquetecommissie concludeerde dat informatiebeheer bij de Belastingdienst structureel faalde.' + bron('Enquetecommissie 2024', 'https://www.tweedekamer.nl/kamerstukken/detail?id=2024Z02942&did=2024D06757') + ' Dossiers werden niet bewaard, digitale systemen werden gewist, e-mails werden verwijderd. De Rutte Doctrine — geen notulen, geen sms\'jes — was geen toeval maar beleid.<br><br>' +
-          '<strong>Slachtoffers hebben na 10-20 jaar geen documenten meer.</strong> Bankafschriften worden na 7 jaar gewist. Huurcontracten zijn zoek na een gedwongen verhuizing. Werkgeversverklaringen bestaan niet meer bij failliete bedrijven. Medische dossiers zijn incompleet. Bewijs van psychisch leed is per definitie subjectief.<br><br>' +
-          '<strong>De bewijslast ligt bij het slachtoffer.</strong> De overheid veroorzaakt het onrecht, vernietigt het bewijs, en eist vervolgens dat het slachtoffer het bewijs levert. Dat is niet alleen onredelijk — het is juridisch onhoudbaar. In het strafrecht geldt: als de dader bewijsmateriaal vernietigt, wordt dat tegen de dader gebruikt. Bij de hersteloperatie is het omgekeerd.' +
+          '<strong>De Belastingdienst vernietigde dossiers.</strong> De enquetecommissie concludeerde dat informatiebeheer structureel faalde.' + bron('Enquetecommissie 2024', 'https://www.tweedekamer.nl/kamerstukken/detail?id=2024Z02942&did=2024D06757') + ' Dossiers niet bewaard, systemen gewist, e-mails verwijderd.<br><br>' +
+          '<strong>Slachtoffers hebben na 10-20 jaar geen documenten meer.</strong> Bankafschriften worden na 7 jaar gewist. Huurcontracten zijn zoek. Werkgeversverklaringen bestaan niet meer.<br><br>' +
+          '<strong>De bewijslast ligt bij het slachtoffer.</strong> De overheid veroorzaakt het onrecht, vernietigt het bewijs, en eist vervolgens dat het slachtoffer het bewijs levert.' +
         '</div>' +
       '</div>' +
 
       '<div style="background:var(--green-soft);border:1px solid rgba(34,197,94,.2);border-radius:var(--rs);padding:16px;margin-bottom:0">' +
         '<div style="font-size:12px;font-weight:700;color:var(--green);text-transform:uppercase;margin-bottom:8px"><span class="mi mi-sm">check_circle</span> De oplossing: forfaitaire vergoeding</div>' +
         '<div style="font-size:13px;color:var(--tx);line-height:1.8">' +
-          'De oplossing is een <strong>forfaitaire vergoeding</strong> — een vast bedrag per schadecategorie, zonder individuele bewijslast. Dit is precies hoe het werkt bij de aardbevingsschade in Groningen (vaste vergoeding per schade-categorie) en bij de LOVS-richtlijn (vast bedrag per dag detentie).<br><br>' +
-          '<strong>Categorieen:</strong><br>' +
-          '• Categorie 1: Financieel gedupeerd, geen uithuisplaatsing → basisvergoeding<br>' +
-          '• Categorie 2: Financieel gedupeerd + verlies woning → basisvergoeding + woningcomponent<br>' +
-          '• Categorie 3: Financieel gedupeerd + echtscheiding → basisvergoeding + relatiecomponent<br>' +
-          '• Categorie 4: Uithuisplaatsing kind(eren) → basisvergoeding + €100.000 per kind<br>' +
-          '• Categorie 5: Overlijden kind → basisvergoeding + volledige rehabilitatie nabestaanden<br><br>' +
-          'Het basisidee: <strong>de staat bepaalt de categorien, niet het individu.</strong> Wie gedupeerd is, wordt ingedeeld op basis van wat de staat zelf weet — want de staat heeft alle data. De bewijslast verschuift naar waar die hoort: bij de dader.' +
+          'Een <strong>forfaitaire vergoeding</strong> \u2014 een vast bedrag per schadecategorie, zonder individuele bewijslast. Precies zoals bij de aardbevingsschade in Groningen en bij de LOVS-richtlijn.<br><br>' +
+          '<strong>De staat bepaalt de categorieen, niet het individu.</strong> Wie gedupeerd is, wordt ingedeeld op basis van wat de staat zelf weet. De bewijslast verschuift naar waar die hoort: bij de dader.' +
+        '</div>' +
+      '</div>' +
+    '</div>' +
+    // SAMENVATTING (bijgewerkt)
+    '<div class="card" style="padding:24px;margin-bottom:16px;background:var(--yellow-soft);border:1px solid rgba(234,179,8,.25)">' +
+      '<h2 style="font-size:17px;margin-bottom:10px;color:var(--yellow)">Samengevat</h2>' +
+      '<div style="font-size:14px;line-height:1.8;color:var(--tx)">' +
+        '<strong>Nieuw BSN:</strong> De juridische basis bestaat (Wabb, AVG, getuigenbescherming). De infrastructuur bestaat. Van Huffelens argumenten zijn stuk voor stuk weerlegd. Het enige wat ontbreekt is politieke wil.<br><br>' +
+        '<strong>Eerlijke vergoeding:</strong> €30.000 is een belediging. Op basis van bestaande normen (LOVS-richtlijn, jurisprudentie) heeft een gedupeerde ouder recht op <strong>€750.000 tot €1.400.000</strong>. Een uit huis geplaatst kind op <strong>~€400.000</strong>. Een forfaitaire regeling per schadecategorie is de enige werkbare oplossing.<br><br>' +
+        '<strong>De kern:</strong> De overheid vernietigt het bewijs en eist dat het slachtoffer het bewijs levert. De overheid besmet het BSN en zegt dat een nieuw BSN "te ingewikkeld" is. <strong>Het is geen onvermogen — het is een systeem dat zichzelf beschermt.</strong> Bekijk de <a href="#" onclick="go(\'/geld\');return false" style="color:var(--yellow);text-decoration:underline">volledige financiele analyse</a>.' +
+      '</div>' +
+    '</div>' +
+
+    // CTA
+    '<div style="text-align:center;padding:20px 0">' +
+      '<h3 style="font-size:17px;margin-bottom:6px">Genoeg gelezen?</h3>' +
+      '<p style="font-size:13px;color:var(--tx2);margin-bottom:14px">Deel dit verhaal. Deel de feiten. <strong style="color:var(--yellow)">Laat zien dat het wel kan.</strong></p>' +
+      '<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">' +
+        '<button class="btn btn-red btn-lg" onclick="go(\'/melden\')"><span class="mi">add_circle</span> Doe een melding</button>' +
+        '<button class="btn btn-ghost" onclick="go(\'/geld\')"><span class="mi mi-sm">payments</span> Waar gaat het geld heen?</button>' +
+      '</div>' +
+    '</div>' +
+    bronnenFooter() +
+  '</div>';
+}
+
+// ============ PAGE: GELD — HET VERDIENMODEL VAN DE CRISIS ============
+function pgGeld(){
+  resetBronnen();
+  // Consultancy data
+  var firms = [
+    { naam:'PwC', toeslagen:true, groningen:true, uwv:true, bd_it:true, omschrijving:'FSV-onderzoeken (€15+ mln), diverse audits Belastingdienst, IT-reviews' },
+    { naam:'KPMG', toeslagen:true, groningen:true, uwv:true, bd_it:true, omschrijving:'FSV-rapport fase 1, financiele audits, reorganisatie-advies' },
+    { naam:'Accenture', toeslagen:true, groningen:false, uwv:true, bd_it:true, omschrijving:'IT-systemen Belastingdienst, digitalisering toeslagen, €100+ mln aan IT-contracten' },
+    { naam:'McKinsey', toeslagen:true, groningen:false, uwv:false, bd_it:true, omschrijving:'Strategisch advies reorganisatie Belastingdienst "Investeringsagenda" (€23 mln, mislukt)' },
+    { naam:'Capgemini', toeslagen:true, groningen:true, uwv:true, bd_it:true, omschrijving:'IT-ontwikkeling, portalen, digitale dienstverlening overheid' },
+    { naam:'EY', toeslagen:true, groningen:true, uwv:false, bd_it:true, omschrijving:'Financiele audits, compliance-onderzoeken, IT-advies' },
+    { naam:'BCG', toeslagen:true, groningen:false, uwv:false, bd_it:false, omschrijving:'Strategisch advies hersteloperatie, procesoptimalisatie UHT' },
+    { naam:'Deloitte', toeslagen:true, groningen:true, uwv:true, bd_it:true, omschrijving:'Risicoanalyses, compliance, IT-audits, procesadvies' }
+  ];
+
+  var tabelRows = '';
+  firms.forEach(function(f){
+    var v = function(b){ return b ? '<span style="color:var(--accent);font-weight:800">&#10003;</span>' : '<span style="color:var(--tx3)">—</span>'; };
+    tabelRows += '<tr style="border-bottom:1px solid rgba(255,255,255,.06)">' +
+      '<td style="padding:8px 6px;font-weight:700;font-size:13px;white-space:nowrap">' + f.naam + '</td>' +
+      '<td style="padding:8px 6px;text-align:center">' + v(f.toeslagen) + '</td>' +
+      '<td style="padding:8px 6px;text-align:center">' + v(f.groningen) + '</td>' +
+      '<td style="padding:8px 6px;text-align:center">' + v(f.uwv) + '</td>' +
+      '<td style="padding:8px 6px;text-align:center">' + v(f.bd_it) + '</td>' +
+      '<td style="padding:8px 6px;font-size:11px;color:var(--tx2)">' + f.omschrijving + '</td>' +
+    '</tr>';
+  });
+
+  return '<div class="page">' +
+
+    // HERO
+    '<div style="text-align:center;padding:28px 0 20px">' +
+      '<span class="mi" style="font-size:48px;color:var(--accent);display:block;margin-bottom:8px">payments</span>' +
+      '<h1 style="font-size:clamp(22px,4vw,32px);font-weight:800;line-height:1.2">De crisis als<br><span style="color:var(--accent)">verdienmodel</span></h1>' +
+      '<p style="font-size:14px;color:var(--tx2);max-width:600px;margin:10px auto 0">€11,7 miljard aan "herstel." Hoeveel daarvan bereikt de slachtoffers? En wie verdient er wél aan?</p>' +
+    '</div>' +
+
+
+    // ==========================================
+    // SECTIE: WAT SLACHTOFFERS HOREN TE KRIJGEN
+    // ==========================================
+    '<div style="margin:24px 0 10px;display:flex;align-items:center;gap:10px">' +
+      '<div style="height:2px;flex:1;background:linear-gradient(90deg,transparent,var(--green))"></div>' +
+      '<span style="font-size:12px;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:1px;white-space:nowrap">Wat slachtoffers horen te krijgen</span>' +
+      '<div style="height:2px;flex:1;background:linear-gradient(90deg,var(--green),transparent)"></div>' +
+    '</div>' +
+
+    '<div class="card" style="padding:24px;margin-bottom:16px;border-left:4px solid var(--green)">' +
+      '<h2 style="font-size:19px;margin-bottom:10px"><span class="mi mi-sm" style="color:var(--green)">gavel</span> De LOVS-richtlijn: wat rechters toekennen</h2>' +
+      '<p style="font-size:14px;line-height:1.8;color:var(--tx);margin-bottom:14px">' +
+        'Het <strong>Landelijk Overleg Vakinhoud Strafrecht (LOVS)</strong> is het overleg van alle Nederlandse strafrechters. Zij hanteren vaste bedragen voor immaterieel leed bij onterechte detentie en overheidsonrecht:' +
+      '</p>' +
+      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">' +
+        '<div style="padding:14px;background:rgba(34,197,94,.08);border-radius:var(--rs);text-align:center">' +
+          '<div style="font-size:28px;font-weight:800;color:var(--green)">\u20ac105</div>' +
+          '<div style="font-size:12px;color:var(--tx2)">per dag &mdash; huis van bewaring</div>' +
+        '</div>' +
+        '<div style="padding:14px;background:rgba(34,197,94,.08);border-radius:var(--rs);text-align:center">' +
+          '<div style="font-size:28px;font-weight:800;color:var(--green)">\u20ac130</div>' +
+          '<div style="font-size:12px;color:var(--tx2)">per dag &mdash; politiecel</div>' +
+        '</div>' +
+      '</div>' +
+      '<p style="font-size:13px;line-height:1.7;color:var(--tx);margin-bottom:14px">' +
+        'Dit is <strong>alleen</strong> voor immaterieel leed (smartengeld). Inkomensverlies, woningverlies, psychische schade en andere materi\u00eble schade komt daar bovenop. Bij vergelijkbare zaken betaalt Nederland <strong>\u20ac300.000 \u2013 \u20ac500.000 per jaar</strong> aan totale schadevergoeding.' +
+      '</p>' +
+
+      '<div style="display:grid;gap:10px;margin-bottom:0">' +
+        '<div style="padding:12px;border-left:3px solid var(--blue);background:rgba(59,130,246,.05);border-radius:0 var(--rs) var(--rs) 0">' +
+          '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:4px">' +
+            '<div style="font-size:14px;font-weight:700;color:var(--blue)">Lucia de Berk &mdash; 6,5 jaar onterecht vast</div>' +
+            '<div style="font-size:18px;font-weight:800;color:var(--blue)">\u20ac2+ miljoen</div>' +
+          '</div>' +
+          '<div style="font-size:13px;color:var(--tx);line-height:1.7;margin-top:4px">Verpleegkundige die onterecht werd veroordeeld voor moorden die nooit plaatsvonden. Na vrijspraak ontving ze meer dan \u20ac2 miljoen schadevergoeding.</div>' +
+        '</div>' +
+        '<div style="padding:12px;border-left:3px solid var(--blue);background:rgba(59,130,246,.05);border-radius:0 var(--rs) var(--rs) 0">' +
+          '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:4px">' +
+            '<div style="font-size:14px;font-weight:700;color:var(--blue)">Schiedammer Parkmoord &mdash; 3 jaar onterecht vast</div>' +
+            '<div style="font-size:18px;font-weight:800;color:var(--blue)">\u20ac1+ miljoen</div>' +
+          '</div>' +
+          '<div style="font-size:13px;color:var(--tx);line-height:1.7;margin-top:4px">Cees B. zat 3 jaar vast voor een moord die hij niet pleegde. Schadevergoeding: ruim \u20ac1 miljoen, inclusief alle schadeposten.</div>' +
         '</div>' +
       '</div>' +
     '</div>' +
 
-    // ==========================================
-    // BEREKENING: TOTAALBEDRAG PER SLACHTOFFER EN KIND
-    // ==========================================
     '<div class="card" style="padding:24px;margin-bottom:16px;border:2px solid var(--green);background:linear-gradient(135deg,rgba(34,197,94,.04),rgba(234,179,8,.04))">' +
-      '<h2 style="font-size:19px;margin-bottom:6px"><span class="mi mi-sm" style="color:var(--green)">calculate</span> De berekening: wat zou elk slachtoffer moeten krijgen?</h2>' +
+      '<h2 style="font-size:19px;margin-bottom:6px"><span class="mi mi-sm" style="color:var(--green)">attach_money</span> Berekening per slachtoffer</h2>' +
       '<p style="font-size:14px;line-height:1.8;color:var(--tx);margin-bottom:16px">' +
-        'Op basis van de LOVS-richtlijn, vastgestelde schadecategorieen en gangbare jurisprudentie: dit is wat een eerlijke vergoeding er per persoon uit zou zien.' +
+        'Op basis van de LOVS-richtlijn, vastgestelde schadecategorie\u00ebn en gangbare jurisprudentie:' +
       '</p>' +
 
-      // === OUDER / SLACHTOFFER ===
       '<div style="background:var(--bg2);border-radius:var(--rs);padding:16px;margin-bottom:14px">' +
-        '<div style="font-size:12px;font-weight:700;color:var(--accent);text-transform:uppercase;margin-bottom:12px"><span class="mi mi-sm">person</span> Gedupeerde ouder — berekening</div>' +
+        '<div style="font-size:12px;font-weight:700;color:var(--accent);text-transform:uppercase;margin-bottom:12px"><span class="mi mi-sm">person</span> Gedupeerde ouder</div>' +
         '<table style="width:100%;border-collapse:collapse;font-size:13px">' +
           '<tr style="border-bottom:2px solid var(--glass-bd)">' +
             '<td style="padding:8px 6px;font-weight:700;color:var(--tx2)">Schadepost</td>' +
@@ -4429,52 +4444,51 @@ function pgOplossing(){
           '</tr>' +
           '<tr style="border-bottom:1px solid var(--glass-bd)">' +
             '<td style="padding:8px 6px;font-weight:600">Immaterieel leed</td>' +
-            '<td style="padding:8px 6px;color:var(--tx3);font-size:11px">LOVS €105/dag × 7.300 dagen (20 jaar)</td>' +
-            '<td style="padding:8px 6px;text-align:right;font-weight:700;color:var(--accent)">€766.500</td>' +
+            '<td style="padding:8px 6px;color:var(--tx3);font-size:11px">LOVS \u20ac105/dag &times; 7.300 dagen (20 jaar)</td>' +
+            '<td style="padding:8px 6px;text-align:right;font-weight:700;color:var(--accent)">\u20ac766.500</td>' +
           '</tr>' +
           '<tr style="border-bottom:1px solid var(--glass-bd)">' +
             '<td style="padding:8px 6px;font-weight:600">Inkomensverlies</td>' +
-            '<td style="padding:8px 6px;color:var(--tx3);font-size:11px">gem. €30.000/jaar × 10 jaar werkloos</td>' +
-            '<td style="padding:8px 6px;text-align:right;font-weight:700">€300.000</td>' +
+            '<td style="padding:8px 6px;color:var(--tx3);font-size:11px">gem. \u20ac30.000/jaar &times; 10 jaar werkloos</td>' +
+            '<td style="padding:8px 6px;text-align:right;font-weight:700">\u20ac300.000</td>' +
           '</tr>' +
           '<tr style="border-bottom:1px solid var(--glass-bd)">' +
             '<td style="padding:8px 6px;font-weight:600">Woningverlies</td>' +
             '<td style="padding:8px 6px;color:var(--tx3);font-size:11px">gedwongen verkoop, hypotheekschade, verhuizingen</td>' +
-            '<td style="padding:8px 6px;text-align:right;font-weight:700">€150.000</td>' +
+            '<td style="padding:8px 6px;text-align:right;font-weight:700">\u20ac150.000</td>' +
           '</tr>' +
           '<tr style="border-bottom:1px solid var(--glass-bd)">' +
             '<td style="padding:8px 6px;font-weight:600">Pensioenschade</td>' +
-            '<td style="padding:8px 6px;color:var(--tx3);font-size:11px">10 jaar geen opbouw, gemiste rendement</td>' +
-            '<td style="padding:8px 6px;text-align:right;font-weight:700">€75.000</td>' +
+            '<td style="padding:8px 6px;color:var(--tx3);font-size:11px">10 jaar geen opbouw, gemist rendement</td>' +
+            '<td style="padding:8px 6px;text-align:right;font-weight:700">\u20ac75.000</td>' +
           '</tr>' +
           '<tr style="border-bottom:1px solid var(--glass-bd)">' +
             '<td style="padding:8px 6px;font-weight:600">Psychische schade</td>' +
             '<td style="padding:8px 6px;color:var(--tx3);font-size:11px">PTSS, depressie, behandeling, medicatie</td>' +
-            '<td style="padding:8px 6px;text-align:right;font-weight:700">€50.000</td>' +
+            '<td style="padding:8px 6px;text-align:right;font-weight:700">\u20ac50.000</td>' +
           '</tr>' +
           '<tr style="border-bottom:1px solid var(--glass-bd)">' +
             '<td style="padding:8px 6px;font-weight:600">Relatieschade</td>' +
             '<td style="padding:8px 6px;color:var(--tx3);font-size:11px">echtscheiding, gezinsontwrichting</td>' +
-            '<td style="padding:8px 6px;text-align:right;font-weight:700">€50.000</td>' +
+            '<td style="padding:8px 6px;text-align:right;font-weight:700">\u20ac50.000</td>' +
           '</tr>' +
           '<tr style="border-bottom:1px solid var(--glass-bd)">' +
             '<td style="padding:8px 6px;font-weight:600">Juridische kosten</td>' +
             '<td style="padding:8px 6px;color:var(--tx3);font-size:11px">advocaat, bezwaar, procedures, bijstand</td>' +
-            '<td style="padding:8px 6px;text-align:right;font-weight:700">€25.000</td>' +
+            '<td style="padding:8px 6px;text-align:right;font-weight:700">\u20ac25.000</td>' +
           '</tr>' +
           '<tr style="background:rgba(239,68,68,.1);border-top:2px solid var(--accent)">' +
             '<td colspan="2" style="padding:10px 6px;font-weight:800;font-size:14px;color:var(--accent)">TOTAAL OUDER</td>' +
-            '<td style="padding:10px 6px;text-align:right;font-weight:800;font-size:20px;color:var(--accent)">€1.416.500</td>' +
+            '<td style="padding:10px 6px;text-align:right;font-weight:800;font-size:20px;color:var(--accent)">\u20ac1.416.500</td>' +
           '</tr>' +
         '</table>' +
         '<div style="margin-top:10px;font-size:12px;color:var(--tx3);line-height:1.6">' +
-          'Ter vergelijking: de overheid biedt <strong style="color:var(--yellow)">€30.000</strong> via de Catshuisregeling — dat is <strong>2,1%</strong> van het eerlijke bedrag.' +
+          'De overheid biedt <strong style="color:var(--yellow)">\u20ac30.000</strong> via de Catshuisregeling \u2014 dat is <strong>2,1%</strong> van het eerlijke bedrag.' +
         '</div>' +
       '</div>' +
 
-      // === KINDSLACHTOFFER (UHP) ===
       '<div style="background:var(--bg2);border-radius:var(--rs);padding:16px;margin-bottom:14px">' +
-        '<div style="font-size:12px;font-weight:700;color:var(--yellow);text-transform:uppercase;margin-bottom:12px"><span class="mi mi-sm">child_care</span> Kindslachtoffer (uit huis geplaatst) — berekening</div>' +
+        '<div style="font-size:12px;font-weight:700;color:var(--yellow);text-transform:uppercase;margin-bottom:12px"><span class="mi mi-sm">child_care</span> Kindslachtoffer (uit huis geplaatst)</div>' +
         '<table style="width:100%;border-collapse:collapse;font-size:13px">' +
           '<tr style="border-bottom:2px solid var(--glass-bd)">' +
             '<td style="padding:8px 6px;font-weight:700;color:var(--tx2)">Schadepost</td>' +
@@ -4483,97 +4497,87 @@ function pgOplossing(){
           '</tr>' +
           '<tr style="border-bottom:1px solid var(--glass-bd)">' +
             '<td style="padding:8px 6px;font-weight:600">Immaterieel leed UHP</td>' +
-            '<td style="padding:8px 6px;color:var(--tx3);font-size:11px">LOVS €105/dag × 1.460 dagen (gem. 4 jaar UHP)</td>' +
-            '<td style="padding:8px 6px;text-align:right;font-weight:700;color:var(--yellow)">€153.300</td>' +
+            '<td style="padding:8px 6px;color:var(--tx3);font-size:11px">LOVS \u20ac105/dag &times; 1.460 dagen (gem. 4 jaar UHP)</td>' +
+            '<td style="padding:8px 6px;text-align:right;font-weight:700;color:var(--yellow)">\u20ac153.300</td>' +
           '</tr>' +
           '<tr style="border-bottom:1px solid var(--glass-bd)">' +
             '<td style="padding:8px 6px;font-weight:600">Hechtingsschade</td>' +
             '<td style="padding:8px 6px;color:var(--tx3);font-size:11px">ontwrichting ouder-kind band, langdurige psychische gevolgen</td>' +
-            '<td style="padding:8px 6px;text-align:right;font-weight:700">€100.000</td>' +
+            '<td style="padding:8px 6px;text-align:right;font-weight:700">\u20ac100.000</td>' +
           '</tr>' +
           '<tr style="border-bottom:1px solid var(--glass-bd)">' +
             '<td style="padding:8px 6px;font-weight:600">Onderwijsschade</td>' +
             '<td style="padding:8px 6px;color:var(--tx3);font-size:11px">schoolwisselingen, achterstand, gemiste kansen</td>' +
-            '<td style="padding:8px 6px;text-align:right;font-weight:700">€50.000</td>' +
+            '<td style="padding:8px 6px;text-align:right;font-weight:700">\u20ac50.000</td>' +
           '</tr>' +
           '<tr style="border-bottom:1px solid var(--glass-bd)">' +
             '<td style="padding:8px 6px;font-weight:600">Verloren jeugd</td>' +
             '<td style="padding:8px 6px;color:var(--tx3);font-size:11px">onherstelbaar gemis gezinsleven, identiteitsschade</td>' +
-            '<td style="padding:8px 6px;text-align:right;font-weight:700">€100.000</td>' +
+            '<td style="padding:8px 6px;text-align:right;font-weight:700">\u20ac100.000</td>' +
           '</tr>' +
           '<tr style="background:rgba(234,179,8,.1);border-top:2px solid var(--yellow)">' +
             '<td colspan="2" style="padding:10px 6px;font-weight:800;font-size:14px;color:var(--yellow)">TOTAAL PER KIND</td>' +
-            '<td style="padding:10px 6px;text-align:right;font-weight:800;font-size:20px;color:var(--yellow)">€403.300</td>' +
+            '<td style="padding:10px 6px;text-align:right;font-weight:800;font-size:20px;color:var(--yellow)">\u20ac403.300</td>' +
           '</tr>' +
         '</table>' +
         '<div style="margin-top:10px;font-size:12px;color:var(--tx3);line-height:1.6">' +
-          'De kindregeling bood aanvankelijk <strong style="color:var(--yellow)">€10.000</strong> per kind — dat is <strong>2,5%</strong> van het eerlijke bedrag.' +
+          'De kindregeling bood aanvankelijk <strong style="color:var(--yellow)">\u20ac10.000</strong> per kind \u2014 dat is <strong>2,5%</strong> van het eerlijke bedrag.' +
         '</div>' +
       '</div>' +
 
-      // === TOTAAL GEZIN ===
       '<div style="background:var(--accent-soft);border:2px solid rgba(239,68,68,.3);border-radius:var(--rs);padding:20px;margin-bottom:0">' +
-        '<div style="font-size:12px;font-weight:700;color:var(--accent);text-transform:uppercase;margin-bottom:14px"><span class="mi mi-sm">family_restroom</span> Totaal gezin — voorbeeld: ouder + 2 uit huis geplaatste kinderen</div>' +
+        '<div style="font-size:12px;font-weight:700;color:var(--accent);text-transform:uppercase;margin-bottom:14px"><span class="mi mi-sm">family_restroom</span> Totaal gezin \u2014 ouder + 2 uit huis geplaatste kinderen</div>' +
         '<div style="display:grid;gap:8px;margin-bottom:16px">' +
           '<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:var(--bg2);border-radius:var(--rs)">' +
             '<div style="font-size:14px;font-weight:600"><span class="mi mi-sm" style="color:var(--accent)">person</span> Ouder</div>' +
-            '<div style="font-size:16px;font-weight:800;color:var(--accent)">€1.416.500</div>' +
+            '<div style="font-size:16px;font-weight:800;color:var(--accent)">\u20ac1.416.500</div>' +
           '</div>' +
           '<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:var(--bg2);border-radius:var(--rs)">' +
             '<div style="font-size:14px;font-weight:600"><span class="mi mi-sm" style="color:var(--yellow)">child_care</span> Kind 1 (UHP)</div>' +
-            '<div style="font-size:16px;font-weight:800;color:var(--yellow)">€403.300</div>' +
+            '<div style="font-size:16px;font-weight:800;color:var(--yellow)">\u20ac403.300</div>' +
           '</div>' +
           '<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:var(--bg2);border-radius:var(--rs)">' +
             '<div style="font-size:14px;font-weight:600"><span class="mi mi-sm" style="color:var(--yellow)">child_care</span> Kind 2 (UHP)</div>' +
-            '<div style="font-size:16px;font-weight:800;color:var(--yellow)">€403.300</div>' +
+            '<div style="font-size:16px;font-weight:800;color:var(--yellow)">\u20ac403.300</div>' +
           '</div>' +
         '</div>' +
-
         '<div style="background:rgba(239,68,68,.12);border-radius:var(--rs);padding:18px;text-align:center;margin-bottom:16px">' +
           '<div style="font-size:13px;color:var(--tx2);margin-bottom:4px">Eerlijke vergoeding voor dit gezin:</div>' +
-          '<div style="font-size:42px;font-weight:900;color:var(--accent);line-height:1">€2.223.100</div>' +
-          '<div style="font-size:13px;color:var(--tx2);margin-top:8px">€1.416.500 + 2 × €403.300</div>' +
+          '<div style="font-size:42px;font-weight:900;color:var(--accent);line-height:1">\u20ac2.223.100</div>' +
+          '<div style="font-size:13px;color:var(--tx2);margin-top:8px">\u20ac1.416.500 + 2 &times; \u20ac403.300</div>' +
         '</div>' +
-
-        // Vergelijking overheid
         '<div style="display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:center;margin-bottom:14px">' +
           '<div style="text-align:center;padding:14px;background:var(--bg2);border-radius:var(--rs)">' +
             '<div style="font-size:10px;color:var(--tx3);text-transform:uppercase;margin-bottom:4px">Overheid biedt</div>' +
-            '<div style="font-size:24px;font-weight:800;color:var(--yellow)">€50.000</div>' +
-            '<div style="font-size:10px;color:var(--tx3)">€30.000 ouder + 2×€10.000 kind</div>' +
+            '<div style="font-size:24px;font-weight:800;color:var(--yellow)">\u20ac50.000</div>' +
+            '<div style="font-size:10px;color:var(--tx3)">\u20ac30.000 ouder + 2&times;\u20ac10.000 kind</div>' +
           '</div>' +
           '<div style="font-size:24px;color:var(--tx3)">vs.</div>' +
           '<div style="text-align:center;padding:14px;background:var(--bg2);border-radius:var(--rs)">' +
             '<div style="font-size:10px;color:var(--tx3);text-transform:uppercase;margin-bottom:4px">Eerlijk bedrag</div>' +
-            '<div style="font-size:24px;font-weight:800;color:var(--accent)">€2.223.100</div>' +
-            '<div style="font-size:10px;color:var(--tx3)">op basis van LOVS + schadecategorieen</div>' +
+            '<div style="font-size:24px;font-weight:800;color:var(--accent)">\u20ac2.223.100</div>' +
+            '<div style="font-size:10px;color:var(--tx3)">op basis van LOVS + schadecategorie\u00ebn</div>' +
           '</div>' +
         '</div>' +
-
-        // Visuele balk
-        '<div style="margin-bottom:14px">' +
-          '<div style="font-size:11px;color:var(--tx3);margin-bottom:6px">€50.000 van de overheid als percentage van de eerlijke vergoeding:</div>' +
-          '<div style="position:relative;height:32px;background:var(--bg2);border-radius:12px;overflow:hidden">' +
-            '<div style="position:absolute;left:0;top:0;height:100%;width:2.2%;background:var(--yellow);border-radius:12px;display:flex;align-items:center;justify-content:center;min-width:36px">' +
-              '<span style="font-size:11px;font-weight:800;color:#fff">2,2%</span>' +
-            '</div>' +
-            '<div style="position:absolute;right:8px;top:50%;transform:translateY(-50%);font-size:11px;color:var(--tx3)">€2.223.100 eerlijke vergoeding &rarr;</div>' +
+        '<div style="position:relative;height:32px;background:var(--bg2);border-radius:12px;overflow:hidden;margin-bottom:14px">' +
+          '<div style="position:absolute;left:0;top:0;height:100%;width:2.2%;background:var(--yellow);border-radius:12px;display:flex;align-items:center;justify-content:center;min-width:36px">' +
+            '<span style="font-size:11px;font-weight:800;color:#fff">2,2%</span>' +
           '</div>' +
+          '<div style="position:absolute;right:8px;top:50%;transform:translateY(-50%);font-size:11px;color:var(--tx3)">\u20ac2.223.100 eerlijke vergoeding &rarr;</div>' +
         '</div>' +
-
         '<div style="font-size:14px;color:var(--tx);line-height:1.8">' +
-          '<strong style="color:var(--accent)">De overheid biedt dit gezin €50.000.</strong> Het eerlijke bedrag is <strong>€2.223.100</strong>. Dat is een factor <strong>44</strong> verschil.<br><br>' +
-          'Dit is geen overdrijving. Dit is precies wat Nederland zou betalen als deze mensen onterecht veroordeeld waren in plaats van onterecht als fraudeur bestempeld. Het verschil: bij een rechterlijke dwaling krijg je ruimhartige compensatie. Bij overheidsonrecht krijg je <strong>een fooi en de opdracht om zelf te bewijzen wat je verloren hebt</strong>.' +
+          '<strong style="color:var(--accent)">De overheid biedt dit gezin \u20ac50.000.</strong> Het eerlijke bedrag is <strong>\u20ac2.223.100</strong>. Dat is een factor <strong>44</strong> verschil. Dit is geen overdrijving \u2014 dit is precies wat Nederland zou betalen als deze mensen onterecht veroordeeld waren.' +
         '</div>' +
       '</div>' +
     '</div>' +
+
 
     // ==========================================
     // SECTIE 3: AVG-BOETES VS. HERSTELKOSTEN
     // ==========================================
     '<div style="margin:28px 0 10px;display:flex;align-items:center;gap:10px">' +
       '<div style="height:2px;flex:1;background:linear-gradient(90deg,transparent,var(--blue))"></div>' +
-      '<span style="font-size:12px;font-weight:700;color:var(--blue);text-transform:uppercase;letter-spacing:1px;white-space:nowrap">Deel 3 — AVG-boetes vs. herstelkosten</span>' +
+      '<span style="font-size:12px;font-weight:700;color:var(--blue);text-transform:uppercase;letter-spacing:1px;white-space:nowrap">AVG-boetes vs. herstelkosten</span>' +
       '<div style="height:2px;flex:1;background:linear-gradient(90deg,var(--blue),transparent)"></div>' +
     '</div>' +
 
@@ -4586,7 +4590,7 @@ function pgOplossing(){
       // Boete 1
       '<div style="background:var(--bg2);border-radius:var(--rs);padding:16px;margin-bottom:12px">' +
         '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:6px">' +
-          '<div style="font-size:14px;font-weight:700;color:var(--blue)"><span class="mi mi-sm">receipt_long</span> Boete 1 — Discriminatie op nationaliteit</div>' +
+          '<div style="font-size:14px;font-weight:700;color:var(--blue)"><span class="mi mi-sm">report</span> Boete 1 — Discriminatie op nationaliteit</div>' +
           '<div style="font-size:18px;font-weight:800;color:var(--accent)">€2,75 mln</div>' +
         '</div>' +
         '<div style="font-size:13px;color:var(--tx);line-height:1.7;margin-bottom:10px">' +
@@ -4600,7 +4604,7 @@ function pgOplossing(){
       // Boete 2
       '<div style="background:var(--bg2);border-radius:var(--rs);padding:16px;margin-bottom:12px">' +
         '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:6px">' +
-          '<div style="font-size:14px;font-weight:700;color:var(--blue)"><span class="mi mi-sm">receipt_long</span> Boete 2 — Zwarte lijst FSV</div>' +
+          '<div style="font-size:14px;font-weight:700;color:var(--blue)"><span class="mi mi-sm">report</span> Boete 2 — Zwarte lijst FSV</div>' +
           '<div style="font-size:18px;font-weight:800;color:var(--accent)">€3,7 mln</div>' +
         '</div>' +
         '<div style="font-size:13px;color:var(--tx);line-height:1.7;margin-bottom:10px">' +
@@ -4693,7 +4697,7 @@ function pgOplossing(){
 
       // TOTAALBEREKENING
       '<div style="background:var(--accent-soft);border:1px solid rgba(239,68,68,.2);border-radius:var(--rs);padding:16px;margin-bottom:0">' +
-        '<div style="font-size:12px;font-weight:700;color:var(--accent);text-transform:uppercase;margin-bottom:10px"><span class="mi mi-sm">functions</span> Wat de Belastingdienst had moeten betalen</div>' +
+        '<div style="font-size:12px;font-weight:700;color:var(--accent);text-transform:uppercase;margin-bottom:10px"><span class="mi mi-sm">attach_money</span> Wat de Belastingdienst had moeten betalen</div>' +
         '<table style="width:100%;border-collapse:collapse;font-size:12px;margin-bottom:12px">' +
           '<tr style="border-bottom:2px solid var(--glass-bd);font-weight:700"><td style="padding:6px">Overtreding</td><td style="padding:6px;text-align:right">Opgelegd</td><td style="padding:6px;text-align:right">Had moeten zijn</td></tr>' +
 
@@ -4713,7 +4717,8 @@ function pgOplossing(){
 
           // SCHADEVERGOEDING ART. 82
           '<tr style="border-bottom:1px solid var(--glass-bd);background:rgba(34,197,94,.08)"><td colspan="3" style="padding:6px;font-weight:700;color:var(--green);font-size:11px;text-transform:uppercase">Schadevergoeding (art. 82 AVG — recht van elk slachtoffer)</td></tr>' +
-          '<tr style="border-bottom:1px solid var(--glass-bd)"><td style="padding:6px">43.056 gedupeerden × gemiddeld €117.500 schade per gezin</td><td style="padding:6px;text-align:right">—</td><td style="padding:6px;text-align:right;font-weight:700">€5,1 mrd</td></tr>' +
+          '<tr style="border-bottom:1px solid var(--glass-bd)"><td style="padding:6px">43.056 gedupeerden × LOVS-norm (€105/dag × 10-20 jaar benadeeld)</td><td style="padding:6px;text-align:right">—</td><td style="padding:6px;text-align:right;font-weight:700">€32 – 61 mrd</td></tr>' +
+          '<tr style="border-bottom:1px solid var(--glass-bd)"><td style="padding:6px;font-size:11px;color:var(--tx2)"><em>Per ouder €750.000 – €1.416.500, per kind ~€403.300 (zie berekening hierboven)</em></td><td style="padding:6px;text-align:right"></td><td style="padding:6px;text-align:right"></td></tr>' +
           '<tr style="border-bottom:1px solid var(--glass-bd)"><td style="padding:6px">270.000 FSV-geregistreerden × immateriele schadevergoeding</td><td style="padding:6px;text-align:right">—</td><td style="padding:6px;text-align:right">€500 mln – €2,7 mrd</td></tr>' +
 
           // UITHUISPLAATSINGEN
@@ -4739,10 +4744,10 @@ function pgOplossing(){
           '<tr style="border-bottom:1px solid var(--glass-bd)"><td style="padding:6px">Art. 44 UAVG — opzettelijke niet-naleving AVG (strafrechtelijk)</td><td style="padding:6px;text-align:right">—</td><td style="padding:6px;text-align:right">individuele strafvervolging</td></tr>' +
 
           // EINDTOTAAL
-          '<tr style="background:var(--accent-soft);border-top:3px solid var(--accent)"><td style="padding:8px 6px;font-weight:800;font-size:13px">TOTAAL alle boetes + schadevergoedingen + dwangsommen</td><td style="padding:8px 6px;text-align:right;font-weight:800;color:var(--accent);font-size:13px">>€116 mln</td><td style="padding:8px 6px;text-align:right;font-weight:800;color:var(--accent);font-size:13px">€8,1 – 12,5 mrd</td></tr>' +
+          '<tr style="background:var(--accent-soft);border-top:3px solid var(--accent)"><td style="padding:8px 6px;font-weight:800;font-size:13px">TOTAAL alle boetes + schadevergoedingen + dwangsommen</td><td style="padding:8px 6px;text-align:right;font-weight:800;color:var(--accent);font-size:13px">>€116 mln</td><td style="padding:8px 6px;text-align:right;font-weight:800;color:var(--accent);font-size:13px">€35 – 66 mrd</td></tr>' +
         '</table>' +
         '<div style="font-size:13px;color:var(--tx);line-height:1.7;margin-bottom:12px">' +
-          '<strong style="color:var(--accent)">Minder dan €116 miljoen opgelegd en uitbetaald. €8,1 tot €12,5 miljard had het moeten zijn.</strong> Dat is het volledige plaatje: AVG-boetes met alle verzwarende factoren, schadevergoedingsrecht, EVRM-claims voor de staatsontvoeringen, discriminatieschadevergoeding, plus <strong>€363 miljoen aan dwangsommen</strong> omdat de UHT er gemiddeld 78 weken over doet (wettelijk: 12) om op een bezwaar te beslissen. Zelfs die dwangsommen betaalt de BD niet uit — ouders moeten naar de rechter om €15.000 te krijgen waar ze recht op hebben.' + bron('Voorjaarsnota 2025', 'https://www.rijksfinancien.nl/voorjaarsnota/2025/7815799') + bron('RvS, mrt 2025', 'https://www.raadvanstate.nl/actueel/nieuws/maart/langere-beslistermijn-dienst-toeslagen/') +
+          '<strong style="color:var(--accent)">Minder dan €116 miljoen opgelegd en uitbetaald. €35 tot €66 miljard had het moeten zijn.</strong> Dat is het volledige plaatje: AVG-boetes met alle verzwarende factoren, schadevergoeding op basis van de LOVS-norm (€105/dag × jarenlange benadeling), EVRM-claims voor de staatsontvoeringen, discriminatieschadevergoeding, plus <strong>€363 miljoen aan dwangsommen</strong> omdat de UHT er gemiddeld 78 weken over doet (wettelijk: 12) om op een bezwaar te beslissen. Zelfs die dwangsommen betaalt de BD niet uit — ouders moeten naar de rechter om €15.000 te krijgen waar ze recht op hebben.' + bron('Voorjaarsnota 2025', 'https://www.rijksfinancien.nl/voorjaarsnota/2025/7815799') + bron('RvS, mrt 2025', 'https://www.raadvanstate.nl/actueel/nieuws/maart/langere-beslistermijn-dienst-toeslagen/') +
         '</div>' +
 
         // Per slachtoffer berekening
@@ -4752,12 +4757,22 @@ function pgOplossing(){
             '<tr style="border-bottom:2px solid var(--glass-bd);font-weight:700"><td style="padding:6px">Boete-scenario</td><td style="padding:6px;text-align:right">Totaal</td><td style="padding:6px;text-align:right">Per gedupeerde (43.056)</td></tr>' +
             '<tr style="border-bottom:1px solid var(--glass-bd)"><td style="padding:6px">Daadwerkelijk opgelegd</td><td style="padding:6px;text-align:right">€6,45 mln</td><td style="padding:6px;text-align:right;color:var(--accent);font-weight:700">€150</td></tr>' +
             '<tr style="border-bottom:1px solid var(--glass-bd)"><td style="padding:6px">Alleen AVG-boetes (volledig)</td><td style="padding:6px;text-align:right">€1,4 – 1,6 mrd</td><td style="padding:6px;text-align:right;font-weight:700">€32.500 – €37.200</td></tr>' +
-            '<tr style="border-bottom:1px solid var(--glass-bd);background:var(--bg2)"><td style="padding:6px;font-weight:700">Alle boetes + schadevergoedingen + EVRM</td><td style="padding:6px;text-align:right;font-weight:700">€7,7 – 12,1 mrd</td><td style="padding:6px;text-align:right;font-weight:800;color:var(--green)">€178.800 – €281.000</td></tr>' +
+            '<tr style="border-bottom:1px solid var(--glass-bd);background:var(--bg2)"><td style="padding:6px;font-weight:700">Alle boetes + LOVS-vergoeding + EVRM</td><td style="padding:6px;text-align:right;font-weight:700">€35 – 66 mrd</td><td style="padding:6px;text-align:right;font-weight:800;color:var(--green)">€750.000 – €1.416.500</td></tr>' +
             '<tr style="border-bottom:1px solid var(--glass-bd)"><td style="padding:6px;font-style:italic;color:var(--tx2)">Ter vergelijking: startbedrag Catshuisregeling</td><td style="padding:6px;text-align:right;font-style:italic">—</td><td style="padding:6px;text-align:right;font-weight:700;color:var(--yellow)">€30.000</td></tr>' +
             '<tr style="background:var(--accent-soft)"><td style="padding:6px;font-style:italic;color:var(--tx2)">Ter vergelijking: gemiddeld werkelijk per gezin</td><td style="padding:6px;text-align:right;font-style:italic">—</td><td style="padding:6px;text-align:right;font-weight:700">€117.500</td></tr>' +
           '</table>' +
           '<div style="font-size:13px;color:var(--tx);line-height:1.7;margin-top:10px">' +
-            '<strong style="color:var(--green)">Had de staat alle wetten correct toegepast</strong>, dan had elke gedupeerde <strong>€178.800 – €281.000</strong> moeten ontvangen — AVG-boetes, EVRM-schadevergoeding voor staatsontvoeringen, en discriminatieschadevergoeding bij elkaar. Dat is <strong>meer dan het dubbele</strong> van wat ze nu gemiddeld krijgen (€117.500) — en het had <strong>direct</strong> uitgekeerd kunnen worden, zonder vijf jaar wachten en €2,35 miljard aan uitvoeringskosten.' +
+            '<strong style="color:var(--green)">Had de staat alle wetten correct toegepast</strong>, dan had elke gedupeerde ouder <strong>€750.000 – €1.416.500</strong> moeten ontvangen. Dat bedrag is opgebouwd uit:' +
+          '</div>' +
+          '<div style="font-size:12px;color:var(--tx);line-height:1.6;margin:8px 0;padding-left:12px;border-left:2px solid var(--green)">' +
+            '<strong>€105/dag × 10-20 jaar</strong> — immaterieel leed (LOVS-richtlijn)<br>' +
+            '<strong>€200.000 – €500.000</strong> — inkomensverlies, woningverlies, psychische schade<br>' +
+            '<strong>€32.500 – €37.200</strong> — AVG-boetes (met alle verzwarende factoren)<br>' +
+            '<strong>€10.000 – €51.000</strong> — discriminatieclaims (Awgb + EVRM art. 14)<br>' +
+            '<strong>€8.400</strong> — dwangsommen (niet-tijdig beslissen, Awb)' +
+          '</div>' +
+          '<div style="font-size:13px;color:var(--tx);line-height:1.7;margin-top:8px">' +
+            'Dat is <strong>meer dan 6× zoveel</strong> als wat ze nu gemiddeld krijgen (€117.500) — en het had <strong>direct</strong> uitgekeerd kunnen worden, zonder vijf jaar wachten en €2,35 miljard aan uitvoeringskosten.' +
           '</div>' +
         '</div>' +
 
@@ -4770,14 +4785,14 @@ function pgOplossing(){
 
     // DE GROTE VERGELIJKING
     '<div class="card" style="padding:24px;margin-bottom:16px;border-left:4px solid var(--accent)">' +
-      '<h2 style="font-size:19px;margin-bottom:10px"><span class="mi mi-sm" style="color:var(--accent)">compare_arrows</span> De grote vergelijking: boetes vs. herstelkosten</h2>' +
+      '<h2 style="font-size:19px;margin-bottom:10px"><span class="mi mi-sm" style="color:var(--accent)">swap_horiz</span> De grote vergelijking: boetes vs. herstelkosten</h2>' +
       '<p style="font-size:14px;line-height:1.8;color:var(--tx);margin-bottom:14px">' +
         'De hersteloperatie kost inmiddels <strong>€11,6 miljard</strong> (raming 2025). In het slechtste scenario: <strong>€14 miljard</strong>.' + bron('NOS — worst-case €14 mrd', 'https://nos.nl/artikel/2520340-herstel-toeslagenaffaire-dreigt-ongekende-strop-te-worden-nog-5-miljard-extra') + ' De Commissie Van Dam (januari 2025) concludeerde dat de operatie <strong>nog 15-20 jaar kan duren</strong>.' + bron('Rapport "Minder beloven, meer doen"', 'https://www.rijksoverheid.nl/documenten/kamerstukken/2025/01/23/minder-beloven-meer-doen-lr') +
       '</p>' +
 
       // Vergelijkingstabel
       '<div style="background:var(--accent-soft);border:1px solid rgba(239,68,68,.2);border-radius:var(--rs);padding:16px;margin-bottom:14px">' +
-        '<div style="font-size:12px;font-weight:700;color:var(--accent);text-transform:uppercase;margin-bottom:10px"><span class="mi mi-sm">calculate</span> Boetes vs. schade — de absurde wanverhouding</div>' +
+        '<div style="font-size:12px;font-weight:700;color:var(--accent);text-transform:uppercase;margin-bottom:10px"><span class="mi mi-sm">swap_horiz</span> Boetes vs. schade — de absurde wanverhouding</div>' +
         '<table style="width:100%;border-collapse:collapse;font-size:13px">' +
           '<tr style="border-bottom:2px solid var(--glass-bd);font-weight:700"><td style="padding:8px 6px">Scenario</td><td style="padding:8px 6px;text-align:right">Bedrag</td><td style="padding:8px 6px;text-align:right">% van herstelkosten</td></tr>' +
           '<tr style="border-bottom:1px solid var(--glass-bd)"><td style="padding:8px 6px">Daadwerkelijk opgelegde boetes</td><td style="padding:8px 6px;text-align:right;font-weight:700">€6,45 mln</td><td style="padding:8px 6px;text-align:right;color:var(--accent);font-weight:700">0,056%</td></tr>' +
@@ -4832,7 +4847,7 @@ function pgOplossing(){
 
       // Wat als het geld direct naar slachtoffers ging?
       '<div style="background:var(--bg2);border-radius:var(--rs);padding:16px;margin-bottom:14px;border-left:3px solid var(--green)">' +
-        '<div style="font-size:12px;font-weight:700;color:var(--green);text-transform:uppercase;margin-bottom:10px"><span class="mi mi-sm">lightbulb</span> Wat als het geld direct naar slachtoffers was gegaan?</div>' +
+        '<div style="font-size:12px;font-weight:700;color:var(--green);text-transform:uppercase;margin-bottom:10px"><span class="mi mi-sm">star</span> Wat als het geld direct naar slachtoffers was gegaan?</div>' +
         '<div style="font-size:13px;color:var(--tx);line-height:1.8;margin-bottom:12px">' +
           'Stel dat de overheid in 2020 direct <strong>forfaitair</strong> had uitgekeerd — zonder jarenlange beoordelingsprocedures, zonder duizenden consultants, zonder €2,35 miljard aan uitvoeringskosten:' +
         '</div>' +
@@ -4874,7 +4889,7 @@ function pgOplossing(){
 
       // De paradox — bijgewerkt
       '<div style="background:var(--accent-soft);border:1px solid rgba(239,68,68,.2);border-radius:var(--rs);padding:16px;margin-bottom:0">' +
-        '<div style="font-size:12px;font-weight:700;color:var(--accent);text-transform:uppercase;margin-bottom:10px"><span class="mi mi-sm">sync_problem</span> De conclusie: het boetesysteem beschermt de dader</div>' +
+        '<div style="font-size:12px;font-weight:700;color:var(--accent);text-transform:uppercase;margin-bottom:10px"><span class="mi mi-sm">warning</span> De conclusie: het boetesysteem beschermt de dader</div>' +
         '<div style="font-size:13px;color:var(--tx);line-height:1.8">' +
           'De feiten op een rij:<br>' +
           '<strong>1.</strong> De hersteloperatie kost <strong>€11,7 miljard</strong>. Daarvan komt <strong>minder dan de helft</strong> bij gedupeerden terecht.<br>' +
@@ -4886,6 +4901,9 @@ function pgOplossing(){
         '</div>' +
       '</div>' +
     '</div>' +
+
+
+    // ==========================================
 
     // Geschonden wetten overzicht
     '<div class="card" style="padding:24px;margin-bottom:16px;border-left:4px solid var(--purple)">' +
@@ -4909,7 +4927,8 @@ function pgOplossing(){
             '<strong>Art. 32</strong> — Beveiliging van verwerking<br>' +
             '<strong>Art. 35/38</strong> — DPIA niet tijdig, FG te laat betrokken' +
           '</div>' +
-        '</div>' +
+
+
 
         // EVRM
         '<div style="padding:12px;background:var(--bg2);border-radius:var(--rs);border-left:3px solid var(--green)">' +
@@ -4943,68 +4962,6 @@ function pgOplossing(){
       '</div>' +
     '</div>' +
 
-    // SAMENVATTING (bijgewerkt)
-    '<div class="card" style="padding:24px;margin-bottom:16px;background:var(--yellow-soft);border:1px solid rgba(234,179,8,.25)">' +
-      '<h2 style="font-size:17px;margin-bottom:10px;color:var(--yellow)">Samengevat</h2>' +
-      '<div style="font-size:14px;line-height:1.8;color:var(--tx)">' +
-        '<strong>Nieuw BSN:</strong> De juridische basis bestaat (Wabb, AVG, getuigenbescherming). De infrastructuur bestaat. Van Huffelens argumenten zijn stuk voor stuk weerlegd. Het enige wat ontbreekt is politieke wil.<br><br>' +
-        '<strong>Eerlijke vergoeding:</strong> €30.000 is een belediging. Onterecht veroordeelden krijgen €105/dag — dat is bijna €1 miljoen voor 25 jaar. Toeslagenslachtoffers verloren niet alleen hun vrijheid maar ook hun kinderen, hun huis en hun gezondheid. Een forfaitaire regeling per schadecategorie is de enige werkbare oplossing.<br><br>' +
-        '<strong>AVG-boetes:</strong> De Belastingdienst kreeg €6,45 miljoen boete — <strong>0,056%</strong> van de €11,6 miljard herstelkosten. Het wettelijk maximum voor de vastgestelde overtredingen was €170 miljoen. Met de 50+ illegale algoritmes erbij: potentieel €1+ miljard. Maar zelfs dat dekt <strong>nog geen tiende</strong> van de schade. Boetes aan de overheid zijn belastinggeld dat van het ene potje naar het andere schuift — de slachtoffers zien er niets van terug.<br><br>' +
-        '<strong>De kern:</strong> De overheid vernietigt het bewijs en eist vervolgens dat het slachtoffer het bewijs levert. De overheid besmet het BSN en zegt vervolgens dat een nieuw BSN "te ingewikkeld" is. De overheid schendt de AVG en betaalt de boete uit de staatskas. <strong>Het is geen onvermogen — het is een systeem dat zichzelf beschermt.</strong>' +
-      '</div>' +
-    '</div>' +
-
-    // CTA
-    '<div style="text-align:center;padding:20px 0">' +
-      '<h3 style="font-size:17px;margin-bottom:6px">Genoeg gelezen?</h3>' +
-      '<p style="font-size:13px;color:var(--tx2);margin-bottom:14px">Deel dit verhaal. Deel de feiten. <strong style="color:var(--yellow)">Laat zien dat het wel kan.</strong></p>' +
-      '<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">' +
-        '<button class="btn btn-red btn-lg" onclick="go(\'/melden\')"><span class="mi">add_circle</span> Doe een melding</button>' +
-        '<button class="btn btn-ghost" onclick="go(\'/geld\')"><span class="mi mi-sm">payments</span> Waar gaat het geld heen?</button>' +
-      '</div>' +
-    '</div>' +
-    bronnenFooter() +
-  '</div>';
-}
-
-// ============ PAGE: GELD — HET VERDIENMODEL VAN DE CRISIS ============
-function pgGeld(){
-  resetBronnen();
-  // Consultancy data
-  var firms = [
-    { naam:'PwC', toeslagen:true, groningen:true, uwv:true, bd_it:true, omschrijving:'FSV-onderzoeken (€15+ mln), diverse audits Belastingdienst, IT-reviews' },
-    { naam:'KPMG', toeslagen:true, groningen:true, uwv:true, bd_it:true, omschrijving:'FSV-rapport fase 1, financiele audits, reorganisatie-advies' },
-    { naam:'Accenture', toeslagen:true, groningen:false, uwv:true, bd_it:true, omschrijving:'IT-systemen Belastingdienst, digitalisering toeslagen, €100+ mln aan IT-contracten' },
-    { naam:'McKinsey', toeslagen:true, groningen:false, uwv:false, bd_it:true, omschrijving:'Strategisch advies reorganisatie Belastingdienst "Investeringsagenda" (€23 mln, mislukt)' },
-    { naam:'Capgemini', toeslagen:true, groningen:true, uwv:true, bd_it:true, omschrijving:'IT-ontwikkeling, portalen, digitale dienstverlening overheid' },
-    { naam:'EY', toeslagen:true, groningen:true, uwv:false, bd_it:true, omschrijving:'Financiele audits, compliance-onderzoeken, IT-advies' },
-    { naam:'BCG', toeslagen:true, groningen:false, uwv:false, bd_it:false, omschrijving:'Strategisch advies hersteloperatie, procesoptimalisatie UHT' },
-    { naam:'Deloitte', toeslagen:true, groningen:true, uwv:true, bd_it:true, omschrijving:'Risicoanalyses, compliance, IT-audits, procesadvies' }
-  ];
-
-  var tabelRows = '';
-  firms.forEach(function(f){
-    var v = function(b){ return b ? '<span style="color:var(--accent);font-weight:800">&#10003;</span>' : '<span style="color:var(--tx3)">—</span>'; };
-    tabelRows += '<tr style="border-bottom:1px solid rgba(255,255,255,.06)">' +
-      '<td style="padding:8px 6px;font-weight:700;font-size:13px;white-space:nowrap">' + f.naam + '</td>' +
-      '<td style="padding:8px 6px;text-align:center">' + v(f.toeslagen) + '</td>' +
-      '<td style="padding:8px 6px;text-align:center">' + v(f.groningen) + '</td>' +
-      '<td style="padding:8px 6px;text-align:center">' + v(f.uwv) + '</td>' +
-      '<td style="padding:8px 6px;text-align:center">' + v(f.bd_it) + '</td>' +
-      '<td style="padding:8px 6px;font-size:11px;color:var(--tx2)">' + f.omschrijving + '</td>' +
-    '</tr>';
-  });
-
-  return '<div class="page">' +
-
-    // HERO
-    '<div style="text-align:center;padding:28px 0 20px">' +
-      '<span class="mi" style="font-size:48px;color:var(--accent);display:block;margin-bottom:8px">payments</span>' +
-      '<h1 style="font-size:clamp(22px,4vw,32px);font-weight:800;line-height:1.2">De crisis als<br><span style="color:var(--accent)">verdienmodel</span></h1>' +
-      '<p style="font-size:14px;color:var(--tx2);max-width:600px;margin:10px auto 0">€11,7 miljard aan "herstel." Hoeveel daarvan bereikt de slachtoffers? En wie verdient er wél aan?</p>' +
-    '</div>' +
-
-    // ==========================================
     // SECTIE 1: HOEVEEL IS ER BESTEED
     // ==========================================
     '<div style="margin:24px 0 10px;display:flex;align-items:center;gap:10px">' +
