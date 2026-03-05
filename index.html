@@ -6,6 +6,10 @@
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'><rect y='0' width='36' height='12' fill='%23AE1C28'/><rect y='12' width='36' height='12' fill='%23FFF'/><rect y='24' width='36' height='12' fill='%2321468B'/></svg>">
 <title>Meldpunt Ambtenaren — Wil jij je recht halen?</title>
 <meta name="description" content="Wij helpen je om de daders verantwoordelijk te houden. Meld ambtenaren die burgers benadelen. Anoniem of openbaar.">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0a0e1a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300..800;1,9..40,300..800&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
@@ -358,6 +362,10 @@ sup a[title], sup[title] { border-bottom: 1px dotted var(--blue); }
         <button class="nav-btn" data-r="/geld" onclick="go('/geld')"><span class="mi mi-sm">payments</span> Geld</button>
         <button class="nav-btn" data-r="/juridische-hulp" onclick="go('/juridische-hulp')"><span class="mi mi-sm">support_agent</span> Hulp</button>
         <button class="nav-btn cta" data-r="/melden" onclick="go('/melden')"><span class="mi mi-sm">add_circle</span> Meld</button>
+        <div style="border-top:1px solid var(--glass-bd);margin:4px 0;padding-top:4px">
+          <button class="nav-btn" id="navAuthBtn" onclick="showAuthModal()"><span class="mi mi-sm">login</span> Inloggen</button>
+          <button class="nav-btn" id="navLogoutBtn" style="display:none;color:var(--tx3)" onclick="doLogout()"><span class="mi mi-sm">logout</span> Uitloggen</button>
+        </div>
       </nav>
     </div>
   </header>
@@ -372,10 +380,115 @@ sup a[title], sup[title] { border-bottom: 1px dotted var(--blue); }
 
 <div class="toast-box" id="toasts"></div>
 
+<!-- Auth modal -->
+<div id="authOverlay" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.7);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center">
+  <div style="background:var(--bg2);border:1px solid var(--glass-bd);border-radius:var(--r);padding:28px;max-width:420px;width:90%;position:relative">
+    <button onclick="hideAuthModal()" style="position:absolute;top:10px;right:14px;background:none;border:none;color:var(--tx3);cursor:pointer;font-size:22px">&times;</button>
+    <div id="authContent"></div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 /* ============================================================
    MELDPUNT AMBTENAREN v2.0 — Simpel. Namen. Verhalen. Publiceer.
    ============================================================ */
+
+// ============ SUPABASE CONFIG ============
+var SUPABASE_URL = ''; // Vul in na Supabase project aanmaken
+var SUPABASE_KEY = ''; // Vul in: anon/public key
+var SB = null;
+var _user = null;
+var _sbReady = false;
+
+// Initialiseer Supabase (alleen als config is ingevuld)
+if (SUPABASE_URL && SUPABASE_KEY && typeof supabase !== 'undefined') {
+  SB = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  _sbReady = true;
+
+  SB.auth.onAuthStateChange(function(event, session) {
+    _user = session ? session.user : null;
+    updateAuthUI();
+    // Herrender als op een auth-gerelateerde pagina
+    if (_route === '/dossier' || _route === '/ehrm' || _route === '/uploaden') render();
+  });
+
+  // Check bestaande sessie
+  SB.auth.getSession().then(function(r) {
+    if (r.data.session) {
+      _user = r.data.session.user;
+      updateAuthUI();
+    }
+  });
+}
+
+// ============ AUTH FUNCTIES ============
+function showAuthModal() {
+  var el = document.getElementById('authOverlay');
+  el.style.display = 'flex';
+  document.getElementById('authContent').innerHTML =
+    '<div style="text-align:center;margin-bottom:20px">' +
+      '<span class="mi" style="font-size:40px;color:var(--blue)">lock_open</span>' +
+      '<h2 style="font-size:20px;font-weight:800;margin:8px 0 4px">Inloggen</h2>' +
+      '<p style="font-size:13px;color:var(--tx2)">Log in om je dossier te beheren, documenten te uploaden en EHRM-procedures te starten. Je ontvangt een link per e-mail — geen wachtwoord nodig.</p>' +
+    '</div>' +
+    '<div style="margin-bottom:12px">' +
+      '<input class="fi" type="email" id="authEmail" placeholder="jouw@email.nl" style="width:100%;box-sizing:border-box">' +
+    '</div>' +
+    '<button class="btn btn-blue btn-lg" style="width:100%" onclick="doMagicLink()"><span class="mi mi-sm">email</span> Stuur inloglink</button>' +
+    '<div id="authMsg" style="font-size:12px;color:var(--tx2);text-align:center;margin-top:12px"></div>' +
+    '<div style="border-top:1px solid var(--glass-bd);margin-top:16px;padding-top:12px;font-size:12px;color:var(--tx3);text-align:center">' +
+      '<span class="mi mi-sm" style="color:var(--green)">verified_user</span> Je gegevens zijn versleuteld en alleen voor jou zichtbaar.' +
+    '</div>';
+  setTimeout(function(){ var e = document.getElementById('authEmail'); if(e) e.focus(); }, 100);
+}
+
+function hideAuthModal() {
+  document.getElementById('authOverlay').style.display = 'none';
+}
+
+function doMagicLink() {
+  var email = (document.getElementById('authEmail') || {}).value;
+  if (!email || email.indexOf('@') < 0) { toast('Vul een geldig e-mailadres in'); return; }
+  var msg = document.getElementById('authMsg');
+  if (msg) msg.innerHTML = '<span style="color:var(--blue)">Link wordt verzonden...</span>';
+
+  if (!SB) { toast('Supabase niet geconfigureerd'); return; }
+  SB.auth.signInWithOtp({ email: email }).then(function(r) {
+    if (r.error) {
+      if (msg) msg.innerHTML = '<span style="color:var(--accent)">' + esc(r.error.message) + '</span>';
+    } else {
+      if (msg) msg.innerHTML = '<span style="color:var(--green)">✓ Link verzonden! Check je e-mail (ook spam).</span>';
+    }
+  });
+}
+
+function doLogout() {
+  if (!SB) return;
+  SB.auth.signOut().then(function() {
+    _user = null;
+    updateAuthUI();
+    toast('Uitgelogd');
+    go('/');
+  });
+}
+
+function updateAuthUI() {
+  // Update nav auth knop
+  var authBtn = document.getElementById('navAuthBtn');
+  if (authBtn) {
+    if (_user) {
+      authBtn.innerHTML = '<span class="mi mi-sm">person</span> Mijn Dossier';
+      authBtn.onclick = function(){ go('/dossier'); };
+    } else {
+      authBtn.innerHTML = '<span class="mi mi-sm">login</span> Inloggen';
+      authBtn.onclick = function(){ showAuthModal(); };
+    }
+  }
+  // Update logout knop
+  var logoutBtn = document.getElementById('navLogoutBtn');
+  if (logoutBtn) logoutBtn.style.display = _user ? 'inline-flex' : 'none';
+}
 
 // ============ DATASTORE ============
 // ============ API CLIENT ============
@@ -449,18 +562,68 @@ function apiFetch(url, opts, cb) {
 }
 
 var API = {
-  getMeldingen: function(cb){ apiFetch('/meldingen', cb); },
-  getMelding: function(id, cb){ apiFetch('/meldingen/' + id, cb); },
+  getMeldingen: function(cb){
+    if (_sbReady) {
+      SB.from('meldingen').select('*').eq('status','live').order('created_at',{ascending:false}).then(function(r){
+        if(r.error) return apiFetch('/meldingen', cb);
+        cb(null, r.data);
+      }).catch(function(){ apiFetch('/meldingen', cb); });
+    } else { apiFetch('/meldingen', cb); }
+  },
+  getMelding: function(id, cb){
+    if (_sbReady) {
+      SB.from('meldingen').select('*').eq('id',id).single().then(function(r){
+        if(r.error) return apiFetch('/meldingen/' + id, cb);
+        cb(null, r.data);
+      }).catch(function(){ apiFetch('/meldingen/' + id, cb); });
+    } else { apiFetch('/meldingen/' + id, cb); }
+  },
   submitMelding: function(data, cb){
-    // Probeer eerst lokale API, dan GitHub Issues
-    apiFetch('/meldingen', {method:'POST', body:data}, function(err, result, status){
-      if(!err){ cb(null, result); return; }
-      // Fallback: sla op via GitHub Issues
-      submitViaGitHub(data, cb);
-    });
+    // Supabase: sla op met user_id als ingelogd
+    if (_sbReady) {
+      var payload = {
+        titel: data.titel,
+        verhaal: data.verhaal,
+        instantie: data.instantie,
+        plaats: data.plaats,
+        namen: data.namen,
+        feiten: data.feiten,
+        anoniem: data.anoniem,
+        melder_naam: data.melder_naam,
+        melder_email: data.melder_email,
+        linked_to: data.linked_to,
+        link_relatie: data.link_relatie,
+        user_id: _user ? _user.id : null,
+        status: data.anoniem ? 'review' : 'live'
+      };
+      SB.from('meldingen').insert(payload).select().then(function(r){
+        if(r.error){
+          console.warn('Supabase insert mislukt, fallback GitHub:', r.error);
+          // Fallback naar GitHub Issues
+          submitViaGitHub(data, cb);
+          return;
+        }
+        var m = r.data[0];
+        cb(null, { id: m.id, claimCode: m.claim_code, status: m.status });
+      }).catch(function(){
+        submitViaGitHub(data, cb);
+      });
+    } else {
+      // Probeer eerst lokale API, dan GitHub Issues
+      apiFetch('/meldingen', {method:'POST', body:data}, function(err, result, status){
+        if(!err){ cb(null, result); return; }
+        submitViaGitHub(data, cb);
+      });
+    }
   },
 
-  getClaim: function(code, cb){ cb(null, {}); },
+  getClaim: function(code, cb){
+    if (_sbReady) {
+      SB.from('meldingen').select('*').eq('claim_code',code).single().then(function(r){
+        cb(r.error ? 'Niet gevonden' : null, r.data);
+      });
+    } else { cb(null, {}); }
+  },
   updateClaim: function(code, data, cb){ cb(null, {}); },
   getReacties: function(mid, cb){ cb(null, []); },
   submitReactie: function(data, cb){ cb(null, {}); },
@@ -693,6 +856,10 @@ function parseRoute(){
   else if(h === '/juridische-hulp') _route = '/juridische-hulp';
   else if(h === '/oplossing') _route = '/oplossing';
   else if(h === '/geld') _route = '/geld';
+  else if(h === '/dossier') _route = '/dossier';
+  else if(h.indexOf('/dossier/') === 0){ _route = '/dossier-detail'; _params.id = h.replace('/dossier/',''); }
+  else if(h === '/uploaden') _route = '/uploaden';
+  else if(h === '/ehrm') _route = '/ehrm';
   else if(h === '/admin') _route = '/admin';
   else if(h.indexOf('/claim/') === 0){ _route = '/claim'; _params.code = h.replace('/claim/','').toUpperCase(); }
   else _route = '/';
@@ -766,6 +933,10 @@ function render(){
     case '/juridische-hulp': app.innerHTML = pgJuridischeHulp(); break;
     case '/oplossing': app.innerHTML = pgOplossing(); break;
     case '/geld': app.innerHTML = pgGeld(); break;
+    case '/dossier': app.innerHTML = pgDossier(); loadDossierData(); break;
+    case '/dossier-detail': app.innerHTML = _loadingHtml; loadDossierDetail(_params.id); break;
+    case '/uploaden': app.innerHTML = pgUploaden(); break;
+    case '/ehrm': app.innerHTML = pgEHRM(); break;
     case '/admin': renderAdmin(); break;
     case '/claim': renderClaim(); break;
     default:
@@ -3425,6 +3596,7 @@ function pgTijdlijn(){
     { jaar: '2025', titel: 'College: directe discriminatie op ras', tekst: 'Het College voor de Rechten van de Mens oordeelt voor het eerst dat de Belastingdienst <strong>direct discrimineerde op grond van ras</strong> — niet indirect, maar bewust. 20+ discriminatieoordelen inmiddels.' + bron('College oordeel 2023-103', 'https://oordelen.mensenrechten.nl/oordeel/2023-103') + '', kleur: 'var(--accent)' },
     { jaar: 'Mrt 2025', titel: 'Commissie-Hamer: 3.500 kinderen, 23 terug', tekst: 'De Commissie-Hamer concludeert dat de toeslagenaffaire een "grote rol" speelde bij uithuisplaatsingen. Van de 3.500+ kinderen zijn er slechts <strong>23</strong> herenigd met hun ouders. De gevolgen zijn "blijvend — mogelijk generatielang."' + bron('Commissie-Hamer, mrt 2025', 'https://www.rijksoverheid.nl/documenten/rapporten/2025/03/27/tk-bijlage-1-rapportage-commissie-toeslagen-en-uithuisplaatsingen-erfenis-van-onrecht') + '', kleur: 'var(--accent)' },
     { jaar: '2025', titel: '50+ illegale algoritmes nog actief', tekst: 'Follow the Money onthult: meer dan 50 van de 100+ algoritmes van de Belastingdienst zijn <strong>onrechtmatig</strong>. De Autoriteit Persoonsgegevens weigert te handhaven en gedraagt zich als "consultant van de Belastingdienst" aldus Bits of Freedom.' + bron('Follow the Money, 2025', 'https://www.ftm.nl/artikelen/meer-dan-50-algoritmes-van-de-belasting-dienst-zijn-onrechtmatig') + '', kleur: 'var(--yellow)' },
+    { jaar: '2026', titel: 'Palmen liegt tegen de Kamer over dossiers', tekst: 'Staatssecretaris Palmen verklaart in de Tweede Kamer dat ouders hun dossier krijgen en niet worden tegengewerkt. Dit is <strong>aantoonbaar niet waar</strong>: duizenden ouders wachten nog steeds op hun dossier, de Dienst Toeslagen weigert bewust informatie te verstrekken, en het NOS-memo uit 2025 toonde al aan dat dit beleid is — niet een fout.' + bron('NOS intern memo, 2025', 'https://nos.nl/artikel/2599959') + ' Het patroon herhaalt zich: liegen tegen de volksvertegenwoordiging over de behandeling van slachtoffers.', kleur: 'var(--accent)' },
     { jaar: '2026', titel: 'Het is niet voorbij', tekst: 'Anno 2026 wachten duizenden ouders nog op compensatie. Volledige afronding: niet voor 2030. 50+ illegale algoritmes draaien door. Geen enkele ambtenaar of politicus is strafrechtelijk vervolgd. De patronen die de enquêtecommissie signaleerde zijn <strong>"nog steeds aanwezig."</strong>' + bron('Enquêtecommissie 2024', 'https://www.tweedekamer.nl/kamerstukken/detail?id=2024Z02942&did=2024D06757') + ' Het kan morgen opnieuw gebeuren.', kleur: 'var(--accent)' }
   ];
 
@@ -6074,6 +6246,686 @@ function updateClaim(code){
   });
 }
 
+// ============ PAGE: MIJN DOSSIER ============
+var _dossierData = { meldingen: [], documenten: [], dossiers: [], ehrm: [] };
+
+function pgDossier() {
+  if (!_user) {
+    return '<div class="page">' +
+      '<div style="text-align:center;padding:60px 0">' +
+        '<span class="mi" style="font-size:56px;color:var(--blue);display:block;margin-bottom:12px">folder_shared</span>' +
+        '<h1 style="font-size:24px;font-weight:800;margin-bottom:8px">Mijn Dossier</h1>' +
+        '<p style="font-size:15px;color:var(--tx2);max-width:440px;margin:0 auto 20px;line-height:1.6">Log in om je dossier te beheren, documenten te uploaden en EHRM-procedures te starten. Je gegevens zijn alleen voor jou zichtbaar.</p>' +
+        '<button class="btn btn-blue btn-lg" onclick="showAuthModal()"><span class="mi mi-sm">login</span> Inloggen met e-mail</button>' +
+        '<div style="margin-top:16px;font-size:12px;color:var(--tx3)"><span class="mi mi-sm" style="color:var(--green)">verified_user</span> Geen wachtwoord nodig — je ontvangt een link per e-mail</div>' +
+      '</div>' +
+    '</div>';
+  }
+
+  var d = _dossierData;
+  return '<div class="page">' +
+    '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">' +
+      '<div>' +
+        '<h2 style="font-size:20px;font-weight:700"><span class="mi">folder_shared</span> Mijn Dossier</h2>' +
+        '<div style="font-size:12px;color:var(--tx3)">' + esc(_user.email) + '</div>' +
+      '</div>' +
+      '<button class="btn btn-ghost" onclick="doLogout()" style="font-size:12px"><span class="mi mi-sm">logout</span> Uitloggen</button>' +
+    '</div>' +
+
+    // Snelknoppen
+    '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-bottom:20px">' +
+      '<button class="card" style="padding:16px;text-align:center;cursor:pointer;border:none;background:var(--bg3)" onclick="go(\'/melden\')">' +
+        '<span class="mi" style="font-size:28px;color:var(--accent);display:block;margin-bottom:4px">add_circle</span>' +
+        '<div style="font-size:13px;font-weight:700">Nieuwe melding</div>' +
+        '<div style="font-size:11px;color:var(--tx3)">Meld een ambtenaar</div>' +
+      '</button>' +
+      '<button class="card" style="padding:16px;text-align:center;cursor:pointer;border:none;background:var(--bg3)" onclick="go(\'/uploaden\')">' +
+        '<span class="mi" style="font-size:28px;color:var(--blue);display:block;margin-bottom:4px">upload_file</span>' +
+        '<div style="font-size:13px;font-weight:700">Document uploaden</div>' +
+        '<div style="font-size:11px;color:var(--tx3)">Anonimiseer & bewaar</div>' +
+      '</button>' +
+      '<button class="card" style="padding:16px;text-align:center;cursor:pointer;border:none;background:var(--bg3)" onclick="go(\'/ehrm\')">' +
+        '<span class="mi" style="font-size:28px;color:var(--purple);display:block;margin-bottom:4px">balance</span>' +
+        '<div style="font-size:13px;font-weight:700">EHRM Procedure</div>' +
+        '<div style="font-size:11px;color:var(--tx3)">Europees Hof</div>' +
+      '</button>' +
+    '</div>' +
+
+    // Statistieken
+    '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:20px">' +
+      '<div class="card" style="text-align:center;padding:12px"><div style="font-size:22px;font-weight:800;color:var(--accent)">' + d.meldingen.length + '</div><div style="font-size:10px;color:var(--tx3)">MELDINGEN</div></div>' +
+      '<div class="card" style="text-align:center;padding:12px"><div style="font-size:22px;font-weight:800;color:var(--blue)">' + d.documenten.length + '</div><div style="font-size:10px;color:var(--tx3)">DOCUMENTEN</div></div>' +
+      '<div class="card" style="text-align:center;padding:12px"><div style="font-size:22px;font-weight:800;color:var(--purple)">' + d.ehrm.length + '</div><div style="font-size:10px;color:var(--tx3)">PROCEDURES</div></div>' +
+      '<div class="card" style="text-align:center;padding:12px"><div style="font-size:22px;font-weight:800;color:var(--green)">' + d.dossiers.length + '</div><div style="font-size:10px;color:var(--tx3)">DOSSIERS</div></div>' +
+    '</div>' +
+
+    // Mijn meldingen
+    '<div style="margin-bottom:20px">' +
+      '<h3 style="font-size:15px;font-weight:700;margin-bottom:10px"><span class="mi mi-sm" style="color:var(--accent)">report</span> Mijn meldingen</h3>' +
+      (d.meldingen.length === 0 ?
+        '<div class="card" style="padding:20px;text-align:center;color:var(--tx3)"><span class="mi" style="font-size:32px;display:block;margin-bottom:8px">inbox</span>Nog geen meldingen.<br><button class="btn btn-red" style="margin-top:10px" onclick="go(\'/melden\')">Doe je eerste melding</button></div>' :
+        d.meldingen.map(function(m) {
+          var statusKleur = m.status === 'live' ? 'var(--green)' : (m.status === 'rejected' ? 'var(--accent)' : 'var(--yellow)');
+          return '<div class="card" style="padding:14px;margin-bottom:8px;cursor:pointer;border-left:3px solid ' + statusKleur + '" onclick="go(\'/melding/' + m.id + '\')">' +
+            '<div style="display:flex;justify-content:space-between;align-items:flex-start">' +
+              '<div>' +
+                '<div style="font-size:14px;font-weight:700">' + esc(m.titel || 'Melding') + '</div>' +
+                '<div style="font-size:12px;color:var(--tx3);margin-top:2px">' + esc(m.instantie || '') + (m.plaats ? ' — ' + esc(m.plaats) : '') + '</div>' +
+              '</div>' +
+              '<span style="font-size:10px;padding:2px 8px;border-radius:4px;background:' + statusKleur + ';color:#fff;font-weight:600">' + esc(m.status || 'review') + '</span>' +
+            '</div>' +
+            '<div style="font-size:11px;color:var(--tx3);margin-top:6px">' + fmtDate(m.created_at || m.ts) + (m.claim_code ? ' — ' + esc(m.claim_code) : '') + '</div>' +
+          '</div>';
+        }).join('')
+      ) +
+    '</div>' +
+
+    // Mijn documenten
+    '<div style="margin-bottom:20px">' +
+      '<h3 style="font-size:15px;font-weight:700;margin-bottom:10px"><span class="mi mi-sm" style="color:var(--blue)">description</span> Mijn documenten</h3>' +
+      (d.documenten.length === 0 ?
+        '<div class="card" style="padding:20px;text-align:center;color:var(--tx3)"><span class="mi" style="font-size:32px;display:block;margin-bottom:8px">cloud_upload</span>Nog geen documenten.<br><button class="btn btn-blue" style="margin-top:10px" onclick="go(\'/uploaden\')">Upload je eerste document</button></div>' :
+        '<div style="display:grid;gap:6px">' + d.documenten.map(function(doc) {
+          return '<div class="card" style="padding:12px;display:flex;align-items:center;gap:10px">' +
+            '<span class="mi" style="font-size:24px;color:var(--blue)">description</span>' +
+            '<div style="flex:1;min-width:0">' +
+              '<div style="font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + esc(doc.bestandsnaam) + '</div>' +
+              '<div style="font-size:11px;color:var(--tx3)">' + fmtDate(doc.uploaded_at) +
+                (doc.geanonimiseerd ? ' <span style="color:var(--green)">✓ Geanonimiseerd</span>' : '') +
+              '</div>' +
+            '</div>' +
+          '</div>';
+        }).join('') + '</div>'
+      ) +
+    '</div>' +
+
+    // EHRM procedures
+    '<div>' +
+      '<h3 style="font-size:15px;font-weight:700;margin-bottom:10px"><span class="mi mi-sm" style="color:var(--purple)">balance</span> EHRM procedures</h3>' +
+      (d.ehrm.length === 0 ?
+        '<div class="card" style="padding:20px;text-align:center;color:var(--tx3)"><span class="mi" style="font-size:32px;display:block;margin-bottom:8px">balance</span>Nog geen EHRM-procedure gestart.<br><button class="btn btn-purple" style="margin-top:10px" onclick="go(\'/ehrm\')">Start EHRM-procedure</button></div>' :
+        d.ehrm.map(function(p) {
+          var stappen = ['intake','artikelen','beschrijving','bewijs','formulier'];
+          var idx = stappen.indexOf(p.stap || 'intake');
+          var pct = Math.round(((idx+1)/stappen.length)*100);
+          return '<div class="card" style="padding:14px;margin-bottom:8px;border-left:3px solid var(--purple);cursor:pointer" onclick="go(\'/ehrm\')">' +
+            '<div style="font-size:14px;font-weight:700">EHRM-klacht</div>' +
+            '<div style="font-size:12px;color:var(--tx3);margin-top:4px">Stap: ' + esc(p.stap || 'intake') + ' — ' + pct + '% compleet</div>' +
+            '<div style="background:var(--bg);border-radius:4px;height:6px;margin-top:6px;overflow:hidden"><div style="background:var(--purple);height:100%;width:' + pct + '%;border-radius:4px;transition:width .3s"></div></div>' +
+          '</div>';
+        }).join('')
+      ) +
+    '</div>' +
+
+  '</div>';
+}
+
+function loadDossierData() {
+  if (!SB || !_user) return;
+  var app = document.getElementById('app');
+  Promise.all([
+    SB.from('meldingen').select('*').eq('user_id', _user.id).order('created_at', {ascending:false}),
+    SB.from('documenten').select('*').eq('user_id', _user.id).order('uploaded_at', {ascending:false}),
+    SB.from('dossiers').select('*').eq('user_id', _user.id).order('created_at', {ascending:false}),
+    SB.from('ehrm_procedures').select('*').eq('user_id', _user.id).order('created_at', {ascending:false})
+  ]).then(function(results) {
+    _dossierData.meldingen = (results[0].data || []);
+    _dossierData.documenten = (results[1].data || []);
+    _dossierData.dossiers = (results[2].data || []);
+    _dossierData.ehrm = (results[3].data || []);
+    app.innerHTML = pgDossier();
+  }).catch(function(err) {
+    console.error('Dossier laden mislukt:', err);
+    app.innerHTML = pgDossier();
+  });
+}
+
+function loadDossierDetail(id) {
+  if (!SB || !_user) { go('/dossier'); return; }
+  // Placeholder voor dossier-detail pagina
+  var app = document.getElementById('app');
+  SB.from('dossiers').select('*').eq('id', id).eq('user_id', _user.id).single().then(function(r) {
+    if (r.error || !r.data) { toast('Dossier niet gevonden'); go('/dossier'); return; }
+    app.innerHTML = '<div class="page"><h2>' + esc(r.data.titel) + '</h2><pre>' + esc(JSON.stringify(r.data, null, 2)) + '</pre></div>';
+  });
+}
+
+// ============ PAGE: DOCUMENT UPLOAD + ANONIMISERING ============
+var _uploadFile = null;
+var _uploadText = '';
+var _piiMatches = [];
+var _anonText = '';
+
+function pgUploaden() {
+  if (!_user) {
+    return '<div class="page">' +
+      '<div style="text-align:center;padding:60px 0">' +
+        '<span class="mi" style="font-size:56px;color:var(--blue);display:block;margin-bottom:12px">upload_file</span>' +
+        '<h1 style="font-size:24px;font-weight:800;margin-bottom:8px">Documenten uploaden</h1>' +
+        '<p style="font-size:15px;color:var(--tx2);max-width:440px;margin:0 auto 20px">Log in om documenten te uploaden en anonimiseren.</p>' +
+        '<button class="btn btn-blue btn-lg" onclick="showAuthModal()"><span class="mi mi-sm">login</span> Inloggen</button>' +
+      '</div>' +
+    '</div>';
+  }
+
+  return '<div class="page">' +
+    '<div style="text-align:center;padding:16px 0">' +
+      '<span class="mi" style="font-size:40px;color:var(--blue);display:block;margin-bottom:6px">upload_file</span>' +
+      '<h1 style="font-size:22px;font-weight:800;margin-bottom:6px">Document uploaden & anonimiseren</h1>' +
+      '<p style="font-size:13px;color:var(--tx2);max-width:500px;margin:0 auto">Upload afwijzingsbrieven, correspondentie, beschikkingen. Persoonlijke gegevens worden <strong>automatisch gedetecteerd</strong> en kun je anonimiseren v\u00f3\u00f3r het uploaden.</p>' +
+    '</div>' +
+
+    // Veiligheidsinfo
+    '<div class="card" style="padding:14px;margin-bottom:16px;background:var(--green-soft);border:1px solid rgba(34,197,94,.2)">' +
+      '<div style="font-size:13px;font-weight:700;color:var(--green);margin-bottom:6px"><span class="mi mi-sm">security</span> Privacy-first</div>' +
+      '<div style="font-size:12px;color:var(--tx2);line-height:1.6">' +
+        'Je document wordt <strong>eerst in je browser</strong> verwerkt. Pas na anonimisering wordt het veilig opgeslagen. ' +
+        'BSN, IBAN, postcodes, telefoonnummers en e-mailadressen worden automatisch gedetecteerd.' +
+      '</div>' +
+    '</div>' +
+
+    // Upload zone
+    '<div id="uploadZone" class="card" style="padding:40px;text-align:center;border:2px dashed var(--glass-bd);cursor:pointer" onclick="document.getElementById(\'fileInput\').click()">' +
+      '<input type="file" id="fileInput" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx,.txt" style="display:none" onchange="handleFileSelect(this.files)">' +
+      (_uploadFile ?
+        '<div>' +
+          '<span class="mi" style="font-size:36px;color:var(--green)">check_circle</span>' +
+          '<div style="font-size:14px;font-weight:700;margin-top:8px">' + esc(_uploadFile.name) + '</div>' +
+          '<div style="font-size:12px;color:var(--tx3)">' + Math.round(_uploadFile.size/1024) + ' KB</div>' +
+          '<button class="btn btn-ghost" style="margin-top:10px" onclick="event.stopPropagation();resetUpload()"><span class="mi mi-sm">delete</span> Ander bestand</button>' +
+        '</div>' :
+        '<div>' +
+          '<span class="mi" style="font-size:48px;color:var(--tx3)">cloud_upload</span>' +
+          '<div style="font-size:14px;font-weight:600;margin-top:8px;color:var(--tx2)">Klik of sleep een bestand hierheen</div>' +
+          '<div style="font-size:12px;color:var(--tx3);margin-top:4px">PDF, foto\'s, Word-documenten, tekstbestanden</div>' +
+        '</div>'
+      ) +
+    '</div>' +
+
+    // Gedetecteerde PII
+    (_uploadText ? '<div style="margin-top:16px">' +
+      '<h3 style="font-size:15px;font-weight:700;margin-bottom:10px"><span class="mi mi-sm" style="color:var(--yellow)">warning</span> Gedetecteerde persoonlijke gegevens (' + _piiMatches.length + ')</h3>' +
+      (_piiMatches.length > 0 ?
+        '<div class="card" style="padding:14px;margin-bottom:12px">' +
+          _piiMatches.map(function(m, i) {
+            return '<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--glass-bd)">' +
+              '<input type="checkbox" id="pii_' + i + '" checked style="accent-color:var(--accent)">' +
+              '<span style="font-size:12px;padding:2px 6px;border-radius:3px;background:rgba(234,179,8,.15);color:var(--yellow);font-weight:600">' + esc(m.type) + '</span>' +
+              '<code style="font-size:12px;color:var(--accent);background:rgba(239,68,68,.1);padding:2px 6px;border-radius:3px">' + esc(m.value) + '</code>' +
+            '</div>';
+          }).join('') +
+        '</div>' +
+        '<div style="display:flex;gap:10px">' +
+          '<button class="btn btn-red btn-lg" onclick="anonimiseerDocument()"><span class="mi mi-sm">security</span> Anonimiseer geselecteerde</button>' +
+          '<button class="btn btn-ghost" onclick="uploadDocument(false)"><span class="mi mi-sm">cloud_upload</span> Upload zonder anonimisering</button>' +
+        '</div>'
+        :
+        '<div class="card" style="padding:14px;text-align:center;color:var(--green)">' +
+          '<span class="mi mi-sm">check_circle</span> Geen persoonlijke gegevens gedetecteerd.' +
+          '<div style="margin-top:10px"><button class="btn btn-blue btn-lg" onclick="uploadDocument(false)"><span class="mi mi-sm">cloud_upload</span> Upload document</button></div>' +
+        '</div>'
+      ) +
+    '</div>' : '') +
+
+    // Geanonimiseerde preview
+    (_anonText ? '<div style="margin-top:16px">' +
+      '<h3 style="font-size:15px;font-weight:700;margin-bottom:10px"><span class="mi mi-sm" style="color:var(--green)">check_circle</span> Geanonimiseerd document</h3>' +
+      '<div class="card" style="padding:14px;max-height:300px;overflow-y:auto">' +
+        '<pre style="font-size:12px;color:var(--tx2);white-space:pre-wrap;word-break:break-word;margin:0">' + esc(_anonText) + '</pre>' +
+      '</div>' +
+      '<div style="margin-top:12px">' +
+        '<button class="btn btn-blue btn-lg" onclick="uploadDocument(true)"><span class="mi mi-sm">cloud_upload</span> Upload geanonimiseerd document</button>' +
+      '</div>' +
+    '</div>' : '') +
+
+  '</div>';
+}
+
+function handleFileSelect(files) {
+  if (!files || !files.length) return;
+  _uploadFile = files[0];
+  _uploadText = '';
+  _piiMatches = [];
+  _anonText = '';
+
+  // Tekst extractie
+  if (_uploadFile.type === 'application/pdf') {
+    extractPdfText(_uploadFile);
+  } else if (_uploadFile.type.startsWith('text/') || _uploadFile.name.endsWith('.txt')) {
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      _uploadText = e.target.result;
+      _piiMatches = detectPII(_uploadText);
+      render();
+    };
+    reader.readAsText(_uploadFile);
+  } else {
+    // Afbeelding of ander formaat — geen tekst-extractie
+    render();
+  }
+  if (!_uploadText) render(); // Update UI met bestandsnaam
+}
+
+function extractPdfText(file) {
+  // Check of pdf.js beschikbaar is
+  if (typeof pdfjsLib === 'undefined' && typeof window['pdfjs-dist/build/pdf'] === 'undefined') {
+    toast('PDF verwerking laden...');
+    // Laad pdf.js dynamisch
+    var s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js';
+    s.onload = function() {
+      var pdfjs = window['pdfjs-dist/build/pdf'] || window.pdfjsLib;
+      if (pdfjs) {
+        pdfjs.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
+      }
+      doExtractPdf(file);
+    };
+    document.head.appendChild(s);
+  } else {
+    doExtractPdf(file);
+  }
+}
+
+function doExtractPdf(file) {
+  var pdfjs = window['pdfjs-dist/build/pdf'] || window.pdfjsLib;
+  if (!pdfjs) { toast('PDF.js kon niet geladen worden'); return; }
+
+  file.arrayBuffer().then(function(buf) {
+    return pdfjs.getDocument(buf).promise;
+  }).then(function(pdf) {
+    var allText = '';
+    var promises = [];
+    for (var i = 1; i <= pdf.numPages; i++) {
+      promises.push(pdf.getPage(i).then(function(page) {
+        return page.getTextContent().then(function(tc) {
+          return tc.items.map(function(it) { return it.str; }).join(' ');
+        });
+      }));
+    }
+    return Promise.all(promises).then(function(pages) {
+      _uploadText = pages.join('\n\n');
+      _piiMatches = detectPII(_uploadText);
+      render();
+    });
+  }).catch(function(err) {
+    toast('PDF lezen mislukt: ' + err.message);
+    console.error(err);
+  });
+}
+
+// PII Detectie — BSN, IBAN, postcode, telefoon, email
+function detectPII(text) {
+  var matches = [];
+
+  // BSN (9 cijfers, elfproef)
+  var bsnRegex = /\b(\d{9})\b/g;
+  var m;
+  while ((m = bsnRegex.exec(text)) !== null) {
+    if (isValidBSN(m[1])) {
+      matches.push({ type: 'BSN', value: m[1], start: m.index, end: m.index + m[1].length });
+    }
+  }
+
+  // IBAN
+  var ibanRegex = /\b([A-Z]{2}\d{2}\s?[A-Z]{4}\s?\d{4}\s?\d{4}\s?\d{2,4})\b/gi;
+  while ((m = ibanRegex.exec(text)) !== null) {
+    matches.push({ type: 'IBAN', value: m[1], start: m.index, end: m.index + m[1].length });
+  }
+
+  // Postcodes (1234AB)
+  var pcRegex = /\b(\d{4}\s?[A-Z]{2})\b/g;
+  while ((m = pcRegex.exec(text)) !== null) {
+    matches.push({ type: 'Postcode', value: m[1], start: m.index, end: m.index + m[1].length });
+  }
+
+  // Telefoonnummers
+  var telRegex = /\b((?:0|\+31[\s-]?)(?:6[\s-]?\d{8}|\d{2,3}[\s-]?\d{6,7}))\b/g;
+  while ((m = telRegex.exec(text)) !== null) {
+    matches.push({ type: 'Telefoon', value: m[1], start: m.index, end: m.index + m[1].length });
+  }
+
+  // E-mailadressen
+  var emailRegex = /\b([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})\b/g;
+  while ((m = emailRegex.exec(text)) !== null) {
+    matches.push({ type: 'E-mail', value: m[1], start: m.index, end: m.index + m[1].length });
+  }
+
+  // Sorteer op positie (achteraan eerst voor vervanging)
+  matches.sort(function(a, b) { return b.start - a.start; });
+  return matches;
+}
+
+function isValidBSN(bsn) {
+  if (bsn.length !== 9) return false;
+  var sum = 0;
+  for (var i = 0; i < 8; i++) {
+    sum += parseInt(bsn[i]) * (9 - i);
+  }
+  sum -= parseInt(bsn[8]);
+  return sum % 11 === 0 && sum > 0;
+}
+
+function anonimiseerDocument() {
+  var text = _uploadText;
+  // Verwerk geselecteerde PII matches (van achteren naar voren)
+  _piiMatches.forEach(function(m, i) {
+    var cb = document.getElementById('pii_' + i);
+    if (cb && cb.checked) {
+      text = text.substring(0, m.start) + '\u2588'.repeat(m.value.length) + text.substring(m.end);
+    }
+  });
+  _anonText = text;
+  toast('Document geanonimiseerd');
+  render();
+}
+
+function uploadDocument(isAnon) {
+  if (!SB || !_user || !_uploadFile) { toast('Geen bestand geselecteerd'); return; }
+
+  var content = isAnon && _anonText ? new Blob([_anonText], {type:'text/plain'}) : _uploadFile;
+  var path = _user.id + '/' + Date.now() + '_' + _uploadFile.name;
+
+  toast('Uploaden...');
+  SB.storage.from('documenten').upload(path, content).then(function(r) {
+    if (r.error) { toast('Upload mislukt: ' + r.error.message); return; }
+
+    // Metadata opslaan
+    return SB.from('documenten').insert({
+      user_id: _user.id,
+      bestandsnaam: _uploadFile.name,
+      storage_path: path,
+      mime_type: _uploadFile.type || 'application/octet-stream',
+      grootte: _uploadFile.size,
+      geanonimiseerd: isAnon
+    });
+  }).then(function(r) {
+    if (r && r.error) { toast('Metadata opslaan mislukt: ' + r.error.message); return; }
+    toast('Document veilig opgeslagen!');
+    resetUpload();
+    go('/dossier');
+  }).catch(function(err) {
+    toast('Fout: ' + err.message);
+  });
+}
+
+function resetUpload() {
+  _uploadFile = null;
+  _uploadText = '';
+  _piiMatches = [];
+  _anonText = '';
+  render();
+}
+
+// ============ PAGE: EHRM PROCEDURE WIZARD ============
+var _ehrmStap = 0;
+var _ehrmData = {
+  uitgeprocedeerd: { bezwaar: false, beroep: false, hoger_beroep: false, geen_reactie: false },
+  artikelen: [],
+  beschrijving: { wat: '', wanneer: '', effect: '', instantie: '' },
+  documenten: [],
+  id: null
+};
+
+function pgEHRM() {
+  if (!_user) {
+    return '<div class="page">' +
+      '<div style="text-align:center;padding:60px 0">' +
+        '<span class="mi" style="font-size:56px;color:var(--purple);display:block;margin-bottom:12px">balance</span>' +
+        '<h1 style="font-size:24px;font-weight:800;margin-bottom:8px">EHRM Procedure Starten</h1>' +
+        '<p style="font-size:15px;color:var(--tx2);max-width:440px;margin:0 auto 20px">Log in om een klacht bij het Europees Hof voor de Rechten van de Mens voor te bereiden.</p>' +
+        '<button class="btn btn-blue btn-lg" onclick="showAuthModal()"><span class="mi mi-sm">login</span> Inloggen</button>' +
+      '</div>' +
+    '</div>';
+  }
+
+  var stappen = [
+    { titel: 'Uitgeprocedeerd?', icon: 'checklist' },
+    { titel: 'Geschonden rechten', icon: 'gavel' },
+    { titel: 'Jouw situatie', icon: 'edit_note' },
+    { titel: 'Bewijs', icon: 'attach_file' },
+    { titel: 'Klachtformulier', icon: 'description' }
+  ];
+
+  // Stappen-indicator
+  var stappenHtml = '<div style="display:flex;gap:4px;margin-bottom:20px">';
+  stappen.forEach(function(s, i) {
+    var active = i === _ehrmStap;
+    var done = i < _ehrmStap;
+    stappenHtml += '<div style="flex:1;text-align:center">' +
+      '<div style="height:4px;border-radius:2px;background:' + (done ? 'var(--green)' : (active ? 'var(--purple)' : 'var(--glass-bd)')) + ';margin-bottom:6px"></div>' +
+      '<div style="font-size:10px;color:' + (active ? 'var(--purple)' : (done ? 'var(--green)' : 'var(--tx3)')) + ';font-weight:' + (active ? '700' : '400') + '">' +
+        (done ? '<span class="mi mi-sm" style="font-size:12px">check_circle</span> ' : '') + s.titel +
+      '</div>' +
+    '</div>';
+  });
+  stappenHtml += '</div>';
+
+  // Stap content
+  var contentHtml = '';
+
+  if (_ehrmStap === 0) {
+    // Stap 1: Uitgeprocedeerd check
+    contentHtml = '<div class="card" style="padding:20px">' +
+      '<h3 style="font-size:16px;font-weight:700;margin-bottom:4px"><span class="mi mi-sm" style="color:var(--purple)">checklist</span> Ben je uitgeprocedeerd in Nederland?</h3>' +
+      '<p style="font-size:13px;color:var(--tx2);margin-bottom:16px">Het EHRM behandelt alleen klachten als je alle nationale rechtsmiddelen hebt uitgeput. Vink aan wat je al hebt gedaan:</p>' +
+      '<div style="display:flex;flex-direction:column;gap:12px">' +
+        '<label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;padding:12px;background:var(--bg3);border-radius:var(--rs)">' +
+          '<input type="checkbox" id="ehrm_bezwaar" ' + (_ehrmData.uitgeprocedeerd.bezwaar ? 'checked' : '') + ' onchange="_ehrmData.uitgeprocedeerd.bezwaar=this.checked" style="margin-top:2px;accent-color:var(--purple)">' +
+          '<div><div style="font-size:14px;font-weight:600">Bezwaar ingediend</div><div style="font-size:12px;color:var(--tx3)">Je hebt bezwaar gemaakt bij het bestuursorgaan (bijv. Belastingdienst, gemeente)</div></div>' +
+        '</label>' +
+        '<label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;padding:12px;background:var(--bg3);border-radius:var(--rs)">' +
+          '<input type="checkbox" id="ehrm_beroep" ' + (_ehrmData.uitgeprocedeerd.beroep ? 'checked' : '') + ' onchange="_ehrmData.uitgeprocedeerd.beroep=this.checked" style="margin-top:2px;accent-color:var(--purple)">' +
+          '<div><div style="font-size:14px;font-weight:600">Beroep bij rechtbank</div><div style="font-size:12px;color:var(--tx3)">Je bent naar de bestuursrechter geweest</div></div>' +
+        '</label>' +
+        '<label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;padding:12px;background:var(--bg3);border-radius:var(--rs)">' +
+          '<input type="checkbox" id="ehrm_hoger" ' + (_ehrmData.uitgeprocedeerd.hoger_beroep ? 'checked' : '') + ' onchange="_ehrmData.uitgeprocedeerd.hoger_beroep=this.checked" style="margin-top:2px;accent-color:var(--purple)">' +
+          '<div><div style="font-size:14px;font-weight:600">Hoger beroep (Raad van State / Gerechtshof)</div><div style="font-size:12px;color:var(--tx3)">Laatste nationale instantie</div></div>' +
+        '</label>' +
+        '<div style="border-top:1px solid var(--glass-bd);padding-top:12px">' +
+          '<label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;padding:12px;background:rgba(234,179,8,.08);border:1px solid rgba(234,179,8,.2);border-radius:var(--rs)">' +
+            '<input type="checkbox" id="ehrm_geen_reactie" ' + (_ehrmData.uitgeprocedeerd.geen_reactie ? 'checked' : '') + ' onchange="_ehrmData.uitgeprocedeerd.geen_reactie=this.checked" style="margin-top:2px;accent-color:var(--yellow)">' +
+            '<div><div style="font-size:14px;font-weight:600;color:var(--yellow)">De overheid reageert niet / blokkeert</div><div style="font-size:12px;color:var(--tx3)">Je kunt geen procedures voeren omdat de overheid niet reageert, geen informatie geeft, of je tegenwerkt. Dit is zelf een schending van Art. 13 EVRM (recht op effectief rechtsmiddel).</div></div>' +
+          '</label>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  }
+  else if (_ehrmStap === 1) {
+    // Stap 2: Geschonden rechten
+    var artikelen = [
+      { id: 'art8', titel: 'Art. 8 EVRM — Priv\u00e9leven & gezinsleven', tekst: 'Misbruik van BSN, persoonsgegevens, uithuisplaatsing kinderen, inbreuk op gezinsleven.', kleur: 'var(--blue)' },
+      { id: 'art13', titel: 'Art. 13 EVRM — Effectief rechtsmiddel', tekst: 'Geen toegang tot rechter, bezwaar wordt genegeerd, overheid reageert niet, dossier wordt geweigerd.', kleur: 'var(--yellow)' },
+      { id: 'art14', titel: 'Art. 14 EVRM — Discriminatieverbod', tekst: 'Geselecteerd op basis van afkomst, dubbele nationaliteit, achternaam of postcode.', kleur: 'var(--accent)' },
+      { id: 'p1a1', titel: 'Art. 1 Protocol 1 — Eigendomsrecht', tekst: 'Onterechte terugvorderingen, financiële schade, vermogen afgenomen, schulden opgelegd.', kleur: 'var(--green)' }
+    ];
+    contentHtml = '<div class="card" style="padding:20px">' +
+      '<h3 style="font-size:16px;font-weight:700;margin-bottom:4px"><span class="mi mi-sm" style="color:var(--purple)">gavel</span> Welke rechten zijn geschonden?</h3>' +
+      '<p style="font-size:13px;color:var(--tx2);margin-bottom:16px">Selecteer alle EVRM-artikelen die op jouw situatie van toepassing zijn:</p>' +
+      artikelen.map(function(a) {
+        var sel = _ehrmData.artikelen.indexOf(a.id) >= 0;
+        return '<label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;padding:14px;margin-bottom:8px;background:' + (sel ? 'rgba(168,85,247,.08)' : 'var(--bg3)') + ';border:1px solid ' + (sel ? 'rgba(168,85,247,.3)' : 'var(--glass-bd)') + ';border-radius:var(--rs);border-left:3px solid ' + a.kleur + '">' +
+          '<input type="checkbox" ' + (sel ? 'checked' : '') + ' onchange="toggleEhrmArtikel(\'' + a.id + '\')" style="margin-top:2px;accent-color:var(--purple)">' +
+          '<div>' +
+            '<div style="font-size:14px;font-weight:700">' + a.titel + '</div>' +
+            '<div style="font-size:12px;color:var(--tx2);margin-top:2px">' + a.tekst + '</div>' +
+          '</div>' +
+        '</label>';
+      }).join('') +
+    '</div>';
+  }
+  else if (_ehrmStap === 2) {
+    // Stap 3: Beschrijf je situatie
+    contentHtml = '<div class="card" style="padding:20px">' +
+      '<h3 style="font-size:16px;font-weight:700;margin-bottom:4px"><span class="mi mi-sm" style="color:var(--purple)">edit_note</span> Beschrijf je situatie</h3>' +
+      '<p style="font-size:13px;color:var(--tx2);margin-bottom:16px">Beantwoord deze vragen om je klacht bij het EHRM op te bouwen:</p>' +
+      '<div style="display:flex;flex-direction:column;gap:12px">' +
+        '<div>' +
+          '<label style="font-size:13px;font-weight:600;display:block;margin-bottom:4px">Welke overheidsinstantie(s)?</label>' +
+          '<input class="fi" placeholder="Bijv. Belastingdienst, gemeente Den Haag, UHT" value="' + esc(_ehrmData.beschrijving.instantie) + '" oninput="_ehrmData.beschrijving.instantie=this.value">' +
+        '</div>' +
+        '<div>' +
+          '<label style="font-size:13px;font-weight:600;display:block;margin-bottom:4px">Wat heeft de overheid gedaan?</label>' +
+          '<textarea class="ft" style="min-height:100px" placeholder="Beschrijf concreet wat er is gebeurd, welke beslissingen zijn genomen, hoe je bent behandeld." oninput="_ehrmData.beschrijving.wat=this.value">' + esc(_ehrmData.beschrijving.wat) + '</textarea>' +
+        '</div>' +
+        '<div>' +
+          '<label style="font-size:13px;font-weight:600;display:block;margin-bottom:4px">Wanneer? (periode)</label>' +
+          '<input class="fi" placeholder="Bijv. 2014 tot heden, of specifieke data" value="' + esc(_ehrmData.beschrijving.wanneer) + '" oninput="_ehrmData.beschrijving.wanneer=this.value">' +
+        '</div>' +
+        '<div>' +
+          '<label style="font-size:13px;font-weight:600;display:block;margin-bottom:4px">Wat zijn de gevolgen?</label>' +
+          '<textarea class="ft" style="min-height:80px" placeholder="Financieel, gezondheid, gezin, kinderen, werk, woning..." oninput="_ehrmData.beschrijving.effect=this.value">' + esc(_ehrmData.beschrijving.effect) + '</textarea>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  }
+  else if (_ehrmStap === 3) {
+    // Stap 4: Bewijs uploaden
+    contentHtml = '<div class="card" style="padding:20px">' +
+      '<h3 style="font-size:16px;font-weight:700;margin-bottom:4px"><span class="mi mi-sm" style="color:var(--purple)">attach_file</span> Bewijs uploaden</h3>' +
+      '<p style="font-size:13px;color:var(--tx2);margin-bottom:16px">Upload afwijzingsbrieven, beschikkingen, correspondentie. Je kunt documenten ook later toevoegen.</p>' +
+      '<button class="btn btn-blue btn-lg" onclick="go(\'/uploaden\')"><span class="mi mi-sm">upload_file</span> Upload documenten</button>' +
+      '<div style="margin-top:12px;font-size:12px;color:var(--tx3)">Tip: Gebruik de anonimisering-tool om BSN en andere persoonlijke gegevens te verwijderen.</div>' +
+    '</div>';
+  }
+  else if (_ehrmStap === 4) {
+    // Stap 5: Genereer klachtformulier
+    var artTekst = _ehrmData.artikelen.map(function(a) {
+      var labels = { art8: 'Art. 8 EVRM (priv\u00e9leven)', art13: 'Art. 13 EVRM (effectief rechtsmiddel)', art14: 'Art. 14 EVRM (discriminatie)', p1a1: 'Art. 1 Prot. 1 (eigendom)' };
+      return labels[a] || a;
+    }).join(', ');
+
+    contentHtml = '<div class="card" style="padding:20px">' +
+      '<h3 style="font-size:16px;font-weight:700;margin-bottom:4px"><span class="mi mi-sm" style="color:var(--green)">description</span> Klachtformulier</h3>' +
+      '<p style="font-size:13px;color:var(--tx2);margin-bottom:16px">Hieronder staat je klacht-samenvatting. Kopieer deze tekst naar het offici\u00eble EHRM-klachtformulier.</p>' +
+
+      '<div class="card" style="padding:16px;background:var(--bg);border:1px solid var(--purple);border-radius:var(--rs)">' +
+        '<div style="font-size:12px;font-weight:700;color:var(--purple);margin-bottom:10px">KLACHT AAN HET EUROPEES HOF VOOR DE RECHTEN VAN DE MENS</div>' +
+
+        '<div style="font-size:13px;color:var(--tx);line-height:1.7">' +
+          '<strong>Geschonden artikelen:</strong> ' + (artTekst || 'Nog niet geselecteerd') + '<br><br>' +
+          '<strong>Verweerder staat:</strong> Nederland<br><br>' +
+          '<strong>Betrokken instantie(s):</strong> ' + esc(_ehrmData.beschrijving.instantie || 'Niet ingevuld') + '<br><br>' +
+          '<strong>Feiten:</strong><br>' + esc(_ehrmData.beschrijving.wat || 'Niet ingevuld') + '<br><br>' +
+          '<strong>Periode:</strong> ' + esc(_ehrmData.beschrijving.wanneer || 'Niet ingevuld') + '<br><br>' +
+          '<strong>Gevolgen:</strong><br>' + esc(_ehrmData.beschrijving.effect || 'Niet ingevuld') + '<br><br>' +
+          '<strong>Nationale rechtsmiddelen uitgeput:</strong> ' +
+            (_ehrmData.uitgeprocedeerd.bezwaar ? 'Bezwaar ✓ ' : '') +
+            (_ehrmData.uitgeprocedeerd.beroep ? 'Beroep ✓ ' : '') +
+            (_ehrmData.uitgeprocedeerd.hoger_beroep ? 'Hoger beroep ✓ ' : '') +
+            (_ehrmData.uitgeprocedeerd.geen_reactie ? '(Overheid reageert niet — Art. 13 EVRM schending)' : '') +
+        '</div>' +
+      '</div>' +
+
+      '<div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap">' +
+        '<button class="btn btn-purple btn-lg" onclick="kopieerEhrmKlacht()"><span class="mi mi-sm">content_copy</span> Kopieer klacht</button>' +
+        '<button class="btn btn-green btn-lg" onclick="slaEhrmOp()"><span class="mi mi-sm">save</span> Opslaan</button>' +
+      '</div>' +
+
+      '<div style="margin-top:16px;padding:14px;background:var(--bg3);border-radius:var(--rs)">' +
+        '<div style="font-size:13px;font-weight:700;margin-bottom:6px"><span class="mi mi-sm" style="color:var(--blue)">info</span> Hoe indienen?</div>' +
+        '<ol style="font-size:12px;color:var(--tx2);line-height:1.7;margin:0;padding-left:16px">' +
+          '<li>Ga naar <a href="https://www.echr.coe.int/apply-to-the-court" target="_blank" style="color:var(--blue)">echr.coe.int/apply-to-the-court</a></li>' +
+          '<li>Download het offici\u00eble klachtformulier (PDF)</li>' +
+          '<li>Vul je persoonlijke gegevens in</li>' +
+          '<li>Plak de bovenstaande klachttekst in de relevante secties</li>' +
+          '<li>Voeg je bewijsdocumenten toe als bijlage</li>' +
+          '<li>Stuur per post naar: Greffe de la Cour, CEDH, F-67075 Strasbourg</li>' +
+        '</ol>' +
+      '</div>' +
+    '</div>';
+  }
+
+  return '<div class="page">' +
+    '<div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">' +
+      '<button class="btn btn-ghost" onclick="go(\'/dossier\')" style="padding:6px"><span class="mi mi-sm">arrow_back</span></button>' +
+      '<div>' +
+        '<h2 style="font-size:20px;font-weight:700;margin:0"><span class="mi mi-sm" style="color:var(--purple)">balance</span> EHRM Procedure</h2>' +
+        '<div style="font-size:12px;color:var(--tx3)">Stap ' + (_ehrmStap + 1) + ' van 5</div>' +
+      '</div>' +
+    '</div>' +
+
+    stappenHtml +
+    contentHtml +
+
+    // Navigatie knoppen
+    '<div style="display:flex;justify-content:space-between;margin-top:20px;padding-top:16px;border-top:1px solid var(--glass-bd)">' +
+      (_ehrmStap > 0 ? '<button class="btn btn-ghost" onclick="ehrmVorige()"><span class="mi mi-sm">arrow_back</span> Vorige</button>' : '<div></div>') +
+      (_ehrmStap < 4 ? '<button class="btn btn-purple btn-lg" onclick="ehrmVolgende()">Volgende <span class="mi mi-sm">arrow_forward</span></button>' : '') +
+    '</div>' +
+  '</div>';
+}
+
+function toggleEhrmArtikel(id) {
+  var idx = _ehrmData.artikelen.indexOf(id);
+  if (idx >= 0) _ehrmData.artikelen.splice(idx, 1);
+  else _ehrmData.artikelen.push(id);
+  render();
+}
+
+function ehrmVolgende() {
+  if (_ehrmStap < 4) { _ehrmStap++; render(); window.scrollTo(0,0); }
+}
+
+function ehrmVorige() {
+  if (_ehrmStap > 0) { _ehrmStap--; render(); window.scrollTo(0,0); }
+}
+
+function kopieerEhrmKlacht() {
+  var artTekst = _ehrmData.artikelen.map(function(a) {
+    var labels = { art8: 'Art. 8 EVRM (priv\u00e9leven)', art13: 'Art. 13 EVRM (effectief rechtsmiddel)', art14: 'Art. 14 EVRM (discriminatie)', p1a1: 'Art. 1 Prot. 1 (eigendom)' };
+    return labels[a] || a;
+  }).join(', ');
+
+  var tekst = 'KLACHT AAN HET EUROPEES HOF VOOR DE RECHTEN VAN DE MENS\n\n' +
+    'Geschonden artikelen: ' + (artTekst || '-') + '\n' +
+    'Verweerder staat: Nederland\n' +
+    'Betrokken instantie(s): ' + (_ehrmData.beschrijving.instantie || '-') + '\n\n' +
+    'Feiten:\n' + (_ehrmData.beschrijving.wat || '-') + '\n\n' +
+    'Periode: ' + (_ehrmData.beschrijving.wanneer || '-') + '\n\n' +
+    'Gevolgen:\n' + (_ehrmData.beschrijving.effect || '-') + '\n\n' +
+    'Nationale rechtsmiddelen uitgeput: ' +
+    (_ehrmData.uitgeprocedeerd.bezwaar ? 'Bezwaar gedaan. ' : '') +
+    (_ehrmData.uitgeprocedeerd.beroep ? 'Beroep gevoerd. ' : '') +
+    (_ehrmData.uitgeprocedeerd.hoger_beroep ? 'Hoger beroep gevoerd. ' : '') +
+    (_ehrmData.uitgeprocedeerd.geen_reactie ? 'Overheid reageert niet (Art. 13 EVRM schending). ' : '');
+
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(tekst).then(function() { toast('Klachttekst gekopieerd naar klembord'); });
+  }
+}
+
+function slaEhrmOp() {
+  if (!SB || !_user) { toast('Niet ingelogd'); return; }
+
+  var stappen = ['intake','artikelen','beschrijving','bewijs','formulier'];
+  var payload = {
+    user_id: _user.id,
+    stap: stappen[_ehrmStap] || 'intake',
+    geschonden_artikelen: _ehrmData.artikelen,
+    feiten_samenvatting: _ehrmData.beschrijving.wat,
+    nationale_procedures:
+      (_ehrmData.uitgeprocedeerd.bezwaar ? 'Bezwaar. ' : '') +
+      (_ehrmData.uitgeprocedeerd.beroep ? 'Beroep. ' : '') +
+      (_ehrmData.uitgeprocedeerd.hoger_beroep ? 'Hoger beroep. ' : '') +
+      (_ehrmData.uitgeprocedeerd.geen_reactie ? 'Overheid reageert niet.' : ''),
+    uitkomst_nationaal: _ehrmData.beschrijving.effect,
+    updated_at: new Date().toISOString()
+  };
+
+  var promise;
+  if (_ehrmData.id) {
+    promise = SB.from('ehrm_procedures').update(payload).eq('id', _ehrmData.id);
+  } else {
+    promise = SB.from('ehrm_procedures').insert(payload).select();
+  }
+
+  promise.then(function(r) {
+    if (r.error) { toast('Opslaan mislukt: ' + r.error.message); return; }
+    if (!_ehrmData.id && r.data && r.data[0]) _ehrmData.id = r.data[0].id;
+    toast('EHRM-procedure opgeslagen');
+  });
+}
+
 // ============ PAGE: ADMIN (met login + moderatie) ============
 var _adminData = { stats: null, meldingen: [], filter: '' };
 
@@ -6453,7 +7305,19 @@ try {
   });
 } catch(e){ console.warn('GitHub laden mislukt:', e); }
 
-console.log('Meldpunt Ambtenaren v3.1 — Versleuteld via GitHub Issues');
+console.log('Meldpunt Ambtenaren v3.2 — PWA + Supabase');
+
+// Service Worker registratie (PWA)
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js').then(function(reg) {
+    console.log('Service Worker geregistreerd:', reg.scope);
+  }).catch(function(err) {
+    console.warn('SW registratie mislukt:', err);
+  });
+}
+
+// Auth UI updaten na init
+setTimeout(updateAuthUI, 100);
 
 // ============ ANALYTICS — minimale, privacy-vriendelijke pageview tracking ============
 (function(){
