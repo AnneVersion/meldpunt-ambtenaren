@@ -998,13 +998,18 @@ function getNamenLijst(meldingen){
     (m.namen || []).forEach(function(n){
       var key = (n.naam||'').trim().toLowerCase();
       if(!key) return;
-      if(!map[key]) map[key] = { naam: n.naam, count: 0, instanties: {}, meldingIds: [], email: '' };
+      if(!map[key]) map[key] = { naam: n.naam, count: 0, instanties: {}, meldingIds: [], email: '', feiten: {}, maxSancties: {} };
       map[key].count++;
       if(n.functie) map[key].functie = n.functie;
       if(n.email) map[key].email = n.email;
       if(m.instantie) map[key].instanties[m.instantie] = true;
       map[key].meldingIds.push(m.id);
       if(n.naam.length > map[key].naam.length) map[key].naam = n.naam;
+      // Verzamel feiten en max sancties per persoon
+      (m.feiten || []).forEach(function(f){
+        if(f.feit) map[key].feiten[f.feit] = f;
+        if(f.maxSanctie) map[key].maxSancties[f.maxSanctie] = true;
+      });
     });
   });
   var list = [];
@@ -1169,9 +1174,10 @@ function pgMelding(){
         h += '<div class="card" style="padding:12px;margin-bottom:8px;border-left:3px solid var(--accent)">' +
           '<div style="font-size:14px;font-weight:700;margin-bottom:4px">' + esc(f.feit) + '</div>' +
           '<div style="font-size:12px;color:var(--accent);font-weight:600;margin-bottom:6px">' + esc(f.juridisch || '') + '</div>' +
-          '<div style="display:flex;gap:6px;flex-wrap:wrap">' +
+          '<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">' +
             (f.wet ? '<span class="badge badge-blue" style="font-size:10px">' + esc(f.wet) + '</span>' : '') +
             (f.sanctie ? '<span class="badge badge-red" style="font-size:10px">' + esc(f.sanctie) + '</span>' : '') +
+            (f.maxSanctie ? '<span style="font-size:10px;padding:3px 8px;border-radius:4px;background:var(--accent);color:#fff;font-weight:700">⚖ MAX: ' + esc(f.maxSanctie) + '</span>' : '') +
             (f.categorie ? '<span class="badge badge-purple" style="font-size:10px">' + esc(f.categorie) + '</span>' : '') +
           '</div>' +
         '</div>';
@@ -1277,94 +1283,94 @@ var _naamSugVisible = -1;
 // Alle mogelijke ambtelijke feiten — herkenbare taal + juridische term + wettelijke basis + sancties
 var FEITEN = [
   // --- NEGEREN & TRAINEREN ---
-  { cat: 'Negeren & traineren', feit: 'Niet reageren op brieven of e-mails', juridisch: 'Schending correspondentieplicht', wet: 'Art. 6:2 Awb', sanctie: 'Dwangsom max €1.442 + schadevergoeding', toelichting: 'Je stuurt brieven of e-mails maar krijgt geen antwoord' },
-  { cat: 'Negeren & traineren', feit: 'Telefoon niet opnemen of eindeloos doorverbinden', juridisch: 'Schending bereikbaarheidsverplichting', wet: 'Art. 2:1 Awb', sanctie: 'Klacht bij Nationale Ombudsman', toelichting: 'Je wordt eindeloos doorverbonden of er wordt niet opgenomen' },
-  { cat: 'Negeren & traineren', feit: 'Te laat beslissen op aanvraag of bezwaar', juridisch: 'Niet-tijdig beslissen / termijnoverschrijding', wet: 'Art. 4:13/7:10 Awb', sanctie: 'Dwangsom max €1.442 + beroep bij rechter', toelichting: 'De wettelijke beslistermijn is verstreken maar je hoort niets' },
-  { cat: 'Negeren & traineren', feit: 'Zaak eindeloos doorschuiven', juridisch: 'Schending zorgvuldigheidsbeginsel', wet: 'Art. 3:2 Awb', sanctie: 'Dwangsom + schadevergoeding', toelichting: 'Van het kastje naar de muur, niemand voelt zich verantwoordelijk' },
-  { cat: 'Negeren & traineren', feit: 'Toezegging niet nakomen', juridisch: 'Schending vertrouwensbeginsel', wet: 'Art. 3:2 Awb + vertrouwensbeginsel', sanctie: 'Vernietiging besluit + schadevergoeding', toelichting: 'Er is iets beloofd maar ze komen er niet op terug' },
-  { cat: 'Negeren & traineren', feit: 'WOB/WOO-verzoek negeren of traineren', juridisch: 'Niet-naleving Wet open overheid', wet: 'Art. 4.4 Woo', sanctie: 'Dwangsom + rechterlijk bevel', toelichting: 'Je vraagt om overheidsdocumenten maar krijgt ze niet of veel te laat' },
-  { cat: 'Negeren & traineren', feit: 'Ingebrekestelling negeren', juridisch: 'Niet-naleving ingebrekestelling', wet: 'Art. 4:17 Awb', sanctie: 'Dwangsom €23/dag, max €1.442', toelichting: 'Je hebt een ingebrekestelling gestuurd maar er gebeurt nog steeds niets' },
+  { cat: 'Negeren & traineren', feit: 'Niet reageren op brieven of e-mails', juridisch: 'Schending correspondentieplicht', wet: 'Art. 6:2 Awb', sanctie: 'Dwangsom max €1.442 + schadevergoeding', maxSanctie: '€1.442 dwangsom', toelichting: 'Je stuurt brieven of e-mails maar krijgt geen antwoord' },
+  { cat: 'Negeren & traineren', feit: 'Telefoon niet opnemen of eindeloos doorverbinden', juridisch: 'Schending bereikbaarheidsverplichting', wet: 'Art. 2:1 Awb', sanctie: 'Klacht bij Nationale Ombudsman', maxSanctie: 'Ombudsman-rapport', toelichting: 'Je wordt eindeloos doorverbonden of er wordt niet opgenomen' },
+  { cat: 'Negeren & traineren', feit: 'Te laat beslissen op aanvraag of bezwaar', juridisch: 'Niet-tijdig beslissen / termijnoverschrijding', wet: 'Art. 4:13/7:10 Awb', sanctie: 'Dwangsom max €1.442 + beroep bij rechter', maxSanctie: '€1.442 + beroep', toelichting: 'De wettelijke beslistermijn is verstreken maar je hoort niets' },
+  { cat: 'Negeren & traineren', feit: 'Zaak eindeloos doorschuiven', juridisch: 'Schending zorgvuldigheidsbeginsel', wet: 'Art. 3:2 Awb', sanctie: 'Dwangsom + schadevergoeding', maxSanctie: '€1.442 + schadevergoeding', toelichting: 'Van het kastje naar de muur, niemand voelt zich verantwoordelijk' },
+  { cat: 'Negeren & traineren', feit: 'Toezegging niet nakomen', juridisch: 'Schending vertrouwensbeginsel', wet: 'Art. 3:2 Awb + vertrouwensbeginsel', sanctie: 'Vernietiging besluit + schadevergoeding', maxSanctie: 'Vernietiging besluit', toelichting: 'Er is iets beloofd maar ze komen er niet op terug' },
+  { cat: 'Negeren & traineren', feit: 'WOB/WOO-verzoek negeren of traineren', juridisch: 'Niet-naleving Wet open overheid', wet: 'Art. 4.4 Woo', sanctie: 'Dwangsom + rechterlijk bevel', maxSanctie: '€1.442 + rechterlijk bevel', toelichting: 'Je vraagt om overheidsdocumenten maar krijgt ze niet of veel te laat' },
+  { cat: 'Negeren & traineren', feit: 'Ingebrekestelling negeren', juridisch: 'Niet-naleving ingebrekestelling', wet: 'Art. 4:17 Awb', sanctie: 'Dwangsom €23/dag, max €1.442', maxSanctie: '€1.442 dwangsom', toelichting: 'Je hebt een ingebrekestelling gestuurd maar er gebeurt nog steeds niets' },
 
   // --- KLACHTEN & BEZWAAR ---
-  { cat: 'Klachten & bezwaar', feit: 'Klacht afwijzen zonder onderbouwing', juridisch: 'Onzorgvuldige klachtbehandeling', wet: 'Art. 9:12 Awb', sanctie: 'Klacht bij Nationale Ombudsman', toelichting: 'Je klacht wordt afgewezen met een standaardzin' },
-  { cat: 'Klachten & bezwaar', feit: 'Bezwaar afwijzen zonder goed te luisteren', juridisch: 'Schending hoorplicht / motiveringsgebrek', wet: 'Art. 7:2/7:12 Awb', sanctie: 'Vernietiging door rechter + schadevergoeding', toelichting: 'Je bezwaar wordt afgewezen terwijl ze niet naar je argumenten keken' },
-  { cat: 'Klachten & bezwaar', feit: 'Besluit niet uitleggen', juridisch: 'Motiveringsgebrek', wet: 'Art. 3:46 Awb', sanctie: 'Vernietiging besluit', toelichting: 'Je krijgt een besluit maar het wordt niet uitgelegd waarom' },
-  { cat: 'Klachten & bezwaar', feit: 'Geen hoor en wederhoor', juridisch: 'Schending hoorplicht', wet: 'Art. 4:7/4:8 Awb', sanctie: 'Vernietiging besluit', toelichting: 'Er wordt een besluit genomen zonder dat je je verhaal kon doen' },
-  { cat: 'Klachten & bezwaar', feit: 'Bezwaar als "kennelijk ongegrond" afgedaan', juridisch: 'Onrechtmatige vereenvoudigde afdoening', wet: 'Art. 7:3 Awb', sanctie: 'Vernietiging + heropening procedure', toelichting: 'Je bezwaar wordt zonder echte beoordeling terzijde geschoven' },
-  { cat: 'Klachten & bezwaar', feit: 'Bezwaarcommissie-advies genegeerd', juridisch: 'Afwijking advies zonder deugdelijke motivering', wet: 'Art. 7:13 Awb', sanctie: 'Vernietiging besluit', toelichting: 'De onafhankelijke commissie gaf je gelijk maar het bestuursorgaan wijst toch af' },
+  { cat: 'Klachten & bezwaar', feit: 'Klacht afwijzen zonder onderbouwing', juridisch: 'Onzorgvuldige klachtbehandeling', wet: 'Art. 9:12 Awb', sanctie: 'Klacht bij Nationale Ombudsman', maxSanctie: 'Ombudsman-rapport', toelichting: 'Je klacht wordt afgewezen met een standaardzin' },
+  { cat: 'Klachten & bezwaar', feit: 'Bezwaar afwijzen zonder goed te luisteren', juridisch: 'Schending hoorplicht / motiveringsgebrek', wet: 'Art. 7:2/7:12 Awb', sanctie: 'Vernietiging door rechter + schadevergoeding', maxSanctie: 'Vernietiging + schadevergoeding', toelichting: 'Je bezwaar wordt afgewezen terwijl ze niet naar je argumenten keken' },
+  { cat: 'Klachten & bezwaar', feit: 'Besluit niet uitleggen', juridisch: 'Motiveringsgebrek', wet: 'Art. 3:46 Awb', sanctie: 'Vernietiging besluit', maxSanctie: 'Vernietiging besluit', toelichting: 'Je krijgt een besluit maar het wordt niet uitgelegd waarom' },
+  { cat: 'Klachten & bezwaar', feit: 'Geen hoor en wederhoor', juridisch: 'Schending hoorplicht', wet: 'Art. 4:7/4:8 Awb', sanctie: 'Vernietiging besluit', maxSanctie: 'Vernietiging besluit', toelichting: 'Er wordt een besluit genomen zonder dat je je verhaal kon doen' },
+  { cat: 'Klachten & bezwaar', feit: 'Bezwaar als "kennelijk ongegrond" afgedaan', juridisch: 'Onrechtmatige vereenvoudigde afdoening', wet: 'Art. 7:3 Awb', sanctie: 'Vernietiging + heropening procedure', maxSanctie: 'Heropening procedure', toelichting: 'Je bezwaar wordt zonder echte beoordeling terzijde geschoven' },
+  { cat: 'Klachten & bezwaar', feit: 'Bezwaarcommissie-advies genegeerd', juridisch: 'Afwijking advies zonder deugdelijke motivering', wet: 'Art. 7:13 Awb', sanctie: 'Vernietiging besluit', maxSanctie: 'Vernietiging besluit', toelichting: 'De onafhankelijke commissie gaf je gelijk maar het bestuursorgaan wijst toch af' },
 
   // --- ONEERLIJK BEHANDELD ---
-  { cat: 'Oneerlijk behandeld', feit: 'Anders behandeld vanwege afkomst of naam', juridisch: 'Discriminatie / schending gelijkheidsbeginsel', wet: 'Art. 1 Gw + Art. 137d Sr', sanctie: 'Max 1 jaar cel + schadevergoeding', toelichting: 'Je wordt anders behandeld vanwege achternaam, afkomst of huidskleur' },
-  { cat: 'Oneerlijk behandeld', feit: 'Onterecht als fraudeur bestempeld', juridisch: 'Onrechtmatige verdachtmaking / institutionele vooringenomenheid', wet: 'Art. 3:2/3:4 Awb', sanctie: 'Vernietiging + compensatie €30.000', toelichting: 'Je wordt beschuldigd van fraude zonder bewijs' },
-  { cat: 'Oneerlijk behandeld', feit: 'Veel te streng gestraft voor kleine fout', juridisch: 'Schending evenredigheidsbeginsel', wet: 'Art. 3:4 Awb', sanctie: 'Vernietiging besluit + schadevergoeding', toelichting: 'Een kleine fout leidt tot buitenproportionele gevolgen' },
-  { cat: 'Oneerlijk behandeld', feit: 'Ongelijk behandeld t.o.v. anderen', juridisch: 'Schending gelijkheidsbeginsel', wet: 'Art. 1 Gw', sanctie: 'Vernietiging besluit + schadevergoeding', toelichting: 'Iemand anders in dezelfde situatie wordt wel geholpen, jij niet' },
-  { cat: 'Oneerlijk behandeld', feit: 'Vernederend of respectloos behandeld', juridisch: 'Onmenselijke/vernederende behandeling', wet: 'Art. 3 EVRM', sanctie: 'Schadevergoeding via EHRM (€25.000+)', toelichting: 'Kleinerend, respectloos of intimiderend bejegend door een ambtenaar' },
-  { cat: 'Oneerlijk behandeld', feit: 'Geselecteerd door algoritme of risicoprofiel', juridisch: 'Onrechtmatige geautomatiseerde besluitvorming / profilering', wet: 'AVG Art. 22 + Art. 1 Gw', sanctie: 'Vernietiging + schadevergoeding + AP-boete', toelichting: 'Je bent geselecteerd voor controle door een algoritme, niet door feiten' },
-  { cat: 'Oneerlijk behandeld', feit: 'Dubbele nationaliteit als risicofactor gebruikt', juridisch: 'Etnisch profileren', wet: 'Art. 1 Gw + AVG Art. 9', sanctie: 'Schadevergoeding + AP-boete tot €20 miljoen', toelichting: 'Je tweede nationaliteit is gebruikt als grond voor extra controle' },
+  { cat: 'Oneerlijk behandeld', feit: 'Anders behandeld vanwege afkomst of naam', juridisch: 'Discriminatie / schending gelijkheidsbeginsel', wet: 'Art. 1 Gw + Art. 137d Sr', sanctie: 'Max 1 jaar cel + schadevergoeding', maxSanctie: '1 jaar cel', toelichting: 'Je wordt anders behandeld vanwege achternaam, afkomst of huidskleur' },
+  { cat: 'Oneerlijk behandeld', feit: 'Onterecht als fraudeur bestempeld', juridisch: 'Onrechtmatige verdachtmaking / institutionele vooringenomenheid', wet: 'Art. 3:2/3:4 Awb', sanctie: 'Vernietiging + compensatie €30.000', maxSanctie: '€30.000 compensatie', toelichting: 'Je wordt beschuldigd van fraude zonder bewijs' },
+  { cat: 'Oneerlijk behandeld', feit: 'Veel te streng gestraft voor kleine fout', juridisch: 'Schending evenredigheidsbeginsel', wet: 'Art. 3:4 Awb', sanctie: 'Vernietiging besluit + schadevergoeding', maxSanctie: 'Vernietiging + schadevergoeding', toelichting: 'Een kleine fout leidt tot buitenproportionele gevolgen' },
+  { cat: 'Oneerlijk behandeld', feit: 'Ongelijk behandeld t.o.v. anderen', juridisch: 'Schending gelijkheidsbeginsel', wet: 'Art. 1 Gw', sanctie: 'Vernietiging besluit + schadevergoeding', maxSanctie: 'Vernietiging + schadevergoeding', toelichting: 'Iemand anders in dezelfde situatie wordt wel geholpen, jij niet' },
+  { cat: 'Oneerlijk behandeld', feit: 'Vernederend of respectloos behandeld', juridisch: 'Onmenselijke/vernederende behandeling', wet: 'Art. 3 EVRM', sanctie: 'Schadevergoeding via EHRM (€25.000+)', maxSanctie: '€25.000+ (EHRM)', toelichting: 'Kleinerend, respectloos of intimiderend bejegend door een ambtenaar' },
+  { cat: 'Oneerlijk behandeld', feit: 'Geselecteerd door algoritme of risicoprofiel', juridisch: 'Onrechtmatige geautomatiseerde besluitvorming / profilering', wet: 'AVG Art. 22 + Art. 1 Gw', sanctie: 'Vernietiging + schadevergoeding + AP-boete', maxSanctie: '€20 mln AP-boete', toelichting: 'Je bent geselecteerd voor controle door een algoritme, niet door feiten' },
+  { cat: 'Oneerlijk behandeld', feit: 'Dubbele nationaliteit als risicofactor gebruikt', juridisch: 'Etnisch profileren', wet: 'Art. 1 Gw + AVG Art. 9', sanctie: 'Schadevergoeding + AP-boete tot €20 miljoen', maxSanctie: '€20 mln AP-boete', toelichting: 'Je tweede nationaliteit is gebruikt als grond voor extra controle' },
 
   // --- GELD & TERUGVORDERING ---
-  { cat: 'Geld & terugvordering', feit: 'Toeslag of uitkering onterecht stopgezet', juridisch: 'Onrechtmatige intrekking/stopzetting', wet: 'Art. 3:2/3:4 Awb', sanctie: 'Vernietiging + nabetaling + schadevergoeding', toelichting: 'Je toeslag of uitkering wordt zonder goede reden stopgezet' },
-  { cat: 'Geld & terugvordering', feit: 'Alles terugvorderen bij kleine fout', juridisch: 'Disproportionele terugvordering', wet: 'Art. 3:4 Awb', sanctie: 'Vernietiging + compensatie', toelichting: 'Je moet duizenden euro\'s terugbetalen voor een klein bedrag fout' },
-  { cat: 'Geld & terugvordering', feit: 'Beslag leggen zonder waarschuwing', juridisch: 'Onrechtmatig beslag / schending hoorplicht', wet: 'Art. 3:2 Awb + Rv', sanctie: 'Opheffing beslag + schadevergoeding', toelichting: 'Beslag op bankrekening of loon zonder dat je het wist' },
-  { cat: 'Geld & terugvordering', feit: 'Compensatie of herstel vertragen', juridisch: 'Onrechtmatige vertraging schadevergoeding', wet: 'Art. 4:13 Awb', sanctie: 'Dwangsom + rente + schadevergoeding', toelichting: 'Je hebt recht op compensatie maar het duurt maanden of jaren' },
-  { cat: 'Geld & terugvordering', feit: 'Verrekening zonder toestemming', juridisch: 'Onrechtmatige verrekening', wet: 'Art. 6:127 BW + beslagvrije voet', sanctie: 'Terugbetaling + schadevergoeding', toelichting: 'Ze houden geld in op je uitkering of toeslag zonder overleg' },
-  { cat: 'Geld & terugvordering', feit: 'Beslagvrije voet niet respecteren', juridisch: 'Schending beslagvrije voet', wet: 'Art. 475d Rv', sanctie: 'Terugbetaling + schadevergoeding', toelichting: 'Je houdt minder over dan het minimum om van te leven' },
-  { cat: 'Geld & terugvordering', feit: 'Schuldhulpverlening weigeren', juridisch: 'Onrechtmatige weigering schuldhulp', wet: 'Wgs Art. 2/3', sanctie: 'Rechterlijk bevel tot toelating', toelichting: 'Je wordt niet toegelaten tot schuldhulpverlening zonder goede reden' },
-  { cat: 'Geld & terugvordering', feit: 'Boete opgelegd zonder bewijs', juridisch: 'Onrechtmatige bestuurlijke boete', wet: 'Art. 5:41/5:46 Awb', sanctie: 'Vernietiging boete + schadevergoeding', toelichting: 'Je krijgt een boete maar er is geen bewijs dat je iets fout deed' },
+  { cat: 'Geld & terugvordering', feit: 'Toeslag of uitkering onterecht stopgezet', juridisch: 'Onrechtmatige intrekking/stopzetting', wet: 'Art. 3:2/3:4 Awb', sanctie: 'Vernietiging + nabetaling + schadevergoeding', maxSanctie: 'Nabetaling + schadevergoeding', toelichting: 'Je toeslag of uitkering wordt zonder goede reden stopgezet' },
+  { cat: 'Geld & terugvordering', feit: 'Alles terugvorderen bij kleine fout', juridisch: 'Disproportionele terugvordering', wet: 'Art. 3:4 Awb', sanctie: 'Vernietiging + compensatie', maxSanctie: 'Volledige compensatie', toelichting: 'Je moet duizenden euro\'s terugbetalen voor een klein bedrag fout' },
+  { cat: 'Geld & terugvordering', feit: 'Beslag leggen zonder waarschuwing', juridisch: 'Onrechtmatig beslag / schending hoorplicht', wet: 'Art. 3:2 Awb + Rv', sanctie: 'Opheffing beslag + schadevergoeding', maxSanctie: 'Opheffing + schadevergoeding', toelichting: 'Beslag op bankrekening of loon zonder dat je het wist' },
+  { cat: 'Geld & terugvordering', feit: 'Compensatie of herstel vertragen', juridisch: 'Onrechtmatige vertraging schadevergoeding', wet: 'Art. 4:13 Awb', sanctie: 'Dwangsom + rente + schadevergoeding', maxSanctie: '€1.442 + wettelijke rente', toelichting: 'Je hebt recht op compensatie maar het duurt maanden of jaren' },
+  { cat: 'Geld & terugvordering', feit: 'Verrekening zonder toestemming', juridisch: 'Onrechtmatige verrekening', wet: 'Art. 6:127 BW + beslagvrije voet', sanctie: 'Terugbetaling + schadevergoeding', maxSanctie: 'Terugbetaling + schadevergoeding', toelichting: 'Ze houden geld in op je uitkering of toeslag zonder overleg' },
+  { cat: 'Geld & terugvordering', feit: 'Beslagvrije voet niet respecteren', juridisch: 'Schending beslagvrije voet', wet: 'Art. 475d Rv', sanctie: 'Terugbetaling + schadevergoeding', maxSanctie: 'Terugbetaling + schadevergoeding', toelichting: 'Je houdt minder over dan het minimum om van te leven' },
+  { cat: 'Geld & terugvordering', feit: 'Schuldhulpverlening weigeren', juridisch: 'Onrechtmatige weigering schuldhulp', wet: 'Wgs Art. 2/3', sanctie: 'Rechterlijk bevel tot toelating', maxSanctie: 'Rechterlijk bevel', toelichting: 'Je wordt niet toegelaten tot schuldhulpverlening zonder goede reden' },
+  { cat: 'Geld & terugvordering', feit: 'Boete opgelegd zonder bewijs', juridisch: 'Onrechtmatige bestuurlijke boete', wet: 'Art. 5:41/5:46 Awb', sanctie: 'Vernietiging boete + schadevergoeding', maxSanctie: 'Vernietiging boete', toelichting: 'Je krijgt een boete maar er is geen bewijs dat je iets fout deed' },
 
   // --- KINDEREN & GEZIN ---
-  { cat: 'Kinderen & gezin', feit: 'Kind uit huis geplaatst door schulden', juridisch: 'Onrechtmatige uithuisplaatsing', wet: 'Art. 8 EVRM + IVRK Art. 9', sanctie: 'Schadevergoeding €10.000-€100.000+ per kind', toelichting: 'Je kind is uit huis geplaatst door schulden die de overheid veroorzaakte' },
-  { cat: 'Kinderen & gezin', feit: 'Kind niet teruggeplaatst ondanks recht', juridisch: 'Schending recht op gezinsleven', wet: 'Art. 8 EVRM + BW Boek 1', sanctie: 'Schadevergoeding + terugplaatsing', toelichting: 'De reden voor uithuisplaatsing is weg maar je kind komt niet terug' },
-  { cat: 'Kinderen & gezin', feit: 'Gezin ontwricht door overheidshandelen', juridisch: 'Schending art. 8 EVRM (gezinsleven)', wet: 'Art. 8 EVRM', sanctie: 'Schadevergoeding via EHRM', toelichting: 'Door toedoen van de overheid is je gezin uit elkaar gevallen' },
-  { cat: 'Kinderen & gezin', feit: 'Belang van het kind genegeerd', juridisch: 'Schending belang-van-het-kind-beginsel', wet: 'IVRK Art. 3', sanctie: 'Schadevergoeding + herziening', toelichting: 'Bij besluiten is niet gekeken naar wat het beste is voor het kind' },
-  { cat: 'Kinderen & gezin', feit: 'Jeugdzorg baseert zich op aannames, niet feiten', juridisch: 'Schending zorgvuldigheidsbeginsel / waarheidsvinding', wet: 'Art. 3:2 Awb + Jeugdwet Art. 3.3', sanctie: 'Vernietiging besluit + schadevergoeding', toelichting: 'Jeugdzorg-rapporten bevatten fouten of meningen als feiten' },
-  { cat: 'Kinderen & gezin', feit: 'Omgangsregeling niet nageleefd', juridisch: 'Schending omgangsrecht', wet: 'Art. 8 EVRM + BW 1:377a', sanctie: 'Dwangsom + schadevergoeding', toelichting: 'Je mag je kind niet zien terwijl je daar recht op hebt' },
+  { cat: 'Kinderen & gezin', feit: 'Kind uit huis geplaatst door schulden', juridisch: 'Onrechtmatige uithuisplaatsing', wet: 'Art. 8 EVRM + IVRK Art. 9', sanctie: 'Schadevergoeding €10.000-€100.000+ per kind', maxSanctie: '€100.000+ per kind', toelichting: 'Je kind is uit huis geplaatst door schulden die de overheid veroorzaakte' },
+  { cat: 'Kinderen & gezin', feit: 'Kind niet teruggeplaatst ondanks recht', juridisch: 'Schending recht op gezinsleven', wet: 'Art. 8 EVRM + BW Boek 1', sanctie: 'Schadevergoeding + terugplaatsing', maxSanctie: 'Terugplaatsing + schadevergoeding', toelichting: 'De reden voor uithuisplaatsing is weg maar je kind komt niet terug' },
+  { cat: 'Kinderen & gezin', feit: 'Gezin ontwricht door overheidshandelen', juridisch: 'Schending art. 8 EVRM (gezinsleven)', wet: 'Art. 8 EVRM', sanctie: 'Schadevergoeding via EHRM', maxSanctie: 'EHRM schadevergoeding', toelichting: 'Door toedoen van de overheid is je gezin uit elkaar gevallen' },
+  { cat: 'Kinderen & gezin', feit: 'Belang van het kind genegeerd', juridisch: 'Schending belang-van-het-kind-beginsel', wet: 'IVRK Art. 3', sanctie: 'Schadevergoeding + herziening', maxSanctie: 'Herziening + schadevergoeding', toelichting: 'Bij besluiten is niet gekeken naar wat het beste is voor het kind' },
+  { cat: 'Kinderen & gezin', feit: 'Jeugdzorg baseert zich op aannames, niet feiten', juridisch: 'Schending zorgvuldigheidsbeginsel / waarheidsvinding', wet: 'Art. 3:2 Awb + Jeugdwet Art. 3.3', sanctie: 'Vernietiging besluit + schadevergoeding', maxSanctie: 'Vernietiging + schadevergoeding', toelichting: 'Jeugdzorg-rapporten bevatten fouten of meningen als feiten' },
+  { cat: 'Kinderen & gezin', feit: 'Omgangsregeling niet nageleefd', juridisch: 'Schending omgangsrecht', wet: 'Art. 8 EVRM + BW 1:377a', sanctie: 'Dwangsom + schadevergoeding', maxSanctie: 'Dwangsom + schadevergoeding', toelichting: 'Je mag je kind niet zien terwijl je daar recht op hebt' },
 
   // --- DOSSIER & PRIVACY ---
-  { cat: 'Dossier & privacy', feit: 'Dossier kwijt of onvolledig', juridisch: 'Schending documentatieplicht / inzagerecht', wet: 'Art. 3:2 Awb + AVG Art. 15', sanctie: 'Schadevergoeding + dwangsom', toelichting: 'Je dossier is zoekgeraakt of onvolledig' },
-  { cat: 'Dossier & privacy', feit: 'Op zwarte lijst gezet zonder medeweten', juridisch: 'Onrechtmatige registratie / profilering (bijv. FSV)', wet: 'AVG Art. 5, 13, 14', sanctie: 'Boete instantie + schadevergoeding', toelichting: 'Je staat op een lijst zonder dat je het wist' },
-  { cat: 'Dossier & privacy', feit: 'Persoonsgegevens gedeeld zonder toestemming', juridisch: 'Onrechtmatige verwerking persoonsgegevens', wet: 'AVG Art. 5, 6', sanctie: 'Boete tot €20 miljoen + schadevergoeding', toelichting: 'Je gegevens zijn gedeeld zonder dat je het wist of toestemde' },
-  { cat: 'Dossier & privacy', feit: 'Stukken of bewijs achtergehouden', juridisch: 'Schending op de zaak betrekking hebbende stukken', wet: 'Art. 7:4 Awb + Art. 843a Rv', sanctie: 'Vernietiging besluit + sanctie ambtenaar', toelichting: 'Belangrijke documenten worden niet verstrekt of zijn "verdwenen"' },
-  { cat: 'Dossier & privacy', feit: 'Documenten vervalst', juridisch: 'Valsheid in geschrift', wet: 'Art. 225 Sr', sanctie: 'Max 6 jaar gevangenisstraf', toelichting: 'Documenten, beschikkingen of verslagen zijn vervalst' },
-  { cat: 'Dossier & privacy', feit: 'AVG-inzageverzoek negeren', juridisch: 'Niet-naleving inzagerecht', wet: 'AVG Art. 15 + Art. 12', sanctie: 'AP-boete + schadevergoeding', toelichting: 'Je vraagt om je gegevens in te zien maar krijgt geen of onvolledig antwoord' },
-  { cat: 'Dossier & privacy', feit: 'Gegevens niet corrigeren na verzoek', juridisch: 'Schending recht op rectificatie', wet: 'AVG Art. 16', sanctie: 'AP-boete + dwangsom', toelichting: 'Er staan fouten in je dossier maar ze weigeren het aan te passen' },
-  { cat: 'Dossier & privacy', feit: 'Heimelijk camera- of telefoontoezicht', juridisch: 'Onrechtmatige surveillance', wet: 'Art. 10 Gw + Art. 8 EVRM', sanctie: 'Schadevergoeding + strafvervolging', toelichting: 'Je wordt stiekem in de gaten gehouden zonder dat je het weet' },
+  { cat: 'Dossier & privacy', feit: 'Dossier kwijt of onvolledig', juridisch: 'Schending documentatieplicht / inzagerecht', wet: 'Art. 3:2 Awb + AVG Art. 15', sanctie: 'Schadevergoeding + dwangsom', maxSanctie: 'Schadevergoeding + dwangsom', toelichting: 'Je dossier is zoekgeraakt of onvolledig' },
+  { cat: 'Dossier & privacy', feit: 'Op zwarte lijst gezet zonder medeweten', juridisch: 'Onrechtmatige registratie / profilering (bijv. FSV)', wet: 'AVG Art. 5, 13, 14', sanctie: 'Boete instantie + schadevergoeding', maxSanctie: '€20 mln AP-boete', toelichting: 'Je staat op een lijst zonder dat je het wist' },
+  { cat: 'Dossier & privacy', feit: 'Persoonsgegevens gedeeld zonder toestemming', juridisch: 'Onrechtmatige verwerking persoonsgegevens', wet: 'AVG Art. 5, 6', sanctie: 'Boete tot €20 miljoen + schadevergoeding', maxSanctie: '€20 mln AP-boete', toelichting: 'Je gegevens zijn gedeeld zonder dat je het wist of toestemde' },
+  { cat: 'Dossier & privacy', feit: 'Stukken of bewijs achtergehouden', juridisch: 'Schending op de zaak betrekking hebbende stukken', wet: 'Art. 7:4 Awb + Art. 843a Rv', sanctie: 'Vernietiging besluit + sanctie ambtenaar', maxSanctie: 'Vernietiging + sanctie ambtenaar', toelichting: 'Belangrijke documenten worden niet verstrekt of zijn "verdwenen"' },
+  { cat: 'Dossier & privacy', feit: 'Documenten vervalst', juridisch: 'Valsheid in geschrift', wet: 'Art. 225 Sr', sanctie: 'Max 6 jaar gevangenisstraf', maxSanctie: '6 jaar cel', toelichting: 'Documenten, beschikkingen of verslagen zijn vervalst' },
+  { cat: 'Dossier & privacy', feit: 'AVG-inzageverzoek negeren', juridisch: 'Niet-naleving inzagerecht', wet: 'AVG Art. 15 + Art. 12', sanctie: 'AP-boete + schadevergoeding', maxSanctie: '€20 mln AP-boete', toelichting: 'Je vraagt om je gegevens in te zien maar krijgt geen of onvolledig antwoord' },
+  { cat: 'Dossier & privacy', feit: 'Gegevens niet corrigeren na verzoek', juridisch: 'Schending recht op rectificatie', wet: 'AVG Art. 16', sanctie: 'AP-boete + dwangsom', maxSanctie: '€20 mln AP-boete', toelichting: 'Er staan fouten in je dossier maar ze weigeren het aan te passen' },
+  { cat: 'Dossier & privacy', feit: 'Heimelijk camera- of telefoontoezicht', juridisch: 'Onrechtmatige surveillance', wet: 'Art. 10 Gw + Art. 8 EVRM', sanctie: 'Schadevergoeding + strafvervolging', maxSanctie: 'Strafvervolging + schadevergoeding', toelichting: 'Je wordt stiekem in de gaten gehouden zonder dat je het weet' },
 
   // --- INTIMIDATIE & MACHTSMISBRUIK ---
-  { cat: 'Intimidatie & machtsmisbruik', feit: 'Dreigen met maatregelen', juridisch: 'Ambtelijke dwang / bedreiging', wet: 'Art. 365 Sr', sanctie: 'Max 4 jaar gevangenisstraf', toelichting: 'Een ambtenaar dreigt met korting, stopzetting of uithuisplaatsing' },
-  { cat: 'Intimidatie & machtsmisbruik', feit: 'Macht misbruiken voor eigen belang', juridisch: 'Detournement de pouvoir / ambtelijke corruptie', wet: 'Art. 3:3 Awb + Art. 363 Sr', sanctie: 'Max 6 jaar cel + ontslag', toelichting: 'Een ambtenaar gebruikt zijn positie voor persoonlijk voordeel' },
-  { cat: 'Intimidatie & machtsmisbruik', feit: 'Klokkenluider of melder tegengewerkt', juridisch: 'Schending Wet bescherming klokkenluiders', wet: 'Wet bescherming klokkenluiders', sanctie: 'Schadevergoeding + ontslag pleger', toelichting: 'Je wordt gestraft nadat je misstanden hebt gemeld' },
-  { cat: 'Intimidatie & machtsmisbruik', feit: 'Gelogen tegen rechter of parlement', juridisch: 'Meineed / schending inlichtingenplicht', wet: 'Art. 207/355 Sr', sanctie: 'Max 6 jaar gevangenisstraf', toelichting: 'Een ambtenaar heeft gelogen onder ede of het parlement misleid' },
-  { cat: 'Intimidatie & machtsmisbruik', feit: 'Bewijs vernietigd of laten verdwijnen', juridisch: 'Verduistering / vernietiging bewijsmateriaal', wet: 'Art. 361 Sr', sanctie: 'Max 5 jaar gevangenisstraf', toelichting: 'Documenten of e-mails zijn bewust vernietigd of "kwijtgeraakt"' },
-  { cat: 'Intimidatie & machtsmisbruik', feit: 'Onder druk gezet om af te zien van bezwaar', juridisch: 'Belemmering rechtsmiddelen', wet: 'Art. 6 EVRM + Art. 365 Sr', sanctie: 'Schadevergoeding + strafvervolging', toelichting: 'Ze proberen je ervan te weerhouden bezwaar te maken of te klagen' },
-  { cat: 'Intimidatie & machtsmisbruik', feit: 'Wraakacties na klacht of melding', juridisch: 'Benadeling / represaille', wet: 'Art. 365 Sr + Wbk', sanctie: 'Schadevergoeding + ontslag ambtenaar', toelichting: 'Na je klacht word je extra streng gecontroleerd of tegengewerkt' },
+  { cat: 'Intimidatie & machtsmisbruik', feit: 'Dreigen met maatregelen', juridisch: 'Ambtelijke dwang / bedreiging', wet: 'Art. 365 Sr', sanctie: 'Max 4 jaar gevangenisstraf', maxSanctie: '4 jaar cel', toelichting: 'Een ambtenaar dreigt met korting, stopzetting of uithuisplaatsing' },
+  { cat: 'Intimidatie & machtsmisbruik', feit: 'Macht misbruiken voor eigen belang', juridisch: 'Detournement de pouvoir / ambtelijke corruptie', wet: 'Art. 3:3 Awb + Art. 363 Sr', sanctie: 'Max 6 jaar cel + ontslag', maxSanctie: '6 jaar cel + ontslag', toelichting: 'Een ambtenaar gebruikt zijn positie voor persoonlijk voordeel' },
+  { cat: 'Intimidatie & machtsmisbruik', feit: 'Klokkenluider of melder tegengewerkt', juridisch: 'Schending Wet bescherming klokkenluiders', wet: 'Wet bescherming klokkenluiders', sanctie: 'Schadevergoeding + ontslag pleger', maxSanctie: 'Ontslag + schadevergoeding', toelichting: 'Je wordt gestraft nadat je misstanden hebt gemeld' },
+  { cat: 'Intimidatie & machtsmisbruik', feit: 'Gelogen tegen rechter of parlement', juridisch: 'Meineed / schending inlichtingenplicht', wet: 'Art. 207/355 Sr', sanctie: 'Max 6 jaar gevangenisstraf', maxSanctie: '6 jaar cel', toelichting: 'Een ambtenaar heeft gelogen onder ede of het parlement misleid' },
+  { cat: 'Intimidatie & machtsmisbruik', feit: 'Bewijs vernietigd of laten verdwijnen', juridisch: 'Verduistering / vernietiging bewijsmateriaal', wet: 'Art. 361 Sr', sanctie: 'Max 5 jaar gevangenisstraf', maxSanctie: '5 jaar cel', toelichting: 'Documenten of e-mails zijn bewust vernietigd of "kwijtgeraakt"' },
+  { cat: 'Intimidatie & machtsmisbruik', feit: 'Onder druk gezet om af te zien van bezwaar', juridisch: 'Belemmering rechtsmiddelen', wet: 'Art. 6 EVRM + Art. 365 Sr', sanctie: 'Schadevergoeding + strafvervolging', maxSanctie: '4 jaar cel + schadevergoeding', toelichting: 'Ze proberen je ervan te weerhouden bezwaar te maken of te klagen' },
+  { cat: 'Intimidatie & machtsmisbruik', feit: 'Wraakacties na klacht of melding', juridisch: 'Benadeling / represaille', wet: 'Art. 365 Sr + Wbk', sanctie: 'Schadevergoeding + ontslag ambtenaar', maxSanctie: 'Ontslag + schadevergoeding', toelichting: 'Na je klacht word je extra streng gecontroleerd of tegengewerkt' },
 
   // --- NALATIGHEID & FOUTEN ---
-  { cat: 'Nalatigheid & fouten', feit: 'Verkeerde informatie gegeven', juridisch: 'Schending informatieverplichting', wet: 'Art. 3:2 Awb', sanctie: 'Schadevergoeding + vertrouwensbeginsel', toelichting: 'Je hebt verkeerde informatie gekregen en daar schade van ondervonden' },
-  { cat: 'Nalatigheid & fouten', feit: 'Fout in systeem niet hersteld', juridisch: 'Nalatigheid / schending herstelplicht', wet: 'Art. 3:2 Awb + Art. 6:162 BW', sanctie: 'Schadevergoeding + dwangsom', toelichting: 'Er zit een fout in het systeem maar niemand herstelt het' },
-  { cat: 'Nalatigheid & fouten', feit: 'Verkeerde persoon aangepakt (persoonsverwisseling)', juridisch: 'Onrechtmatige daad door onjuiste identificatie', wet: 'Art. 6:162 BW', sanctie: 'Schadevergoeding + rectificatie', toelichting: 'Je wordt aangepakt maar ze bedoelen iemand anders' },
-  { cat: 'Nalatigheid & fouten', feit: 'Niet wijzen op rechten of mogelijkheden', juridisch: 'Schending voorlichtingsplicht', wet: 'Art. 2:1 Awb + Awb algemeen', sanctie: 'Schadevergoeding + heropening termijn', toelichting: 'Ze vertellen je niet dat je recht hebt op bezwaar, bijstand of voorziening' },
-  { cat: 'Nalatigheid & fouten', feit: 'Fout gemaakt en niet willen corrigeren', juridisch: 'Schending correctierecht / hardnekkige nalatigheid', wet: 'Art. 6:162 BW + Art. 3:2 Awb', sanctie: 'Schadevergoeding + dwangsom', toelichting: 'Een duidelijke fout maar ze weigeren het recht te zetten' },
+  { cat: 'Nalatigheid & fouten', feit: 'Verkeerde informatie gegeven', juridisch: 'Schending informatieverplichting', wet: 'Art. 3:2 Awb', sanctie: 'Schadevergoeding + vertrouwensbeginsel', maxSanctie: 'Schadevergoeding', toelichting: 'Je hebt verkeerde informatie gekregen en daar schade van ondervonden' },
+  { cat: 'Nalatigheid & fouten', feit: 'Fout in systeem niet hersteld', juridisch: 'Nalatigheid / schending herstelplicht', wet: 'Art. 3:2 Awb + Art. 6:162 BW', sanctie: 'Schadevergoeding + dwangsom', maxSanctie: 'Schadevergoeding + dwangsom', toelichting: 'Er zit een fout in het systeem maar niemand herstelt het' },
+  { cat: 'Nalatigheid & fouten', feit: 'Verkeerde persoon aangepakt (persoonsverwisseling)', juridisch: 'Onrechtmatige daad door onjuiste identificatie', wet: 'Art. 6:162 BW', sanctie: 'Schadevergoeding + rectificatie', maxSanctie: 'Schadevergoeding + rectificatie', toelichting: 'Je wordt aangepakt maar ze bedoelen iemand anders' },
+  { cat: 'Nalatigheid & fouten', feit: 'Niet wijzen op rechten of mogelijkheden', juridisch: 'Schending voorlichtingsplicht', wet: 'Art. 2:1 Awb + Awb algemeen', sanctie: 'Schadevergoeding + heropening termijn', maxSanctie: 'Heropening termijn', toelichting: 'Ze vertellen je niet dat je recht hebt op bezwaar, bijstand of voorziening' },
+  { cat: 'Nalatigheid & fouten', feit: 'Fout gemaakt en niet willen corrigeren', juridisch: 'Schending correctierecht / hardnekkige nalatigheid', wet: 'Art. 6:162 BW + Art. 3:2 Awb', sanctie: 'Schadevergoeding + dwangsom', maxSanctie: 'Schadevergoeding + dwangsom', toelichting: 'Een duidelijke fout maar ze weigeren het recht te zetten' },
 
   // --- ZORG & VOORZIENINGEN ---
-  { cat: 'Zorg & voorzieningen', feit: 'Zorg of hulpmiddel onterecht geweigerd', juridisch: 'Onrechtmatige afwijzing zorgaanvraag', wet: 'Wmo 2015 / Wlz / Zvw', sanctie: 'Vernietiging + toewijzing + schadevergoeding', toelichting: 'Je vraagt zorg of een hulpmiddel aan maar het wordt zonder goede reden afgewezen' },
-  { cat: 'Zorg & voorzieningen', feit: 'Indicatie verlaagd zonder onderzoek', juridisch: 'Onzorgvuldige herindicatie', wet: 'Wmo Art. 2.3.2 / Wlz', sanctie: 'Vernietiging besluit + herstel', toelichting: 'Je zorg-indicatie wordt verlaagd zonder dat iemand je situatie heeft bekeken' },
-  { cat: 'Zorg & voorzieningen', feit: 'PGB onterecht afgepakt', juridisch: 'Onrechtmatige intrekking PGB', wet: 'Wmo / Wlz / Zvw', sanctie: 'Vernietiging + nabetaling', toelichting: 'Je persoonsgebonden budget wordt afgepakt zonder goede onderbouwing' },
-  { cat: 'Zorg & voorzieningen', feit: 'Bijstandsaanvraag onterecht afgewezen', juridisch: 'Onrechtmatige afwijzing bijstandsaanvraag', wet: 'Participatiewet Art. 11/17', sanctie: 'Vernietiging + nabetaling', toelichting: 'Je bijstandsaanvraag wordt afgewezen terwijl je er recht op hebt' },
-  { cat: 'Zorg & voorzieningen', feit: 'Huisuitzetting terwijl er kinderen zijn', juridisch: 'Onrechtmatige ontruiming / schending IVRK', wet: 'Art. 8 EVRM + IVRK Art. 27', sanctie: 'Schorsing ontruiming + schadevergoeding', toelichting: 'Je wordt uit je huis gezet terwijl er kinderen in het gezin zijn' },
+  { cat: 'Zorg & voorzieningen', feit: 'Zorg of hulpmiddel onterecht geweigerd', juridisch: 'Onrechtmatige afwijzing zorgaanvraag', wet: 'Wmo 2015 / Wlz / Zvw', sanctie: 'Vernietiging + toewijzing + schadevergoeding', maxSanctie: 'Toewijzing + schadevergoeding', toelichting: 'Je vraagt zorg of een hulpmiddel aan maar het wordt zonder goede reden afgewezen' },
+  { cat: 'Zorg & voorzieningen', feit: 'Indicatie verlaagd zonder onderzoek', juridisch: 'Onzorgvuldige herindicatie', wet: 'Wmo Art. 2.3.2 / Wlz', sanctie: 'Vernietiging besluit + herstel', maxSanctie: 'Herstel indicatie', toelichting: 'Je zorg-indicatie wordt verlaagd zonder dat iemand je situatie heeft bekeken' },
+  { cat: 'Zorg & voorzieningen', feit: 'PGB onterecht afgepakt', juridisch: 'Onrechtmatige intrekking PGB', wet: 'Wmo / Wlz / Zvw', sanctie: 'Vernietiging + nabetaling', maxSanctie: 'Nabetaling PGB', toelichting: 'Je persoonsgebonden budget wordt afgepakt zonder goede onderbouwing' },
+  { cat: 'Zorg & voorzieningen', feit: 'Bijstandsaanvraag onterecht afgewezen', juridisch: 'Onrechtmatige afwijzing bijstandsaanvraag', wet: 'Participatiewet Art. 11/17', sanctie: 'Vernietiging + nabetaling', maxSanctie: 'Nabetaling bijstand', toelichting: 'Je bijstandsaanvraag wordt afgewezen terwijl je er recht op hebt' },
+  { cat: 'Zorg & voorzieningen', feit: 'Huisuitzetting terwijl er kinderen zijn', juridisch: 'Onrechtmatige ontruiming / schending IVRK', wet: 'Art. 8 EVRM + IVRK Art. 27', sanctie: 'Schorsing ontruiming + schadevergoeding', maxSanctie: 'Schorsing ontruiming', toelichting: 'Je wordt uit je huis gezet terwijl er kinderen in het gezin zijn' },
 
   // --- HANDHAVING & TOEZICHT ---
-  { cat: 'Handhaving & toezicht', feit: 'Buitenproportionele huisbezoeken', juridisch: 'Schending huisrecht / privacyrecht', wet: 'Art. 12 Gw + Art. 8 EVRM', sanctie: 'Schadevergoeding + strafvervolging', toelichting: 'Ze komen onaangekondigd bij je thuis of doorzoeken je woning zonder goede reden' },
-  { cat: 'Handhaving & toezicht', feit: 'Dwang om mee te werken zonder wettelijke grond', juridisch: 'Onrechtmatige medewerking afdwingen', wet: 'Art. 5:20 Awb + nemo tenetur', sanctie: 'Vernietiging bewijs + schadevergoeding', toelichting: 'Je wordt gedwongen mee te werken aan controles waar geen basis voor is' },
-  { cat: 'Handhaving & toezicht', feit: 'Overtreding bestraffen die niet bestaat', juridisch: 'Onrechtmatige sanctie / onjuiste kwalificatie', wet: 'Art. 5:4 Awb', sanctie: 'Vernietiging sanctie + schadevergoeding', toelichting: 'Je krijgt een boete of maatregel voor iets dat geen overtreding is' },
-  { cat: 'Handhaving & toezicht', feit: 'Selectief handhaven', juridisch: 'Schending gelijkheidsbeginsel bij handhaving', wet: 'Art. 1 Gw + Art. 3:4 Awb', sanctie: 'Vernietiging besluit', toelichting: 'Anderen doen hetzelfde maar alleen jij wordt aangepakt' },
+  { cat: 'Handhaving & toezicht', feit: 'Buitenproportionele huisbezoeken', juridisch: 'Schending huisrecht / privacyrecht', wet: 'Art. 12 Gw + Art. 8 EVRM', sanctie: 'Schadevergoeding + strafvervolging', maxSanctie: 'Strafvervolging + schadevergoeding', toelichting: 'Ze komen onaangekondigd bij je thuis of doorzoeken je woning zonder goede reden' },
+  { cat: 'Handhaving & toezicht', feit: 'Dwang om mee te werken zonder wettelijke grond', juridisch: 'Onrechtmatige medewerking afdwingen', wet: 'Art. 5:20 Awb + nemo tenetur', sanctie: 'Vernietiging bewijs + schadevergoeding', maxSanctie: 'Vernietiging bewijs', toelichting: 'Je wordt gedwongen mee te werken aan controles waar geen basis voor is' },
+  { cat: 'Handhaving & toezicht', feit: 'Overtreding bestraffen die niet bestaat', juridisch: 'Onrechtmatige sanctie / onjuiste kwalificatie', wet: 'Art. 5:4 Awb', sanctie: 'Vernietiging sanctie + schadevergoeding', maxSanctie: 'Vernietiging sanctie', toelichting: 'Je krijgt een boete of maatregel voor iets dat geen overtreding is' },
+  { cat: 'Handhaving & toezicht', feit: 'Selectief handhaven', juridisch: 'Schending gelijkheidsbeginsel bij handhaving', wet: 'Art. 1 Gw + Art. 3:4 Awb', sanctie: 'Vernietiging besluit', maxSanctie: 'Vernietiging besluit', toelichting: 'Anderen doen hetzelfde maar alleen jij wordt aangepakt' },
 
   // --- BESTUURLIJK FALEN ---
-  { cat: 'Bestuurlijk falen', feit: 'Structureel beleid dat burgers schaadt', juridisch: 'Onrechtmatige beleidsregel / systeemfalen', wet: 'Art. 1:3 Awb + Art. 6:162 BW', sanctie: 'Onverbindendverklaring + groepsschadevergoeding', toelichting: 'Het beleid zelf is het probleem, niet een individuele fout' },
-  { cat: 'Bestuurlijk falen', feit: 'Wet bewust verkeerd toepassen', juridisch: 'Contra legem handelen', wet: 'Art. 3:2/3:4 Awb', sanctie: 'Vernietiging + schadevergoeding', toelichting: 'De wet zegt iets anders maar ze passen het bewust verkeerd toe' },
-  { cat: 'Bestuurlijk falen', feit: 'Toezichthouder die niet ingrijpt', juridisch: 'Falend toezicht / handhavingsgebrek', wet: 'Diverse toezichtwetten', sanctie: 'Rechterlijk bevel + schadevergoeding', toelichting: 'De toezichthouder ziet de problemen maar doet niets' },
-  { cat: 'Bestuurlijk falen', feit: 'Signalen van onrecht negeren', juridisch: 'Schending signaleringsplicht', wet: 'Art. 3:2 Awb + Awb', sanctie: 'Schadevergoeding + bestuurlijke aansprakelijkheid', toelichting: 'Er zijn signalen dat het misgaat maar niemand grijpt in' },
-  { cat: 'Bestuurlijk falen', feit: 'Geen excuses of erkenning na bewezen fout', juridisch: 'Schending behoorlijkheidsnorm', wet: 'Nationale Ombudsman-normen', sanctie: 'Ombudsman-rapport + politieke gevolgen', toelichting: 'Het is bewezen dat ze fout zaten maar ze weigeren het toe te geven' }
+  { cat: 'Bestuurlijk falen', feit: 'Structureel beleid dat burgers schaadt', juridisch: 'Onrechtmatige beleidsregel / systeemfalen', wet: 'Art. 1:3 Awb + Art. 6:162 BW', sanctie: 'Onverbindendverklaring + groepsschadevergoeding', maxSanctie: 'Groepsschadevergoeding', toelichting: 'Het beleid zelf is het probleem, niet een individuele fout' },
+  { cat: 'Bestuurlijk falen', feit: 'Wet bewust verkeerd toepassen', juridisch: 'Contra legem handelen', wet: 'Art. 3:2/3:4 Awb', sanctie: 'Vernietiging + schadevergoeding', maxSanctie: 'Vernietiging + schadevergoeding', toelichting: 'De wet zegt iets anders maar ze passen het bewust verkeerd toe' },
+  { cat: 'Bestuurlijk falen', feit: 'Toezichthouder die niet ingrijpt', juridisch: 'Falend toezicht / handhavingsgebrek', wet: 'Diverse toezichtwetten', sanctie: 'Rechterlijk bevel + schadevergoeding', maxSanctie: 'Rechterlijk bevel', toelichting: 'De toezichthouder ziet de problemen maar doet niets' },
+  { cat: 'Bestuurlijk falen', feit: 'Signalen van onrecht negeren', juridisch: 'Schending signaleringsplicht', wet: 'Art. 3:2 Awb + Awb', sanctie: 'Schadevergoeding + bestuurlijke aansprakelijkheid', maxSanctie: 'Bestuurlijke aansprakelijkheid', toelichting: 'Er zijn signalen dat het misgaat maar niemand grijpt in' },
+  { cat: 'Bestuurlijk falen', feit: 'Geen excuses of erkenning na bewezen fout', juridisch: 'Schending behoorlijkheidsnorm', wet: 'Nationale Ombudsman-normen', sanctie: 'Ombudsman-rapport + politieke gevolgen', maxSanctie: 'Ombudsman-rapport', toelichting: 'Het is bewezen dat ze fout zaten maar ze weigeren het toe te geven' }
 ];
 
 var INSTANTIES = [
@@ -1465,9 +1471,10 @@ function pgMelden(){
               '<button onclick="removeFeit(' + idx + ')" style="position:absolute;top:6px;right:8px;background:none;border:none;color:var(--tx3);cursor:pointer;font-size:18px;line-height:1" title="Verwijder">&times;</button>' +
               '<div style="font-size:13px;font-weight:600;color:var(--tx);padding-right:24px">' + esc(f.feit) + '</div>' +
               '<div style="font-size:11px;color:var(--blue);margin-top:3px;font-style:italic">' + esc(f.juridisch) + '</div>' +
-              '<div style="display:flex;gap:10px;margin-top:6px;flex-wrap:wrap">' +
+              '<div style="display:flex;gap:10px;margin-top:6px;flex-wrap:wrap;align-items:center">' +
                 '<span style="font-size:10px;padding:2px 6px;border-radius:4px;background:rgba(59,130,246,.12);color:var(--blue);font-weight:600">' + esc(f.wet) + '</span>' +
                 '<span style="font-size:10px;padding:2px 6px;border-radius:4px;background:rgba(239,68,68,.12);color:var(--accent);font-weight:600">' + esc(f.sanctie) + '</span>' +
+                (f.maxSanctie ? '<span style="font-size:10px;padding:3px 8px;border-radius:4px;background:var(--accent);color:#fff;font-weight:700;letter-spacing:.3px">⚖ MAX: ' + esc(f.maxSanctie) + '</span>' : '') +
               '</div>' +
               '<div style="font-size:11px;color:var(--tx3);margin-top:4px">' + esc(f.toelichting) + '</div>' +
             '</div>';
@@ -1872,7 +1879,7 @@ function submitMelding(){
     verhaal: _meldVerhaal.trim(),
     instantie: _meldInstantie.trim(),
     plaats: _meldPlaats.trim(),
-    feiten: _meldFeiten.map(function(idx){ var f = FEITEN[idx]; return { feit: f.feit, juridisch: f.juridisch, wet: f.wet, sanctie: f.sanctie, categorie: f.cat }; }),
+    feiten: _meldFeiten.map(function(idx){ var f = FEITEN[idx]; return { feit: f.feit, juridisch: f.juridisch, wet: f.wet, sanctie: f.sanctie, maxSanctie: f.maxSanctie, categorie: f.cat }; }),
     namen: namen,
     anoniem: anoniem,
     melder_naam: anoniem ? null : ((document.getElementById('mNaam')||{}).value || '').trim() || null,
@@ -2573,6 +2580,8 @@ function pgNamen(){
     namen.forEach(function(n){
       var kleur = n.count >= 3 ? 'var(--accent)' : (n.count >= 2 ? 'var(--yellow)' : 'var(--tx3)');
       var orgs = Object.keys(n.instanties).join(', ') || '';
+      var feitenList = Object.keys(n.feiten);
+      var sanctieList = Object.keys(n.maxSancties);
       listHtml += '<div class="card" style="border-left:3px solid ' + kleur + '">' +
         '<div style="display:flex;justify-content:space-between;align-items:flex-start">' +
           '<div>' +
@@ -2586,6 +2595,23 @@ function pgNamen(){
             '<div style="font-size:10px;color:var(--tx3)">melding' + (n.count!==1?'en':'') + '</div>' +
           '</div>' +
         '</div>' +
+        // Gemelde feiten per persoon
+        (feitenList.length > 0 ? '<div style="margin-top:10px;padding-top:8px;border-top:1px solid var(--glass-bd)">' +
+          '<div style="font-size:11px;font-weight:700;color:var(--accent);margin-bottom:6px"><span class="mi mi-sm" style="font-size:12px">gavel</span> Gemelde feiten:</div>' +
+          feitenList.map(function(fk){
+            var f = n.feiten[fk];
+            return '<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-bottom:4px">' +
+              '<span style="font-size:11px;color:var(--tx)">' + esc(f.feit) + '</span>' +
+              (f.wet ? '<span style="font-size:9px;padding:1px 5px;border-radius:3px;background:rgba(59,130,246,.12);color:var(--blue);font-weight:600">' + esc(f.wet) + '</span>' : '') +
+              (f.maxSanctie ? '<span style="font-size:9px;padding:2px 6px;border-radius:3px;background:var(--accent);color:#fff;font-weight:700">⚖ ' + esc(f.maxSanctie) + '</span>' : '') +
+            '</div>';
+          }).join('') +
+        '</div>' : '') +
+        // Max sancties samenvatting
+        (sanctieList.length > 0 ? '<div style="margin-top:6px;display:flex;gap:4px;flex-wrap:wrap">' +
+          '<span style="font-size:10px;font-weight:700;color:var(--accent)">Max sancties:</span>' +
+          sanctieList.map(function(s){ return '<span style="font-size:10px;padding:2px 6px;border-radius:3px;background:rgba(239,68,68,.15);color:var(--accent);font-weight:600">' + esc(s) + '</span>'; }).join('') +
+        '</div>' : '') +
         '<div style="margin-top:8px;display:flex;gap:4px;flex-wrap:wrap">' +
           n.meldingIds.map(function(id){ return '<a href="#/melding/' + id + '" style="font-size:11px">Bekijk</a>'; }).join(' <span style="color:var(--tx3)">&middot;</span> ') +
         '</div>' +
@@ -2597,11 +2623,17 @@ function pgNamen(){
   var herhalers = namen.filter(function(n){ return n.count >= 2; });
 
   return '<div class="page">' +
-    '<h2 style="font-size:20px;font-weight:700;margin-bottom:4px"><span class="mi">people</span> Daders</h2>' +
+    '<h2 style="font-size:20px;font-weight:700;margin-bottom:4px"><span class="mi">people</span> Gemelde ambtenaren</h2>' +
     '<div style="font-size:14px;color:var(--tx);line-height:1.7;margin-bottom:12px;padding:14px;background:var(--accent-soft);border:1px solid rgba(239,68,68,.2);border-radius:var(--rs)">' +
-      '<strong style="color:var(--accent)">Ambtenaren gaan nog steeds door.</strong> Dossiers worden nog steeds getraineerd, bezwaren genegeerd, slachtoffers weggestuurd. Daarom verzamelen wij namen en e-mailadressen van ambtenaren die betrokken zijn bij het toeslagenschandaal. Niet uit wraak — maar zodat er verantwoording komt.' +
+      '<strong style="color:var(--accent)">Waarom publiceren wij namen?</strong><br>' +
+      'Ambtenaren die betrokken zijn bij het toeslagenschandaal gaan nog steeds door. Dossiers worden getraineerd, bezwaren genegeerd, slachtoffers weggestuurd. ' +
+      'Deze pagina publiceert de <strong>namen, functies en e-mailadressen</strong> van gemelde ambtenaren — met de specifieke feiten en maximale sancties die daarop staan. ' +
+      'Niet uit wraak, maar zodat er verantwoording komt en patronen zichtbaar worden.' +
     '</div>' +
-    '<p style="font-size:13px;color:var(--tx2);margin-bottom:16px">Alle genoemde namen en organisaties, gesorteerd op aantal meldingen. Namen die meerdere keren voorkomen wijzen op structureel gedrag.</p>' +
+    '<div style="font-size:13px;color:var(--tx2);line-height:1.6;margin-bottom:12px;padding:12px;background:var(--bg3);border-radius:var(--rs);border:1px solid var(--glass-bd)">' +
+      '<span class="mi mi-sm" style="color:var(--blue)">info</span> <strong>Wat wordt hier getoond:</strong> per gemelde ambtenaar zie je het aantal meldingen, de organisatie(s), de specifieke feiten die bij deze persoon zijn gemeld, en de maximale strafrechtelijke sanctie per feit. ' +
+      'Namen die meerdere keren voorkomen wijzen op <strong>structureel gedrag</strong>.' +
+    '</div>' +
 
     (herhalers.length > 0 ? '<div class="card" style="border-left:3px solid var(--accent);margin-bottom:14px;background:var(--accent-soft)">' +
       '<div style="font-size:14px;font-weight:700;color:var(--accent)"><span class="mi mi-sm">warning</span> ' + herhalers.length + ' naam/namen bij meerdere meldingen</div>' +
