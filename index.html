@@ -2474,16 +2474,16 @@ function pgStaatsontvoeringen(){
 
         // WAT ER GEBEURDE
         '<strong style="color:var(--yellow)">Wat er gebeurde:</strong><br>' +
-        'NOS-correspondenten <strong>Marleen de Rooy</strong> en <strong>Jorn Jonker</strong> publiceren een item op basis van een <strong>interne notitie</strong> van het ministerie van Financiën — hetzelfde ministerie dat de toeslagenaffaire had veroorzaakt. ' +
+        'NOS-correspondenten <strong>Marleen de Rooy</strong> en <strong>Jorn Jonker</strong> publiceren een item over de kosten van de hersteloperatie. ' +
         'De claim: de hersteloperatie zou <strong>€5 miljard extra</strong> kosten, grotendeels door de "methode-Laurentien" van Stichting (Gelijk)waardig Herstel (SGH). ' +
-        'De notitie is <strong>nooit gepubliceerd</strong> — niemand kan de claims verifiëren. Het NOS-item was gebaseerd op gebakken lucht.' +
+        'De onderbouwing voor dit bedrag is <strong>nooit openbaar gemaakt</strong> — niemand kan de claims verifiëren.' +
         bron('NOS, 13 mei 2024', 'https://nos.nl/artikel/2520340') + '<br><br>' +
 
         // HOE HET WERD GEBRACHT
         '<strong style="color:var(--yellow)">Hoe het werd gebracht:</strong><br>' +
         '&bull; Een <strong>anonieme UHT-ambtenaar</strong> — een medewerker van dezelfde Dienst Toeslagen die de affaire veroorzaakte — verschijnt met <strong>pruik en stemvervormer</strong> op het Achtuurjournaal. Ze kon niet hebben dat slachtoffers een voor haar groot bedrag kregen. Ze werd gebruikt om een verkeerd beeld neer te zetten van de waarheid. Geen naam, geen verantwoording, maar wel primetime.<br>' +
         '&bull; SGH krijgt slechts <strong>1 uur en 18 minuten</strong> voor wederhoor — om 16:42 gebeld, publicatie dezelfde avond.<br>' +
-        '&bull; De NOS presenteert de overheidsnotitie als objectief feit, zonder kritische vraag bij de bron: het ministerie dat <em>zelf</em> het probleem had gecreëerd.<br>' +
+        '&bull; De NOS presenteert de claims als objectief feit, zonder kritische vraag bij de bron.<br>' +
         '&bull; Letselschade-advocaat Derk-Jan van der Kolk verwees de bewering van de anonieme ambtenaar naar "het rijk der fabelen."' +
         bron('FTM — reconstructie conflict, apr 2025', 'https://kindertoeslagaffaire.nl/2025/04/01/hoe-fel-de-strijd-over-de-methode-laurentien-was-blijkt-uit-correspondentie-met-het-ministerie-van-financien/') + '<br><br>' +
 
@@ -2522,8 +2522,7 @@ function pgStaatsontvoeringen(){
         bron('NOS, mrt 2025', 'https://nos.nl/artikel/2559543-kabinet-wil-afhandeling-toeslagenaffaire-versnellen-met-methode-laurentien') + '<br>' +
         '&bull; <strong>Excuses of rectificatie van de NOS: nul.</strong> Geen correctie, geen zelfreflectie, geen verantwoording. De Rooy en Jonker hebben nooit erkend dat hun berichtgeving feitelijk onjuist was — ondanks dat het kabinet zelf het bewijs leverde door de methode over te nemen.<br><br>' +
         '<div style="padding:12px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.15);border-radius:var(--r);font-size:12px;color:var(--tx)">' +
-          '<strong style="color:var(--accent)">Samengevat:</strong> twee NOS-correspondenten namen kritiekloos een interne notitie over van het ministerie dat de toeslagenaffaire had veroorzaakt, ' +
-          'brachten het als primeur op het Achtuurjournaal met een anonieme ambtenaar in vermomming, gaven de stichting 75 minuten voor wederhoor, ' +
+          '<strong style="color:var(--accent)">Samengevat:</strong> twee NOS-correspondenten brachten een eenzijdig item als primeur op het Achtuurjournaal met een anonieme ambtenaar in vermomming, gaven de stichting 75 minuten voor wederhoor, ' +
           'saboteerden daarmee de enige herstelroute die werkte, dwongen Laurentien tot aftreden — en toen het kabinet de methode alsnog overnam als officieel beleid, ' +
           'hebben ze nooit een rectificatie geplaatst.' +
         '</div>' +
@@ -3707,6 +3706,78 @@ function pgRechtspraak(){
     '<div style="font-size:12px;color:var(--tx3)">' +
       '<strong>Werkgroepleden:</strong> ' + zelfreflectie.join(', ') +
     '</div>' +
+  '</div>';
+
+  // SUCCESVOLLE RECHTSZAKEN
+  html += '<div class="card" style="padding:20px;margin-bottom:24px;border-left:3px solid var(--green);background:linear-gradient(135deg,rgba(34,197,94,.06),rgba(34,197,94,.02))">' +
+    '<h3 style="font-size:16px;font-weight:700;margin-bottom:12px;color:var(--green)"><span class="mi mi-sm">verified</span> Succesvolle rechtszaken</h3>' +
+    '<p style="font-size:13px;color:var(--tx);line-height:1.7;margin-bottom:16px">' +
+      'Niet alle zaken zijn verloren. Er zijn doorbraken — zowel nationaal als internationaal. Deze zaken bewijzen dat de rechtsweg wél kan werken.' +
+    '</p>' +
+
+    // Van Slooten v. Nederland
+    '<div style="padding:14px;background:var(--glass);border-radius:var(--rs);margin-bottom:10px;border-left:3px solid var(--green)">' +
+      '<div style="font-size:14px;font-weight:800;margin-bottom:4px;color:var(--green)"><span class="mi mi-sm">public</span> Van Slooten v. Nederland (EHRM, 15 april 2025)</div>' +
+      '<div style="font-size:12px;color:var(--tx2);line-height:1.7;margin-top:6px">' +
+        'Het Europees Hof voor de Rechten van de Mens veroordeelde Nederland voor <strong>schending van artikel 8 EVRM</strong> (recht op gezinsleven). ' +
+        'Een moeder verloor het ouderlijk gezag nadat haar kind uit huis was geplaatst. Het EHRM oordeelde dat de Nederlandse autoriteiten ' +
+        '<strong>te snel hadden opgegeven</strong> bij hereniging: al na vier maanden werd besloten dat het perspectief niet meer bij de moeder lag, ' +
+        'zonder gedegen onderzoek naar haar opvoedingsvaardigheden en zonder grondige analyse van het belang van het kind.' + bron('EHRM — Van Slooten t. Nederland', 'https://fiadvocaten.nl/blog/1580') + '<br><br>' +
+        '<strong style="color:var(--green)">Waarom baanbrekend:</strong> Dit is de eerste EHRM-veroordeling van Nederland in de context van uithuisplaatsingen die raakt aan de toeslagenaffaire. ' +
+        'Het Hof stelt een standaard: financiële problemen (door de overheid veroorzaakt) mogen geen reden zijn om kinderen blijvend van ouders te scheiden. ' +
+        'De Hoge Raad heeft de uitspraak inmiddels meegewogen in zijn jurisprudentie.' + bron('Cassatieblog.nl', 'https://cassatieblog.nl/personen-en-familierecht/kinderbeschermingsmaatregelen-en-artikel-8-evrm/') +
+      '</div>' +
+    '</div>' +
+
+    // Rechtbank Amsterdam €500K
+    '<div style="padding:14px;background:var(--glass);border-radius:var(--rs);margin-bottom:10px;border-left:3px solid var(--green)">' +
+      '<div style="font-size:14px;font-weight:800;margin-bottom:4px;color:var(--green)"><span class="mi mi-sm">gavel</span> Rechtbank Amsterdam — €518.416 compensatie (jan 2024)</div>' +
+      '<div style="font-size:12px;color:var(--tx2);line-height:1.7;margin-top:6px">' +
+        'Een gedupeerde vader ontving meer dan <strong>€500.000 aan totale compensatie</strong> na een tussenuitspraak van de Rechtbank Amsterdam. ' +
+        'De rechter oordeelde dat de motivering van het UHT niet goed was en wees een extra bedrag van €112.056 toe bovenop de eerdere compensatie.' + bron('TaxLive, jan 2024', 'https://www.taxlive.nl/nl/documenten/vn-vandaag/gedupeerde-toeslagenaffaire-krijgt-in-totaal-518416-aan-compensatie/') + '<br><br>' +
+        '<strong style="color:var(--green)">Les:</strong> Het is mogelijk om via de rechter een hogere compensatie te krijgen dan de overheid biedt. ' +
+        'De standaard €30.000 is een beginpunt, geen eindstation.' +
+      '</div>' +
+    '</div>' +
+
+    // Art 12 Sv doorbraak
+    '<div style="padding:14px;background:var(--glass);border-radius:var(--rs);margin-bottom:10px;border-left:3px solid var(--green)">' +
+      '<div style="font-size:14px;font-weight:800;margin-bottom:4px;color:var(--green)"><span class="mi mi-sm">local_police</span> Gerechtshof Den Haag — Ambtenaren WEL vervolgbaar (2024)</div>' +
+      '<div style="font-size:12px;color:var(--tx2);line-height:1.7;margin-top:6px">' +
+        'Het Gerechtshof Den Haag oordeelde in een art. 12 Sv-procedure (ECLI:NL:GHDHA:2024:329) dat individuele ambtenaren van de Belastingdienst ' +
+        '<strong>wél strafrechtelijk vervolgbaar</strong> zijn voor hun rol in de toeslagenaffaire.' + bron('BijzonderStrafrecht.nl', 'https://www.bijzonderstrafrecht.nl/home/geen-vervolging-van-individuele-ambtenaren-van-de-belastingdienst-uit-de-toeslagenaffaire-voor-beroepsmatige-discriminatie') + '<br><br>' +
+        '<strong style="color:var(--green)">Les:</strong> Het OM mag weigeren te vervolgen, maar de rechter kan het OM dwingen. Route: doe aangifte → OM seponeert → dien art. 12 Sv-klacht in bij het Gerechtshof.' +
+      '</div>' +
+    '</div>' +
+
+    // Commissie-Hamer
+    '<div style="padding:14px;background:var(--glass);border-radius:var(--rs);margin-bottom:10px;border-left:3px solid var(--green)">' +
+      '<div style="font-size:14px;font-weight:800;margin-bottom:4px;color:var(--green)"><span class="mi mi-sm">family_restroom</span> Commissie-Hamer: erkenning grote rol toeslagenaffaire (mrt 2025)</div>' +
+      '<div style="font-size:12px;color:var(--tx2);line-height:1.7;margin-top:6px">' +
+        'De onafhankelijke Commissie Toeslagen en Uithuisplaatsingen (CTU) concludeerde dat de toeslagenaffaire een <strong>"grote rol"</strong> speelde bij ' +
+        'bijna alle onderzochte uithuisplaatsingen. De uithuisplaatsingen hadden <strong>waarschijnlijk niet plaatsgevonden</strong> als de effecten van de ' +
+        'toeslagenaffaire eerder waren gestabiliseerd.' + bron('Commissie-Hamer 2025', 'https://www.rijksoverheid.nl/documenten/rapporten/2025/03/27/tk-bijlage-1-rapportage-commissie-toeslagen-en-uithuisplaatsingen-erfenis-van-onrecht') + '<br><br>' +
+        '<strong style="color:var(--green)">Gevolg:</strong> Het kabinet erkende in juni 2025 het "extra leed" en kondigde maatregelen aan. ' +
+        '645 kinderen zijn nog niet terug. Slechts 30 gezinnen kregen ouderlijk gezag formeel hersteld.' + bron('Rijksoverheid, jun 2025', 'https://www.rijksoverheid.nl/actueel/nieuws/2025/06/30/kabinet-erkent-extra-leed-uithuisgeplaatste-kinderen') +
+      '</div>' +
+    '</div>' +
+
+    // Overzicht kerngetallen
+    '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-top:16px">' +
+      '<div class="card" style="text-align:center;padding:14px;border:1px solid rgba(34,197,94,.3)">' +
+        '<div style="font-size:22px;font-weight:800;color:var(--green)">1</div>' +
+        '<div style="font-size:10px;color:var(--tx3)">EHRM-VEROORDELING</div>' +
+      '</div>' +
+      '<div class="card" style="text-align:center;padding:14px;border:1px solid rgba(34,197,94,.3)">' +
+        '<div style="font-size:22px;font-weight:800;color:var(--green)">€500K+</div>' +
+        '<div style="font-size:10px;color:var(--tx3)">HOOGSTE COMPENSATIE</div>' +
+      '</div>' +
+      '<div class="card" style="text-align:center;padding:14px;border:1px solid rgba(34,197,94,.3)">' +
+        '<div style="font-size:22px;font-weight:800;color:var(--green)">Ja</div>' +
+        '<div style="font-size:10px;color:var(--tx3)">AMBTENAREN VERVOLGBAAR</div>' +
+      '</div>' +
+    '</div>' +
+
   '</div>';
 
   // CONCLUSIE + ENQUETECOMMISSIE
@@ -5416,10 +5487,130 @@ function pgJuridischeHulp(){
     '<div style="text-align:center;padding:28px 0 20px">' +
       '<span class="mi" style="font-size:48px;color:var(--blue);display:block;margin-bottom:8px">support_agent</span>' +
       '<h1 style="font-size:clamp(22px,4vw,32px);font-weight:800;line-height:1.2">Juridische <span style="color:var(--blue)">Hulp</span></h1>' +
-      '<p style="font-size:14px;color:var(--tx2);max-width:600px;margin:10px auto 0">Stap voor stap je recht halen. Geen juridisch advies — wel de concrete stappen die je kunt nemen.</p>' +
+      '<p style="font-size:14px;color:var(--tx2);max-width:600px;margin:10px auto 0">Concrete stappen die je NU kunt nemen. Geen vage procedures — echte acties.</p>' +
     '</div>' +
 
-    // WAARSCHUWING
+    // EERLIJKE WAARSCHUWING
+    '<div class="card" style="padding:20px;margin-bottom:16px;border-left:3px solid var(--accent);background:var(--accent-soft)">' +
+      '<div style="font-size:14px;font-weight:700;color:var(--accent);margin-bottom:8px"><span class="mi mi-sm">warning</span> Laten we eerlijk zijn</div>' +
+      '<div style="font-size:13px;color:var(--tx);line-height:1.8">' +
+        'Veel gedupeerden hebben onderstaande procedures al doorlopen. Bezwaren worden geseponeerd. Klachten bij de AP duren jaren. ' +
+        'Het OM weigert te vervolgen. De gemeente stuurt je van het kastje naar de muur. <strong>We weten dat.</strong><br><br>' +
+        'Daarom staat hieronder niet alleen "wat je formeel kunt doen" — maar ook <strong>wat je NU concreet kunt doen</strong> als de officiële weg doodloopt. ' +
+        'Inclusief voorbeeldbrieven die je direct kunt versturen en wat je moet doen als er geen reactie komt.' +
+      '</div>' +
+    '</div>' +
+
+    // BSN BESMET — NIEUW BSN AANVRAGEN
+    '<div id="bsnSectie" class="card" style="padding:24px;margin-bottom:20px;border:2px solid var(--yellow);background:linear-gradient(135deg,rgba(234,179,8,.06),rgba(234,179,8,.02))">' +
+      '<h2 style="font-size:18px;font-weight:800;margin-bottom:6px;color:var(--yellow)"><span class="mi" style="vertical-align:-4px">credit_card</span> Besmet BSN — nieuw nummer aanvragen bij de gemeente</h2>' +
+      '<p style="font-size:13px;color:var(--tx);line-height:1.8;margin-bottom:16px">' +
+        'Je BSN is gekoppeld aan fraudelabels in overheidssystemen. Hypotheek geweigerd. Verzekering afgewezen. Toeslagen geblokkeerd. ' +
+        'De overheid zegt dat een nieuw BSN "niet mogelijk" is — maar er is wel degelijk een route.' +
+      '</p>' +
+
+      '<div style="padding:14px;background:var(--glass);border-radius:var(--rs);margin-bottom:14px">' +
+        '<div style="font-size:13px;font-weight:700;color:var(--yellow);margin-bottom:6px"><span class="mi mi-sm">info</span> De situatie</div>' +
+        '<div style="font-size:12px;color:var(--tx2);line-height:1.7">' +
+          '&bull; Staatssecretaris Van Huffelen liet in 2023 onderzoek doen en concludeerde dat BSN-wijziging "niet de oplossing" is<br>' +
+          '&bull; De Tweede Kamer debatteerde erover maar ondernam geen actie<br>' +
+          '&bull; <strong>Maar:</strong> BSN-wijziging is wél mogelijk bij identiteitsdiefstal (art. 2.69 Wet BRP). En wat de Belastingdienst deed — je BSN koppelen aan fraudelabels zonder bewijs — is een vorm van identiteitsmisbruik door de overheid zelf<br>' +
+          '&bull; De gemeente is het bevoegd gezag voor de BRP (Basisregistratie Personen). Daar vraag je het aan.' +
+        '</div>' +
+      '</div>' +
+
+      '<div style="padding:14px;background:var(--glass);border-radius:var(--rs);margin-bottom:14px">' +
+        '<div style="font-size:13px;font-weight:700;color:var(--yellow);margin-bottom:6px"><span class="mi mi-sm">format_list_numbered</span> Stap voor stap</div>' +
+        '<div style="font-size:12px;color:var(--tx2);line-height:1.7">' +
+          '<strong>Stap 1:</strong> Stuur de voorbeeldbrief hieronder naar je gemeente (afdeling Burgerzaken), per <strong>aangetekende post</strong><br>' +
+          '<strong>Stap 2:</strong> De gemeente moet binnen <strong>8 weken</strong> reageren (art. 4:13 Awb)<br>' +
+          '<strong>Stap 3:</strong> Reageert de gemeente niet? Stuur een <strong>ingebrekestelling</strong> (gratis, geen advocaat nodig). Na 2 weken begint een dwangsom van €23/dag<br>' +
+          '<strong>Stap 4:</strong> Weigert de gemeente? Maak <strong>bezwaar binnen 6 weken</strong>. Wordt bezwaar afgewezen? Ga in <strong>beroep bij de rechtbank</strong><br>' +
+          '<strong>Stap 5:</strong> Registreert de gemeente niet eens je verzoek? Doe een <strong>melding bij de Nationale Ombudsman</strong> (gratis, 0800-3355) en dien een klacht in bij de <strong>Autoriteit Persoonsgegevens</strong>' +
+        '</div>' +
+      '</div>' +
+
+      // VOORBEELDBRIEF
+      '<div style="padding:18px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--rs);margin-bottom:14px;font-family:monospace,monospace">' +
+        '<div style="font-size:13px;font-weight:700;color:var(--yellow);margin-bottom:10px;font-family:inherit"><span class="mi mi-sm">description</span> Voorbeeldbrief — Verzoek wijziging BSN</div>' +
+        '<div style="font-size:12px;color:var(--tx);line-height:1.9;white-space:pre-wrap">' +
+'Aan: College van burgemeester en wethouders\n' +
+'Gemeente [JOUW GEMEENTE]\n' +
+'Afdeling Burgerzaken\n' +
+'[Adres gemeente]\n' +
+'\n' +
+'[Jouw naam]\n' +
+'[Jouw adres]\n' +
+'BSN: [jouw huidige BSN]\n' +
+'Datum: [datum]\n' +
+'\n' +
+'Betreft: Verzoek tot wijziging burgerservicenummer wegens identiteitsmisbruik door overheidsinstantie\n' +
+'\n' +
+'Geacht college,\n' +
+'\n' +
+'Hierbij verzoek ik u om wijziging van mijn burgerservicenummer op grond van artikel 2.69 van de Wet basisregistratie personen (Wet BRP).\n' +
+'\n' +
+'Mijn huidige BSN is structureel gekoppeld aan onjuiste frauderegistraties en risicoscores, aangebracht door de Belastingdienst/Toeslagen in het kader van de kinderopvangtoeslagaffaire. Ik ben erkend als gedupeerde [eventueel: onder kenmerk UHT-XXXXXX]. Ondanks deze erkenning ondervind ik nog dagelijks nadeel van mijn besmette BSN:\n' +
+'\n' +
+'[Beschrijf hier concreet wat je overkomt, bijvoorbeeld:]\n' +
+'- Hypotheekaanvraag afgewezen zonder opgave van reden\n' +
+'- Problemen bij het aanvragen van toeslagen/uitkeringen\n' +
+'- Langere verwerkingstijden bij overheidsinstanties\n' +
+'- Afwijzing door verzekeraars of financiële dienstverleners\n' +
+'\n' +
+'De Belastingdienst heeft mijn persoonsgegevens jarenlang onrechtmatig verwerkt, onder meer via de Fraude Signalering Voorziening (FSV). De Autoriteit Persoonsgegevens heeft hiervoor boetes opgelegd. Het Europees Hof voor de Rechten van de Mens heeft Nederland in april 2025 veroordeeld voor schending van artikel 8 EVRM (Van Slooten t. Nederland).\n' +
+'\n' +
+'Het feit dat mijn BSN door een overheidsinstantie zelf is misbruikt en besmet, is vergelijkbaar met identiteitsdiefstal en rechtvaardigt wijziging op grond van art. 2.69 Wet BRP.\n' +
+'\n' +
+'Ik verzoek u:\n' +
+'1. Mijn verzoek formeel te registreren en in behandeling te nemen\n' +
+'2. Mij een nieuw BSN toe te kennen\n' +
+'3. De koppeling met het oude BSN te verbreken in de BRP\n' +
+'\n' +
+'Ik verzoek u om binnen de wettelijke termijn van 8 weken (art. 4:13 Awb) op dit verzoek te beslissen. Bij het uitblijven van een beslissing zal ik u in gebreke stellen op grond van art. 4:17 Awb.\n' +
+'\n' +
+'Hoogachtend,\n' +
+'[Jouw naam]\n' +
+'[Handtekening]' +
+        '</div>' +
+        '<div style="margin-top:12px;text-align:right">' +
+          '<button class="btn btn-sm btn-ghost" onclick="kopieerBrief(this)"><span class="mi mi-sm">content_copy</span> Kopieer brief</button>' +
+        '</div>' +
+      '</div>' +
+
+      // ALS GEMEENTE NIET REAGEERT
+      '<div style="padding:14px;background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.15);border-radius:var(--rs);margin-bottom:14px">' +
+        '<div style="font-size:13px;font-weight:700;color:var(--accent);margin-bottom:8px"><span class="mi mi-sm">warning</span> Als de gemeente niet reageert of weigert</div>' +
+        '<div style="font-size:12px;color:var(--tx);line-height:1.8">' +
+          '<strong>Geen reactie na 8 weken:</strong><br>' +
+          '&bull; Stuur een <strong>ingebrekestelling</strong>: "Ik stel u in gebreke op grond van art. 4:17 Awb wegens het niet tijdig beslissen op mijn verzoek van [datum]"<br>' +
+          '&bull; Na de ingebrekestelling: wacht 2 weken. Nog steeds niets? De dwangsom loopt automatisch op (€23/dag, max €1.442)<br>' +
+          '&bull; Dien een <strong>beroep wegens niet-tijdig beslissen</strong> in bij de rechtbank (art. 8:1 jo. 6:2 Awb)<br><br>' +
+
+          '<strong>Gemeente registreert je verzoek niet:</strong><br>' +
+          '&bull; Stuur het verzoek <strong>nogmaals per aangetekende post</strong> — bewaar het verzendbewijs<br>' +
+          '&bull; Mail een kopie naar de <strong>gemeentesecretaris</strong> en de <strong>gemeentelijke ombudsman</strong><br>' +
+          '&bull; Bel de <strong>Nationale Ombudsman</strong> (0800-3355, gratis) — zij kunnen de gemeente aanspreken<br>' +
+          '&bull; Dien een <strong>klacht in bij de Autoriteit Persoonsgegevens</strong> — de gemeente verwerkt je persoonsgegevens onrechtmatig als ze je verzoek negeren<br><br>' +
+
+          '<strong>Gemeente wijst af:</strong><br>' +
+          '&bull; Je ontvangt een <strong>afwijzingsbesluit</strong> — dit is een bestuursrechtelijk besluit waartegen je bezwaar kunt maken<br>' +
+          '&bull; Maak <strong>bezwaar binnen 6 weken</strong> na de afwijzing<br>' +
+          '&bull; Wordt bezwaar ook afgewezen? Ga in <strong>beroep bij de rechtbank</strong> (griffierecht €54 met toevoeging)<br>' +
+          '&bull; Overweeg een <strong>kort geding</strong> als je acute problemen hebt door het besmette BSN' +
+        '</div>' +
+      '</div>' +
+
+      '<div style="padding:12px;background:var(--green-soft);border:1px solid rgba(34,197,94,.2);border-radius:var(--rs)">' +
+        '<div style="font-size:12px;color:var(--tx);line-height:1.7">' +
+          '<strong style="color:var(--green)"><span class="mi mi-sm">star</span> Tip:</strong> Documenteer ALLES. Elke afwijzing, elke weigering, elke keer dat je ergens wordt afgewezen vanwege je BSN. ' +
+          'Dit is bewijs voor eventuele rechtszaken. Stuur brieven altijd <strong>aangetekend</strong> en bewaar de verzendbewijzen. ' +
+          'Publiceer je correspondentie (zonder BSN) — transparantie beschermt je en helpt anderen.' +
+        '</div>' +
+      '</div>' +
+    '</div>' +
+
+    // DISCLAIMER
     '<div class="card" style="padding:16px;margin-bottom:20px;border-left:3px solid var(--yellow);background:var(--yellow-soft,rgba(250,204,21,.08))">' +
       '<div style="font-size:13px;color:var(--tx);line-height:1.7">' +
         '<strong style="color:var(--yellow)"><span class="mi mi-sm">warning</span> Disclaimer:</strong> Deze pagina bevat <strong>geen juridisch advies</strong>. Het is een overzicht van bestaande rechten en procedures, samengesteld op basis van openbare bronnen. Raadpleeg altijd een advocaat voor je specifieke situatie. Bel het <strong>Juridisch Loket</strong> (0900-8020) voor gratis eerste advies.' +
@@ -5550,6 +5741,14 @@ function pgJuridischeHulp(){
   return html;
 }
 
+// Kopieer voorbeeldbrief naar klembord
+function kopieerBrief(btn){
+  var t = btn.parentElement.previousElementSibling;
+  if(t && navigator.clipboard){
+    navigator.clipboard.writeText(t.textContent).then(function(){ toast('Brief gekopieerd naar klembord'); });
+  }
+}
+
 // Beslisboom logica voor juridische hulp
 function toonAdvies(situatie){
   var advies = '';
@@ -5561,11 +5760,13 @@ function toonAdvies(situatie){
       '<div style="border-left:3px solid var(--blue);padding-left:14px;margin-bottom:14px">' +
         '<div style="font-size:15px;font-weight:700;color:var(--blue);margin-bottom:8px"><span class="mi mi-sm">schedule</span> Je wacht te lang op een beslissing</div>' +
         '<div style="font-size:14px;color:var(--tx);line-height:1.8">' +
-          '<strong>Direct doen:</strong><br>' +
-          '1. <strong>Stuur een ingebrekestelling</strong> (stap 1) — dit is gratis en activeert de dwangsom van €23/dag<br>' +
-          '2. <strong>Vraag je dossier op</strong> (stap 2) — zodat je weet wat er speelt<br>' +
-          '3. Na 2 weken zonder reactie: <strong>beroep bij de rechtbank</strong> wegens niet-tijdig beslissen (art. 8:1 jo. 6:2 Awb)<br><br>' +
-          '<strong style="color:var(--blue)">Belangrijk:</strong> De ingebrekestelling kost niets en je hebt geen advocaat nodig. Begin hier.' +
+          '<strong>We weten:</strong> Veel ouders hebben al ingebrekestellingen gestuurd die genegeerd worden. Het UHT betaalt liever €101,6 miljoen aan dwangsommen dan dat het dossiers afhandelt. Maar juist daarom werkt het als drukmiddel:<br><br>' +
+          '<strong>Wat je NU doet:</strong><br>' +
+          '1. <strong>Stuur een ingebrekestelling</strong> (stap 1) — gratis, geen advocaat nodig, activeert dwangsom van €23/dag<br>' +
+          '2. Na 2 weken zonder reactie: <strong>beroep bij de rechtbank</strong> wegens niet-tijdig beslissen. Griffierecht €54 (met toevoeging). De rechter kan een dwangsom tot €15.000 opleggen<br>' +
+          '3. <strong>Vraag je dossier op</strong> (stap 2) — stuur GELIJKTIJDIG een AVG-verzoek. De overheid moet binnen 4 weken reageren<br>' +
+          '4. <strong>Doe een melding op dit platform</strong> — noem de namen van de ambtenaren die niet reageren<br><br>' +
+          '<strong style="color:var(--blue)">Realiteit:</strong> De ingebrekestelling kost niets en je hebt geen advocaat nodig. Het UHT reageert vaker als er een dwangsom loopt. Begin vandaag.' +
         '</div>' +
       '</div>';
   } else if(situatie === 'afgewezen'){
@@ -5585,24 +5786,31 @@ function toonAdvies(situatie){
       '<div style="border-left:3px solid var(--yellow);padding-left:14px;margin-bottom:14px">' +
         '<div style="font-size:15px;font-weight:700;color:var(--yellow);margin-bottom:8px"><span class="mi mi-sm">credit_card</span> Besmet BSN</div>' +
         '<div style="font-size:14px;color:var(--tx);line-height:1.8">' +
-          '<strong>Direct doen:</strong><br>' +
-          '1. <strong>Dien een klacht in bij de AP</strong> (stap 3) — je BSN wordt onrechtmatig verwerkt<br>' +
-          '2. <strong>Vraag je FSV-gegevens op</strong> (stap 2) — AVG art. 15 inzageverzoek<br>' +
-          '3. <strong>Verzoek rectificatie</strong> via art. 16 AVG — eis dat het fraudelabel wordt verwijderd<br>' +
-          '4. Als Nederland weigert: <strong>klacht bij de EDPB</strong> (Europese toezichthouder) of <strong>EHRM</strong> (stap 7)<br><br>' +
-          '<strong style="color:var(--yellow)">Belangrijk:</strong> Documenteer alles. Elke afwijzing van een hypotheek, verzekering of dienst die gerelateerd is aan je BSN is bewijs voor je zaak.' +
+          '<strong>Wat de overheid zegt:</strong> "BSN-wijziging is niet mogelijk." Dat klopt niet helemaal.<br><br>' +
+          '<strong>Wat je NU kunt doen:</strong><br>' +
+          '1. <strong>Vraag een nieuw BSN aan bij je gemeente</strong> — scroll naar boven naar de BSN-sectie voor de voorbeeldbrief<br>' +
+          '2. <strong>Vraag je FSV-gegevens op</strong> (stap 2) — AVG art. 15 inzageverzoek. Vraag specifiek naar risicoscores en fraudelabels<br>' +
+          '3. <strong>Eis rectificatie</strong> via art. 16 AVG — de fraudelabels zijn onjuist en moeten verwijderd worden<br>' +
+          '4. <strong>Dien een klacht in bij de AP</strong> (stap 3) — je persoonsgegevens worden nog steeds onrechtmatig verwerkt<br>' +
+          '5. Documenteer elke afwijzing (hypotheek, verzekering, toeslag) — dit is bewijs<br>' +
+          '6. Als Nederland weigert: <strong>EHRM</strong> (stap 7) op grond van art. 8 EVRM (privéleven)<br><br>' +
+          '<strong style="color:var(--yellow)">Belangrijk:</strong> De gemeente kan je verzoek afwijzen. Dat is juist goed — want een afwijzingsbesluit kun je aanvechten bij de rechter. Geen reactie is erger. Zie de BSN-sectie bovenaan voor wat te doen als de gemeente niet reageert.' +
         '</div>' +
+        '<div style="margin-top:10px"><button class="btn btn-sm" style="background:var(--yellow);color:#000" onclick="document.getElementById(\'bsnSectie\').scrollIntoView({behavior:\'smooth\',block:\'start\'})"><span class="mi mi-sm">arrow_upward</span> Ga naar BSN-sectie met voorbeeldbrief</button></div>' +
       '</div>';
   } else if(situatie === 'alles'){
     advies =
       '<div style="border-left:3px solid var(--green);padding-left:14px;margin-bottom:14px">' +
         '<div style="font-size:15px;font-weight:700;color:var(--green);margin-bottom:8px"><span class="mi mi-sm">done_all</span> Alle nationale wegen uitgeput</div>' +
         '<div style="font-size:14px;color:var(--tx);line-height:1.8">' +
-          '<strong>De Europese route:</strong><br>' +
-          '1. <strong>EHRM-klacht indienen</strong> (stap 7) — art. 8 EVRM (privéleven), art. 13 EVRM (effectief rechtsmiddel), art. 1 Protocol 1 (eigendom)<br>' +
-          '2. <strong>Argument "geen effectief rechtsmiddel":</strong> De hersteloperatie werkt al 5+ jaar niet. Dit IS het bewijs dat art. 13 EVRM geschonden is<br>' +
-          '3. <strong>Overweeg een art. 82 AVG-claim</strong> bij de civiele rechter — dit is een apart Europees recht<br><br>' +
-          '<strong style="color:var(--green)">Belangrijk:</strong> Het EHRM-klachtformulier is beschikbaar op echr.coe.int. Je kunt het zelf invullen, maar een advocaat met EHRM-ervaring verhoogt je kans enorm. Zoek een specialist via de <a href="#" onclick="go(\'/oplossing\');return false" style="color:var(--green)">pagina Oplossing</a>.' +
+          '<strong>We begrijpen je frustratie.</strong> Het systeem is ontworpen om je te laten opgeven. Bezwaren worden geseponeerd, klachten genegeerd, procedures duren jaren. Maar er zijn nog routes:<br><br>' +
+          '<strong>Wat je NU kunt doen:</strong><br>' +
+          '1. <strong>EHRM-klacht indienen</strong> (stap 7) — Nederland is al veroordeeld in Van Slooten (2025). Je argument: de hersteloperatie duurt al 5+ jaar, er is geen effectief rechtsmiddel (art. 13 EVRM). Download het formulier op echr.coe.int<br>' +
+          '2. <strong>Art. 82 AVG-claim</strong> bij de civiele rechter — onrechtmatige verwerking van persoonsgegevens geeft recht op schadevergoeding. Dit is een apart Europees recht dat los staat van de hersteloperatie<br>' +
+          '3. <strong>Klacht bij VN-Comité CERD</strong> (rassendiscriminatie) — als je gediscrimineerd bent op basis van afkomst. Nederland is al door CERD bekritiseerd over de toeslagenaffaire<br>' +
+          '4. <strong>Publiceer je verhaal</strong> — op dit platform, in de media, via sociale media. Neem contact op met journalisten van FTM, Trouw of RTL Nieuws die de affaire volgen<br>' +
+          '5. <strong>Doe een melding hier</strong> — noem de namen van iedereen die je heeft tegengewerkt. Patronen worden zichtbaar als meer mensen melden<br><br>' +
+          '<strong style="color:var(--green)">Realiteit:</strong> Het EHRM is traag (3-5 jaar) maar het is de enige instantie die Nederland daadwerkelijk verplicht iets te doen. En je hoeft geen advocaat te hebben — je kunt het zelf doen.' +
         '</div>' +
       '</div>';
   }
