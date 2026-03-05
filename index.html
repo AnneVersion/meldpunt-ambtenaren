@@ -356,6 +356,7 @@ sup a[title], sup[title] { border-bottom: 1px dotted var(--blue); }
         <button class="nav-btn" data-r="/tijdlijn" onclick="go('/tijdlijn')"><span class="mi mi-sm">timeline</span> Tijdlijn</button>
         <button class="nav-btn" data-r="/oplossing" onclick="go('/oplossing')"><span class="mi mi-sm">verified</span> Oplossing</button>
         <button class="nav-btn" data-r="/geld" onclick="go('/geld')"><span class="mi mi-sm">payments</span> Geld</button>
+        <button class="nav-btn" data-r="/juridische-hulp" onclick="go('/juridische-hulp')"><span class="mi mi-sm">support_agent</span> Hulp</button>
         <button class="nav-btn cta" data-r="/melden" onclick="go('/melden')"><span class="mi mi-sm">add_circle</span> Meld</button>
       </nav>
     </div>
@@ -689,6 +690,7 @@ function parseRoute(){
   else if(h === '/tijdlijn') _route = '/tijdlijn';
   else if(h === '/rechtspraak') _route = '/rechtspraak';
   else if(h === '/documentatie') _route = '/documentatie';
+  else if(h === '/juridische-hulp') _route = '/juridische-hulp';
   else if(h === '/oplossing') _route = '/oplossing';
   else if(h === '/geld') _route = '/geld';
   else if(h === '/admin') _route = '/admin';
@@ -761,6 +763,7 @@ function render(){
     case '/tijdlijn': app.innerHTML = pgTijdlijn(); break;
     case '/rechtspraak': app.innerHTML = pgRechtspraak(); break;
     case '/documentatie': app.innerHTML = pgDocumentatie(); break;
+    case '/juridische-hulp': app.innerHTML = pgJuridischeHulp(); break;
     case '/oplossing': app.innerHTML = pgOplossing(); break;
     case '/geld': app.innerHTML = pgGeld(); break;
     case '/admin': renderAdmin(); break;
@@ -2537,7 +2540,7 @@ function pgStaatsontvoeringen(){
         '<strong>24 mrt 2022:</strong> Peter Pannekoek noemt het "staatsontvoeringen" op primetime-tv. #Staatsontvoeringen trending op Twitter.' + bron('Hart van Nederland', 'https://www.hartvannederland.nl/politiek/artikelen/peter-pannenkoek-schreeuwt-rutte-toe-toeslagenaffaire-heeft-gezorgd-voor-staatsontvoeringen') + '<br><br>' +
         '<strong>Apr 2022:</strong> CBS actualiseert: 1.675 kinderen uit huis, waarvan 1.120 inmiddels "uit jeugdzorg" — maar dat betekent vaak niet herenigd, maar 18 geworden.' + bron('CBS, apr 2022', 'https://www.cbs.nl/nl-nl/maatwerk/2022/19/actualisatie-uithuisplaatsingen-toeslagenaffaire-2015-t-m-2021') + '<br><br>' +
         '<strong>Nov 2022:</strong> CBS update met data tot juni 2022: 2.090 kinderen uit huis geplaatst.' + bron('CBS, nov 2022', 'https://www.cbs.nl/nl-nl/maatwerk/2022/48/actualisatie-uithuisplaatsingen-toeslagenaffaire-2015-t-m-juni-2022') + '<br><br>' +
-        '<strong>13 mei 2024:</strong> NOS publiceert "€5 miljard extra" op basis van interne notitie van het ministerie van Financiën. Anonieme UHT-ambtenaar met pruik en stemvervormer op Achtuurjournaal.' + bron('NOS, mei 2024', 'https://nos.nl/artikel/2520340') + '<br><br>' +
+        '<strong>13 mei 2024:</strong> NOS publiceert "€5 miljard extra." Anonieme UHT-ambtenaar met pruik en stemvervormer op Achtuurjournaal.' + bron('NOS, mei 2024', 'https://nos.nl/artikel/2520340') + '<br><br>' +
         '<strong>27 mrt 2025:</strong> Commissie-Hamer publiceert "Erfenis van onrecht." Conclusie: toeslagenaffaire speelde "grote rol" bij bijna alle uithuisplaatsingen. Slechts 23 kinderen herenigd.' + bron('Commissie-Hamer 2025', 'https://www.rijksoverheid.nl/documenten/rapporten/2025/03/27/tk-bijlage-1-rapportage-commissie-toeslagen-en-uithuisplaatsingen-erfenis-van-onrecht') + '<br><br>' +
         '<strong>Apr 2025:</strong> EHRM oordeelt in <em>Van Slooten v. Nederland</em> dat Nederland te snel opgeeft bij hereniging.' + bron('Defence for Children', 'https://www.defenceforchildren.nl/actueel/nieuws/familie/2025/toeslagenschandaal-veroorzaakte-onnodige-uithuisplaatsingen/') + '<br><br>' +
         '<strong>Jun 2025:</strong> Kabinet erkent "extra leed" van uithuisgeplaatste kinderen. 645 kinderen nog niet terug. 30 gezinnen kregen ouderlijk gezag formeel hersteld.' + bron('Rijksoverheid, jun 2025', 'https://www.rijksoverheid.nl/actueel/nieuws/2025/06/30/kabinet-erkent-extra-leed-uithuisgeplaatste-kinderen') +
@@ -2976,7 +2979,7 @@ function pgOrganigram(){
   var personen = {
     rutte: {
       naam: 'Mark Rutte', functie: 'Minister-president (2010–2024)', korte_functie: 'Premier', partij: 'VVD', partij_kleur: '#FF6600',
-      foto: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9b/Mark_Rutte%2C_23.03.23_%28cropped%29.jpg/300px-Mark_Rutte%2C_23.03.23_%28cropped%29.jpg',
+      foto: 'img/organigram/rutte.jpg',
       nu: 'Secretaris-generaal NAVO',
       dossier: '<strong>2003 — Somaliërs-affaire:</strong> Als staatssecretaris SZW schreef Rutte een brief aan alle gemeenten om Somalische Nederlanders te traceren via geboorteplaats Mogadishu voor extra fraudecontroles. De rechtbank Haarlem oordeelde (2007) dat dit rassendiscriminatie was.' + bron('VN Speciaal Rapporteur 2019', 'https://www.ohchr.org/en/press-releases/2019/10/netherlands-building-surveillance-state-poor-says-un-rights-expert') + '<br><br>' +
         '<strong>2013 — Ministeriële Commissie Fraude:</strong> Richtte als premier persoonlijk de commissie op die de keiharde fraudeaanpak lanceerde. Zat erbij, leidde het, wist ervan. De toon werd gezet: burgers zijn verdacht.' + bron('Enquêtecommissie 2024', 'https://www.tweedekamer.nl/kamerstukken/detail?id=2024Z02942&did=2024D06757') + '<br><br>' +
@@ -2998,7 +3001,7 @@ function pgOrganigram(){
     },
     wiebes: {
       naam: 'Eric Wiebes', functie: 'Staatssecretaris Financiën (2014–2017)', korte_functie: 'Stss. Financiën', partij: 'VVD', partij_kleur: '#FF6600',
-      foto: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/39/Eric_Wiebes.jpg/300px-Eric_Wiebes.jpg',
+      foto: 'img/organigram/wiebes.jpg',
       nu: 'McKinsey partner + Staatsraad Raad van State',
       dossier: '<strong>2014–2017 — Direct verantwoordelijk:</strong> Als staatssecretaris van Financiën had Wiebes directe verantwoordelijkheid over de Belastingdienst/Toeslagen. Onder zijn bewind bereikten de CAF-teams hun hoogtepunt en werden duizenden ouders als fraudeur bestempeld zonder bewijs.' + bron('Enquêtecommissie 2024', 'https://www.tweedekamer.nl/kamerstukken/detail?id=2024Z02942&did=2024D06757') + '<br><br>' +
         '<strong>Bagatellisering:</strong> Deed de toeslagenaffaire af als "een emotionele discussie."' + bron('Enquêtecommissie 2024', 'https://www.tweedekamer.nl/kamerstukken/detail?id=2024Z02942&did=2024D06757') + ' Weigerde de ernst te erkennen ondanks signalen van advocaten en ouders.<br><br>' +
@@ -3017,7 +3020,7 @@ function pgOrganigram(){
     },
     weekers: {
       naam: 'Frans Weekers', functie: 'Staatssecretaris Financiën (2010–2014)', korte_functie: 'Stss. Financiën', partij: 'VVD', partij_kleur: '#FF6600',
-      foto: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Frans_Weekers_2011.jpg/300px-Frans_Weekers_2011.jpg',
+      foto: 'img/organigram/weekers.jpg',
       nu: 'Secretaris-generaal Benelux Unie',
       dossier: '<strong>2013 — Architect fraudeaanpak:</strong> Na de "Bulgarenfraude" voerde Weekers de Fraudewet Toeslagen in.' + bron('Enquêtecommissie 2024', 'https://www.tweedekamer.nl/kamerstukken/detail?id=2024Z02942&did=2024D06757') + ' De bewijslast werd omgedraaid: niet de overheid moest fraude bewijzen, maar de burger moest zijn onschuld aantonen.<br><br>' +
         '<strong>CAF-teams opgericht:</strong> Onder Weekers werden de Combiteams Aanpak Facilitators (CAF) opgericht die massaal toeslagen stopzetten bij hele kinderdagverblijven — alle ouders gestraft voor verdenking bij één instelling.<br><br>' +
@@ -3034,7 +3037,7 @@ function pgOrganigram(){
     },
     snel: {
       naam: 'Menno Snel', functie: 'Staatssecretaris Financiën (2017–2019)', korte_functie: 'Stss. Financiën', partij: 'D66', partij_kleur: '#01AF36',
-      foto: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b9/Menno_snel-1536227731.jpg/220px-Menno_snel-1536227731.jpg',
+      foto: 'img/organigram/snel.jpg',
       nu: 'Voorzitter RvC Alliander (april 2026)',
       dossier: '<strong>2017–2019 — Nalatigheid:</strong> Volgde Wiebes op en kreeg de toeslagenaffaire op zijn bord. Noemde het handelen "beschamend" maar greep maandenlang niet in terwijl gezinnen bleven lijden.' + bron('Enquêtecommissie 2024', 'https://www.tweedekamer.nl/kamerstukken/detail?id=2024Z02942&did=2024D06757') + '<br><br>' +
         '<strong>Gebroken beloftes:</strong> Beloofde de Kamer transparantie en informatie, maar leverde die niet of onvolledig. Stukken werden niet gedeeld, vragen werden ontwijkend beantwoord.<br><br>' +
@@ -3050,7 +3053,7 @@ function pgOrganigram(){
     },
     asscher: {
       naam: 'Lodewijk Asscher', functie: 'Vicepremier, Minister SZW (2012–2017)', korte_functie: 'Vicepremier', partij: 'PvdA', partij_kleur: '#E12B1A',
-      foto: 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/eb/Lodewijk_Asscher_2013-1.jpg/300px-Lodewijk_Asscher_2013-1.jpg',
+      foto: 'img/organigram/asscher.jpg',
       nu: 'Voorzitter RvT FNV + diverse voorzitterschappen',
       dossier: '<strong>2012–2017 — Medeverantwoordelijk:</strong> Vicepremier in het kabinet dat de Ministeriële Commissie Fraude oprichtte. Zat aan tafel toen de besluiten werden genomen. Als minister van Sociale Zaken medeverantwoordelijk voor het klimaat van fraudejacht.' + bron('Enquêtecommissie 2024', 'https://www.tweedekamer.nl/kamerstukken/detail?id=2024Z02942&did=2024D06757') + '<br><br>' +
         '<strong>2020 — Ondervragingscommissie:</strong> Verscheen voor de parlementaire commissie. Erkende fouten maar wees ook naar anderen.<br><br>' +
@@ -3066,7 +3069,7 @@ function pgOrganigram(){
     },
     vanark: {
       naam: 'Tamara van Ark', functie: 'Staatssecretaris SZW (2017–2020)', korte_functie: 'Stss. SZW', partij: 'VVD', partij_kleur: '#FF6600',
-      foto: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/77/Tamara_van_Ark%2C_April_2018.jpg/300px-Tamara_van_Ark%2C_April_2018.jpg',
+      foto: 'img/organigram/vanark.jpg',
       nu: 'Bestuurskamers: Oranje Fonds, Reclassering NL',
       dossier: '<strong>2017–2020 — Verantwoordelijk voor de staatsontvoeringen:</strong> Als staatssecretaris SZW hield Van Ark het harde toeslagenbeleid in stand. Onder haar bewind bleef de Belastingdienst doorgaan met discriminerende werkwijzen. Haar ambtsperiode viel samen met de jaren waarin de <strong>meeste kinderen uit huis werden geplaatst</strong>.' + bron('Commissie-Hamer 2025', 'https://www.rijksoverheid.nl/documenten/rapporten/2025/03/27/tk-bijlage-1-rapportage-commissie-toeslagen-en-uithuisplaatsingen-erfenis-van-onrecht') + '<br><br>' +
         '<strong>De staatsontvoeringen in cijfers:</strong> Het CBS telde 2.090 kinderen die via de rechter uit huis werden geplaatst (2015–juni 2022).' + bron('CBS, nov 2022', 'https://www.cbs.nl/nl-nl/maatwerk/2022/48/actualisatie-uithuisplaatsingen-toeslagenaffaire-2015-t-m-juni-2022') + ' Het ministerie van J&V telt 3.058 kinderen. De Commissie-Hamer concludeerde dat de toeslagenaffaire bij <strong>bijna alle gezinnen</strong> een "grote rol" speelde. Slechts <strong>23 kinderen</strong> zijn herenigd met hun ouders. Peter Pannekoek noemde het in 2022 op primetime-tv wat het was: <strong>staatsontvoeringen</strong>.' + bron('Hart van Nederland, mrt 2022', 'https://www.hartvannederland.nl/politiek/artikelen/peter-pannenkoek-schreeuwt-rutte-toe-toeslagenaffaire-heeft-gezorgd-voor-staatsontvoeringen') + '<br><br>' +
@@ -3081,7 +3084,7 @@ function pgOrganigram(){
     },
     vanhuffelen: {
       naam: 'Alexandra van Huffelen', functie: 'Staatssecretaris Toeslagen (2020–2022)', korte_functie: 'Stss. Toeslagen', partij: 'D66', partij_kleur: '#01AF36',
-      foto: 'https://upload.wikimedia.org/wikipedia/commons/thumb/2/20/220107Alexandra_van_Huffelen34_%28cropped%29.jpg/300px-220107Alexandra_van_Huffelen34_%28cropped%29.jpg',
+      foto: 'img/organigram/vanhuffelen.jpg',
       nu: 'Collegevoorzitter Radboud Uni + voorzitter D66',
       dossier: '<strong>2020–2022 — Mislukt herstel:</strong> Aangesteld om de schade te herstellen. Beloofde iedere gedupeerde €30.000.' + bron('Commissie-Van Dam 2025', 'https://www.rijksoverheid.nl/documenten/kamerstukken/2025/01/23/minder-beloven-meer-doen-lr') + ' Maar de hersteloperatie werd een tweede schandaal: tergend langzaam, bureaucratisch, opnieuw traumatiserend.<br><br>' +
         '<strong>Nieuw BSN geweigerd:</strong> Weigerde een nieuw BSN voor slachtoffers. Argument: "het lost niks op" en "het geeft regeldruk." De juridische basis bestaat — ze koos ervoor het niet te doen.<br><br>' +
@@ -3097,7 +3100,7 @@ function pgOrganigram(){
     },
     klijnsma: {
       naam: 'Jetta Klijnsma', functie: 'Staatssecretaris SZW (2012–2017)', korte_functie: 'Stss. SZW', partij: 'PvdA', partij_kleur: '#E12B1A',
-      foto: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/fe/Jetta_Klijnsma_2012_%28highres%29.jpg/300px-Jetta_Klijnsma_2012_%28highres%29.jpg',
+      foto: 'img/organigram/klijnsma.jpg',
       nu: 'Commissaris van de Koning Drenthe',
       dossier: '<strong>2012–2017 — Mede-architect fraudebeleid:</strong> Als staatssecretaris SZW in kabinet-Rutte II zat Klijnsma aan tafel bij de Ministeriële Commissie Fraude die de keiharde fraudeaanpak lanceerde. Verantwoordelijk voor de Participatiewet die mensen met een bijstandsuitkering als potentiële fraudeurs behandelde.<br><br>' +
         '<strong>2013 — Waarschuwing genegeerd:</strong> Ombudsman Alex Brenninkmeijer waarschuwde Klijnsma en Asscher persoonlijk over de gevolgen van het harde fraudebeleid. De ministers "hapten niet" — de waarschuwing werd "voor kennisgeving aangenomen."' + bron('Enquêtecommissie 2024', 'https://www.tweedekamer.nl/kamerstukken/detail?id=2024Z02942&did=2024D06757') + '<br><br>' +
@@ -3382,7 +3385,7 @@ function pgTijdlijn(){
     { jaar: 'Okt 2023', titel: 'College voor de Rechten van de Mens: discriminatie', tekst: 'Het College oordeelt in drie zaken dat er sprake was van indirecte discriminatie door de Belastingdienst/Toeslagen. Amnesty International had de affaire eerder al als mensenrechtenschending geclassificeerd.' + bron('Amnesty "Xenofobe machines", 2021', 'https://www.amnesty.nl/content/uploads/2021/10/NL_Xenophobe-Machines_Amnesty-International_EUR-35_4686_2021.pdf') + '', kleur: 'var(--accent)' },
     { jaar: '2024', titel: 'Raad van State biedt excuses aan', tekst: 'De Raad van State erkent dat zij jarenlang een te strikte lijn hanteerde en biedt excuses aan toeslagenouders. Te laat, te weinig — maar een erkenning.' + bron('RvS zelfreflectie', 'https://www.raadvanstate.nl/lessen-uit-de-kinderopvangtoeslagzaken/') + '', kleur: 'var(--yellow)' },
     { jaar: 'Feb 2024', titel: 'Parlementaire enquête: "Blind voor mens en recht"', tekst: 'De enquêtecommissie onder voorzitter Michiel van Nispen (SP) concludeert: "In een verhard politiek en maatschappelijk klimaat zijn de drie staatsmachten blind geweest voor mens en recht, waardoor levens zijn vermorzeld." De commissie beveelt aan om bestuursrechtspraak weg te halen bij de Raad van State. De Raad van State weigert schuld te erkennen.' + bron('Enquêtecommissie 2024', 'https://www.tweedekamer.nl/kamerstukken/detail?id=2024Z02942&did=2024D06757') + '', kleur: 'var(--accent)' },
-    { jaar: 'Mei 2024', titel: 'NOS-journalisten torpederen methode-Laurentien', tekst: 'NOS-correspondenten <strong>Marleen de Rooy</strong> en <strong>Jorn Jonker</strong> publiceren een item op basis van een interne notitie van het ministerie van Financiën — die nooit is gepubliceerd en waarvan niemand de claims kan verifiëren. De hersteloperatie zou €5 miljard extra kosten, grotendeels door de "methode-Laurentien." Een anonieme UHT-ambtenaar verschijnt met <strong>pruik en stemvervormer</strong> in het Achtuurjournaal om de methode aan te vallen. SGH krijgt slechts 75 minuten voor wederhoor.' + bron('NOS, 13 mei 2024', 'https://nos.nl/artikel/2520340-herstel-toeslagenaffaire-dreigt-ongekende-strop-te-worden-nog-5-miljard-extra') + ' Follow the Money toont later aan dat de methode-Laurentien juist <strong>goedkoper</strong> was per zaak (€3.555 uitvoering) dan de overheidsroute (€36.000 per zaak).' + bron('FTM', 'https://www.ftm.nl/artikelen/hersteloperatie-toeslagenschandaal-methode-laurentien') + '', kleur: 'var(--yellow)' },
+    { jaar: 'Mei 2024', titel: 'NOS-journalisten torpederen methode-Laurentien', tekst: 'NOS-correspondenten <strong>Marleen de Rooy</strong> en <strong>Jorn Jonker</strong> publiceren een item: de hersteloperatie zou €5 miljard extra kosten, grotendeels door de "methode-Laurentien." Een anonieme UHT-ambtenaar verschijnt met <strong>pruik en stemvervormer</strong> in het Achtuurjournaal om de methode aan te vallen. SGH krijgt slechts 75 minuten voor wederhoor.' + bron('NOS, 13 mei 2024', 'https://nos.nl/artikel/2520340-herstel-toeslagenaffaire-dreigt-ongekende-strop-te-worden-nog-5-miljard-extra') + ' Follow the Money toont later aan dat de methode-Laurentien juist <strong>goedkoper</strong> was per zaak (€3.555 uitvoering) dan de overheidsroute (€36.000 per zaak).' + bron('FTM', 'https://www.ftm.nl/artikelen/hersteloperatie-toeslagenschandaal-methode-laurentien') + '', kleur: 'var(--yellow)' },
     { jaar: 'Aug 2024', titel: 'Laurentien gedwongen af te treden', tekst: 'Na maanden van anonieme beschuldigingen van "grensoverschrijdend gedrag" — zonder formele klachten — treedt prinses Laurentien af als voorzitter van Stichting Gelijkwaardig Herstel. Toeslagenouders schrijven een open brief: zij herkennen zich niet in het beeld en noemen het "karaktermoord door anonieme ambtenaren." De stichting die slachtoffers het snelst en goedkoopst hielp, is uitgeschakeld.' + bron('NOS, aug 2024', 'https://nos.nl/l/2534894') + '', kleur: 'var(--accent)' },
     { jaar: 'Okt 2024', titel: 'Rutte wordt NAVO-baas', tekst: 'Mark Rutte wordt de 14e secretaris-generaal van de NAVO. Jaarsalaris ~€270.000 belastingvrij. 26.000 gezinnen kapot. 2.090 kinderen uit huis. Nul consequenties. Karim Aachboun dagvaardt Rutte voor het Brusselse Hof van Cassatie.' + bron('DutchEcho, mrt 2025', 'https://dutchecho.com/2025/03/30/aachboun-vs-rutte-the-legal-showdown/') + '', kleur: 'var(--accent)' },
     { jaar: 'Nov 2024', titel: 'Staatssecretaris Achahbar stapt op', tekst: 'Nora Achahbar, pas maanden in functie als staatssecretaris hersteloperatie, treedt af.' + bron('NOS, nov 2024', 'https://nos.nl/artikel/2547044') + ' De zoveelste bestuurder die wegloopt. 37.000 erkende gedupeerden wachten nog steeds.' + bron('Commissie-Van Dam 2025', 'https://www.rijksoverheid.nl/documenten/kamerstukken/2025/01/23/minder-beloven-meer-doen-lr') + '', kleur: 'var(--yellow)' },
@@ -3447,7 +3450,7 @@ function pgRechtspraak(){
       naam: 'Jaap Polak',
       functie: 'Voorzitter Afdeling bestuursrechtspraak Raad van State (2010–2017)',
       nu: 'Emeritus hoogleraar bestuursrecht Universiteit Leiden',
-      foto: 'https://upload.wikimedia.org/wikipedia/commons/7/72/Jaap_Polak_%28cropped%29.jpeg',
+      foto: 'img/organigram/polak.jpg',
       rol: 'Onder zijn leiding vestigde de Afdeling de "alles-of-niets" jurisprudentie waardoor ouders die een klein foutje maakten hun hele kinderopvangtoeslag moesten terugbetalen. De uitspraak ECLI:NL:RVS:2011:BQ8833 werd het fundament van duizenden vernietigende uitspraken.',
       feiten: [
         'Leidde de Afdeling toen de hardste jurisprudentie werd gevestigd (2011–2017)',
@@ -3463,7 +3466,7 @@ function pgRechtspraak(){
       naam: 'Bart Jan van Ettekoven',
       functie: 'Voorzitter Afdeling bestuursrechtspraak Raad van State (2017–heden)',
       nu: 'Nog steeds voorzitter ABRvS',
-      foto: 'https://www.mr-online.nl/wp-content/uploads/2017/03/BartJan-Ettekoven-4431.jpg',
+      foto: 'img/organigram/ettekoven.jpg',
       rol: 'Volgde Polak op en zette de harde lijn voort tot november 2019 (ECLI:NL:RVS:2019:3535). Bood in 2021 namens de rechtspraak excuses aan.' + bron('RvS zelfreflectie', 'https://www.raadvanstate.nl/lessen-uit-de-kinderopvangtoeslagzaken/') + ' Gaf toe: "Wij hadden eerder kunnen en moeten ingrijpen." Maar pas nadat journalisten en advocaten het schandaal hadden blootgelegd.',
       feiten: [
         'Zette de alles-of-niets lijn voort van 2017 tot november 2019',
@@ -3479,7 +3482,7 @@ function pgRechtspraak(){
       naam: 'Piet Hein Donner',
       functie: 'Vice-president Raad van State (2012–2018)',
       nu: 'Voorzitter Commissie-Donner (advies hersteloperatie)',
-      foto: 'https://upload.wikimedia.org/wikipedia/commons/4/4c/Piet-hein-donner-portret.jpg',
+      foto: 'img/organigram/donner.jpg',
       rol: 'Als vice-president was Donner de hoogste baas van de Raad van State toen de hardste jurisprudentie werd toegepast. Daarvoor was hij als minister van Justitie en Sociale Zaken medeverantwoordelijk voor het beleid dat tot de affaire leidde. Na zijn vertrek werd hij voorzitter van de Commissie-Donner die adviseerde over herstel — terwijl hij zelf medeverantwoordelijk was. Een ongekend belangenconflict.' + bron('FTM — Commissie Donner', 'https://www.ftm.nl/artikelen/hardnekkig-wegkijken-commissie-donner'),
       feiten: [
         'Vice-president Raad van State (2012–2018): hoogste baas tijdens de ergste jaren',
@@ -3496,7 +3499,7 @@ function pgRechtspraak(){
       naam: 'Thom de Graaf',
       functie: 'Vice-president Raad van State (2018–heden)',
       nu: 'Nog steeds vice-president Raad van State',
-      foto: 'https://upload.wikimedia.org/wikipedia/commons/d/d7/ThomdeGraaf2018.jpg',
+      foto: 'img/organigram/degraaf.jpg',
       rol: 'D66-politicus die de Raad van State overnam van Donner. Erkende dat de rechtspraak had gefaald maar ondernam geen structurele hervormingen. De Afdeling bestuursrechtspraak bleef onderdeel van de Raad van State, ondanks de aanbeveling van de parlementaire enquetecommissie om deze te verplaatsen.',
       feiten: [
         'Trad aan in 2018 toen het schandaal al bekend begon te worden',
@@ -4212,6 +4215,62 @@ function pgOplossing(){
       '<h2 style="font-size:17px;margin-bottom:10px;color:var(--green)"><span class="mi mi-sm">check_circle</span> Juridische conclusie</h2>' +
       '<div style="font-size:14px;line-height:1.8;color:var(--tx)">' +
         '<strong>De Wet BRP</strong> en de <strong>Wet algemene bepalingen burgerservicenummer (Wabb)</strong> geven de Minister van BZK de bevoegdheid om BSN-nummers te creeren, wijzigen en beheren (art. 3-4 Wabb).' + bron('Wet Wabb, art. 3-4') + ' Het getuigenbeschermingsprogramma bewijst dat de infrastructuur bestaat. De AVG verplicht correctie van onrechtmatig verwerkte data. <strong>Het enige wat ontbreekt is politieke wil.</strong> En die ontbreekt omdat het erkennen van de noodzaak van een nieuw BSN betekent dat de overheid erkent dat ze de schade niet kan herstellen via de normale weg — wat precies het punt is.' +
+      '</div>' +
+    '</div>' +
+
+    // EUROPESE ROUTE OM NIEUW BSN + SCHADEVERGOEDING AF TE DWINGEN
+    '<div class="card" style="padding:24px;margin-bottom:16px;border-left:4px solid var(--blue)">' +
+      '<h2 style="font-size:19px;margin-bottom:10px"><span class="mi mi-sm" style="color:var(--blue)">flag</span> Den Haag weigert? Dan via Europa.</h2>' +
+      '<p style="font-size:14px;line-height:1.8;color:var(--tx);margin-bottom:14px">' +
+        'De Nederlandse overheid weigert een nieuw BSN en weigert een eerlijke schadevergoeding. Maar het EU-recht staat <strong>boven</strong> Nederlands recht. Er zijn <strong>drie Europese routes</strong> om beide af te dwingen.' +
+      '</p>' +
+
+      '<div style="display:grid;gap:10px">' +
+
+        // Route 1: EDPB-klacht
+        '<div style="padding:14px;background:var(--bg2);border-radius:var(--rs);border-left:3px solid var(--blue)">' +
+          '<div style="font-size:13px;font-weight:700;color:var(--blue);margin-bottom:6px"><span class="mi mi-sm">gavel</span> Route 1 — Klacht bij de EDPB</div>' +
+          '<div style="font-size:13px;color:var(--tx);line-height:1.7">' +
+            'De <strong>European Data Protection Board</strong> houdt toezicht op nationale privacytoezichthouders. Als de Autoriteit Persoonsgegevens faalt, kan de EDPB ingrijpen.' +
+            '<div style="margin-top:8px;padding:10px;background:var(--bg3);border-radius:6px;font-size:12px">' +
+              '<strong>Grondslag:</strong> Art. 77 AVG (recht op klacht) + art. 65-66 AVG (EDPB kan bindende besluiten opleggen).<br>' +
+              '<strong>BSN:</strong> De AP weigert rectificatie (art. 16 AVG) of wissing (art. 17 AVG) van het besmette BSN af te dwingen. Een nieuw BSN is de enige remedie als het oude onherstelbaar besmet is.<br>' +
+              '<strong>Schadevergoeding:</strong> Art. 82 AVG geeft elk slachtoffer recht op volledige schadevergoeding. De AP heeft dit nooit afgedwongen. De EDPB kan de AP dwingen dit alsnog te doen.' +
+            '</div>' +
+          '</div>' +
+        '</div>' +
+
+        // Route 2: EHRM
+        '<div style="padding:14px;background:var(--bg2);border-radius:var(--rs);border-left:3px solid var(--green)">' +
+          '<div style="font-size:13px;font-weight:700;color:var(--green);margin-bottom:6px"><span class="mi mi-sm">balance</span> Route 2 — Europees Hof voor de Rechten van de Mens</div>' +
+          '<div style="font-size:13px;color:var(--tx);line-height:1.7">' +
+            'Het EHRM in Straatsburg behandelt klachten van individuen tegen lidstaten. Nederland is al veroordeeld in <em>Van Slooten v. Nederland</em> (2025).' +
+            '<div style="margin-top:8px;padding:10px;background:var(--bg3);border-radius:6px;font-size:12px">' +
+              '<strong>BSN — art. 8 EVRM:</strong> Een besmet BSN dat levenslang discriminatie veroorzaakt bij hypotheken, verzekeringen en werk is een permanente inbreuk op het privéleven. In <em>S. and Marper v. UK</em> (2008) oordeelde het EHRM dat het bewaren van data van onschuldigen art. 8 schendt.<br>' +
+              '<strong>Schadevergoeding — art. 1 Protocol 1:</strong> De onterechte terugvorderingen en schulden schenden het eigendomsrecht. Art. 13 EVRM (recht op effectief rechtsmiddel) is geschonden omdat de hersteloperatie na 5 jaar nog steeds niet werkt.<br>' +
+              '<strong>Kracht:</strong> Het EHRM kan een <strong>pilootarrest</strong> wijzen dat Nederland verplicht een structurele oplossing te bieden voor alle 240.000+ getroffenen — nieuw BSN én eerlijke vergoeding.' +
+            '</div>' +
+          '</div>' +
+        '</div>' +
+
+        // Route 3: HvJ-EU
+        '<div style="padding:14px;background:var(--bg2);border-radius:var(--rs);border-left:3px solid var(--yellow)">' +
+          '<div style="font-size:13px;font-weight:700;color:var(--yellow);margin-bottom:6px"><span class="mi mi-sm">star</span> Route 3 — Hof van Justitie van de EU</div>' +
+          '<div style="font-size:13px;color:var(--tx);line-height:1.7">' +
+            'Het HvJ-EU in Luxemburg interpreteert EU-wetgeving. Een Nederlandse rechter kan een <strong>prejudiciële vraag</strong> stellen.' +
+            '<div style="margin-top:8px;padding:10px;background:var(--bg3);border-radius:6px;font-size:12px">' +
+              '<strong>Vraag 1 (BSN):</strong> "Verplicht art. 17 AVG een lidstaat om een nieuw identificatienummer toe te kennen wanneer het bestaande onherstelbaar besmet is door onrechtmatige overheidsverwerking?"<br>' +
+              '<strong>Vraag 2 (vergoeding):</strong> "Verplicht art. 82 AVG volledige compensatie op basis van bestaande normen (zoals LOVS €105/dag), of mag een lidstaat eenzijdig een lager forfaitair bedrag opleggen?"<br>' +
+              '<strong>Kracht:</strong> Een uitspraak is bindend voor alle EU-lidstaten. Het schept een precedent dat niet alleen Nederland raakt, maar elke lidstaat waar de overheid persoonsgegevens misbruikt.' +
+            '</div>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+
+      '<div style="background:var(--accent-soft);border:1px solid rgba(239,68,68,.2);border-radius:var(--rs);padding:14px;margin-top:12px">' +
+        '<div style="font-size:14px;line-height:1.7;color:var(--tx)">' +
+          '<strong style="color:var(--accent)">De kern:</strong> Nederland kan weigeren. Maar Europa kan het afdwingen. De AVG staat boven Nederlands recht. Het EVRM bindt Nederland. <strong>De juridische wegen bestaan — het enige wat ontbreekt zijn de zaken die worden aangespannen.</strong>' +
+        '</div>' +
       '</div>' +
     '</div>' +
 
@@ -5189,6 +5248,370 @@ function renderClaim(){
     else { _claimMelding = data; }
     app.innerHTML = pgClaim();
   });
+}
+
+// ============ PAGE: JURIDISCHE HULP — TOOLKIT VOOR SLACHTOFFERS ============
+function pgJuridischeHulp(){
+  resetBronnen();
+
+  // Stappen data
+  var stappen = [
+    {
+      nr: 1,
+      icon: 'mail',
+      kleur: 'var(--blue)',
+      titel: 'Ingebrekestelling sturen',
+      subtitel: 'De overheid formeel in gebreke stellen',
+      uitleg: 'Een ingebrekestelling is een formele brief waarin je de overheid meldt dat ze een wettelijke termijn heeft overschreden. Na ontvangst heeft het bestuursorgaan <strong>2 weken</strong> om alsnog te beslissen. Daarna is het automatisch een <strong>dwangsom verschuldigd</strong> van €23 per dag (max €1.442).',
+      grondslag: 'Art. 4:17 Awb (dwangsom bij niet tijdig beslissen)',
+      wanneer: [
+        'Je hebt een aanvraag gedaan (herstel, compensatie, bezwaar) en de wettelijke beslistermijn is verstreken',
+        'De UHT, CWS of gemeente reageert niet op je verzoek',
+        'Je wacht al maanden op een beslissing over je integrale beoordeling'
+      ],
+      hoe: [
+        'Stuur de brief <strong>aangetekend</strong> naar het bestuursorgaan (bijv. UHT, Belastingdienst)',
+        'Vermeld: je naam, BSN, het kenmerk van je aanvraag, de datum van de aanvraag, en de overschreden termijn',
+        'Eindig met: "Ik stel u hierbij in gebreke op grond van artikel 4:17 Awb"',
+        'Bewaar het verzendbewijs — je hebt het nodig als bewijs'
+      ],
+      tip: 'De ingebrekestelling is GRATIS en vereist geen advocaat. Je kunt het zelf doen. Na 2 weken zonder beslissing loopt de dwangsom automatisch op.'
+    },
+    {
+      nr: 2,
+      icon: 'folder_open',
+      kleur: 'var(--green)',
+      titel: 'Je dossier opvragen (WOO)',
+      subtitel: 'Alles opvragen wat de overheid over je heeft',
+      uitleg: 'Op grond van de <strong>Wet open overheid (WOO)</strong> en de <strong>AVG</strong> heb je recht op inzage in alle documenten die de overheid over je heeft. Dit omvat je toeslagendossier, FSV-registraties, interne notities, en correspondentie.',
+      grondslag: 'Art. 15 AVG (inzagerecht) + Wet open overheid (WOO)',
+      wanneer: [
+        'Je wilt weten wat er in je dossier staat',
+        'Je vermoedt dat je op de FSV-lijst stond',
+        'Je hebt documenten nodig voor een juridische procedure',
+        'De UHT weigert informatie te delen'
+      ],
+      hoe: [
+        '<strong>AVG-verzoek (art. 15):</strong> Stuur een brief naar de Belastingdienst: "Op grond van art. 15 AVG verzoek ik om inzage in alle persoonsgegevens die u over mij verwerkt, inclusief FSV-registraties, risicoscores en profilering"',
+        '<strong>WOO-verzoek:</strong> Stuur een brief naar het ministerie van Financiën: "Op grond van de WOO verzoek ik om alle documenten die betrekking hebben op mijn toeslagendossier"',
+        'De overheid moet binnen <strong>4 weken</strong> reageren op een AVG-verzoek en binnen <strong>4 weken</strong> op een WOO-verzoek',
+        'Reageert de overheid niet? Stuur een <strong>ingebrekestelling</strong> (stap 1)'
+      ],
+      tip: 'Vraag specifiek naar FSV-registraties, risicoscores, CAF-betrokkenheid en interne notities. Hoe specifieker je vraag, hoe moeilijker het is om te weigeren.'
+    },
+    {
+      nr: 3,
+      icon: 'shield',
+      kleur: 'var(--accent)',
+      titel: 'Klacht bij de Autoriteit Persoonsgegevens',
+      subtitel: 'Privacy-klacht indienen over onrechtmatige verwerking',
+      uitleg: 'De <strong>Autoriteit Persoonsgegevens (AP)</strong> is de toezichthouder op de AVG. Je kunt een klacht indienen als je persoonsgegevens onrechtmatig zijn verwerkt. De AP heeft de Belastingdienst al beboet voor de FSV-lijst (€3,7 miljoen) en voor discriminatie bij de kinderopvangtoeslag.',
+      grondslag: 'Art. 77 AVG (recht op klacht bij toezichthouder)',
+      wanneer: [
+        'Je stond op de FSV-lijst en ondervindt daar nog steeds nadeel van',
+        'Je BSN is besmet en je wordt nog steeds gediscrimineerd',
+        'De overheid weigert je persoonsgegevens te corrigeren of te wissen',
+        'Je bent geprofileerd op basis van nationaliteit of etniciteit'
+      ],
+      hoe: [
+        'Ga naar <strong>autoriteitpersoonsgegevens.nl/klacht</strong>',
+        'Beschrijf welke persoonsgegevens onrechtmatig verwerkt zijn',
+        'Voeg bewijs toe: afwijzingsbrieven, FSV-bevestiging, WOO-documenten',
+        'De AP moet je klacht onderzoeken — als ze dat niet doen, kun je naar de EDPB (Europese toezichthouder)'
+      ],
+      tip: 'De AP ontvangt duizenden klachten en is traag. Dien je klacht zo concreet mogelijk in met bewijs. Na 3 maanden zonder reactie kun je een klacht indienen bij de EDPB.'
+    },
+    {
+      nr: 4,
+      icon: 'gavel',
+      kleur: 'var(--yellow)',
+      titel: 'Bezwaar en beroep',
+      subtitel: 'Formeel bezwaar maken tegen een beslissing',
+      uitleg: 'Als de overheid een beslissing neemt waar je het niet mee eens bent (afwijzing compensatie, te laag bedrag, weigering nieuw BSN), kun je <strong>bezwaar maken</strong>. Wordt het bezwaar afgewezen, dan kun je in <strong>beroep</strong> bij de rechtbank.',
+      grondslag: 'Art. 7:1 Awb (bezwaar) + art. 8:1 Awb (beroep)',
+      wanneer: [
+        'Je compensatiebedrag is te laag of afgewezen',
+        'De UHT weigert je als gedupeerde te erkennen',
+        'Een gemeente weigert hulp of schuldsanering',
+        'Een bestuursorgaan neemt een beslissing die je benadeelt'
+      ],
+      hoe: [
+        '<strong>Bezwaar:</strong> Binnen <strong>6 weken</strong> na de beslissing een bezwaarschrift sturen naar het bestuursorgaan',
+        'Vermeld: je naam, datum van de beslissing, kenmerk, en waarom je het er niet mee eens bent',
+        '<strong>Beroep:</strong> Als het bezwaar wordt afgewezen, binnen <strong>6 weken</strong> beroep instellen bij de rechtbank',
+        'Bij de rechtbank kun je <strong>griffierecht</strong> verschuldigd zijn (€50 voor particulieren) — vraag vrijstelling aan als je inkomen te laag is'
+      ],
+      tip: '<strong>LET OP:</strong> De termijn van 6 weken is FATAAL. Mis je de termijn, dan vervalt je recht. Stuur desnoods een pro-forma bezwaar ("Ik maak bezwaar, gronden volgen later") om de termijn veilig te stellen.'
+    },
+    {
+      nr: 5,
+      icon: 'balance',
+      kleur: 'var(--green)',
+      titel: 'Schadevergoeding eisen via de rechter',
+      subtitel: 'Civiele procedure of bestuursrechtelijk verzoek',
+      uitleg: 'Je kunt schadevergoeding eisen via twee routes: een <strong>bestuursrechtelijk verzoek</strong> (art. 8:88 Awb) als er al een bestuursrechtelijke procedure loopt, of een <strong>civiele procedure</strong> (art. 6:162 BW, onrechtmatige daad).',
+      grondslag: 'Art. 8:88 Awb + art. 6:162 BW + art. 82 AVG',
+      wanneer: [
+        'De overheid biedt een belachend laag bedrag aan (€30.000)',
+        'Je hebt aantoonbare schade: inkomensverlies, woningverlies, psychische schade',
+        'De hersteloperatie werkt niet of is te traag',
+        'Je wilt de LOVS-norm (€105/dag) toepassen op jouw situatie'
+      ],
+      hoe: [
+        '<strong>Bereken je claim:</strong> LOVS €105/dag × aantal dagen benadeeld = smartengeld. Plus: inkomensverlies, woningverlies, psychische behandelkosten',
+        '<strong>Art. 82 AVG:</strong> Elke onrechtmatige verwerking van persoonsgegevens geeft recht op schadevergoeding. Dit is een Europees recht dat boven Nederlands recht staat',
+        '<strong>Civiele dagvaarding:</strong> Via een advocaat een dagvaarding laten uitbrengen aan de Staat der Nederlanden',
+        'Vraag <strong>gesubsidieerde rechtsbijstand</strong> aan (zie stap 6)'
+      ],
+      tip: 'Een gezin met 2 uithuisgeplaatste kinderen dat 15 jaar is benadeeld heeft volgens de LOVS-norm recht op meer dan €2 miljoen. De overheid biedt €30.000. Dat is 1,5% van wat normaal is.'
+    },
+    {
+      nr: 6,
+      icon: 'support_agent',
+      kleur: 'var(--blue)',
+      titel: 'Gratis rechtsbijstand aanvragen',
+      subtitel: 'Advocaat via toevoeging (pro deo)',
+      uitleg: 'Als je inkomen en vermogen onder de grens liggen, heb je recht op <strong>gesubsidieerde rechtsbijstand</strong>. Een advocaat op toevoeging kost je maximaal €143 (eigen bijdrage). De rest betaalt de overheid.',
+      grondslag: 'Wet op de rechtsbijstand (Wrb)',
+      wanneer: [
+        'Je inkomen is lager dan €30.000 (alleenstaand) of €42.400 (samen)',
+        'Je hebt een advocaat nodig voor bezwaar, beroep of een civiele procedure',
+        'Je wilt naar het EHRM maar hebt geen geld voor een advocaat'
+      ],
+      hoe: [
+        'Ga naar <strong>rechtsbijstand.nl</strong> of bel het <strong>Juridisch Loket</strong> (0900-8020)',
+        'Vraag een <strong>toevoeging</strong> aan bij de Raad voor Rechtsbijstand',
+        'Zoek een advocaat die gespecialiseerd is in <strong>bestuursrecht</strong> of <strong>mensenrechten</strong>',
+        'Kijk op <strong>advocatenorde.nl</strong> voor advocaten in je regio'
+      ],
+      tip: 'Veel toeslagenadvocaten nemen zaken aan op toevoeging. Specialisten: advocatenkantoren die ervaring hebben met de toeslagenaffaire zijn o.a. Fischer Advocaten, Seebregts & Saey, en advocaten aangesloten bij de Specialistenvereniging Sociaal Zekerheidsrecht.'
+    },
+    {
+      nr: 7,
+      icon: 'flag',
+      kleur: 'var(--accent)',
+      titel: 'Europees Hof voor de Rechten van de Mens',
+      subtitel: 'Klacht indienen tegen Nederland in Straatsburg',
+      uitleg: 'Als alle nationale rechtsmiddelen zijn uitgeput, kun je een klacht indienen bij het <strong>EHRM</strong> in Straatsburg. Nederland is al veroordeeld in <em>Van Slooten v. Nederland</em> (2025). Het EHRM kan een pilootarrest wijzen dat Nederland verplicht een structurele oplossing te bieden.',
+      grondslag: 'Art. 34 EVRM (individueel klachtrecht) + art. 8 EVRM (privéleven) + art. 1 Protocol 1 (eigendomsrecht) + art. 13 EVRM (effectief rechtsmiddel)',
+      wanneer: [
+        'Je hebt ALLE nationale rechtsmiddelen uitgeput (bezwaar → beroep → hoger beroep)',
+        'Of: de nationale procedure duurt onredelijk lang (geen effectief rechtsmiddel)',
+        'De inbreuk op je rechten duurt voort (besmet BSN, geen compensatie)',
+        'Het is minder dan <strong>4 maanden</strong> na de laatste nationale beslissing'
+      ],
+      hoe: [
+        'Download het klachtformulier op <strong>echr.coe.int</strong>',
+        'Beschrijf de feiten: wat is er gebeurd, welke rechten zijn geschonden, welke nationale procedures je hebt doorlopen',
+        'Verwijs naar relevante artikelen: art. 8 EVRM (privéleven/BSN), art. 14 EVRM (discriminatieverbod), art. 1 Protocol 1 (eigendom)',
+        'Je kunt het zelf doen, maar een advocaat met EHRM-ervaring vergroot je kans aanzienlijk'
+      ],
+      tip: 'Het EHRM ontvangt 50.000+ klachten per jaar en wijst 95% af op ontvankelijkheid. Zorg dat je dossier waterdicht is. De gemiddelde doorlooptijd is 3-5 jaar, maar bij urgentie (art. 39 EVRM) kan het sneller.'
+    }
+  ];
+
+  var html = '<div class="page">' +
+
+    // HERO
+    '<div style="text-align:center;padding:28px 0 20px">' +
+      '<span class="mi" style="font-size:48px;color:var(--blue);display:block;margin-bottom:8px">support_agent</span>' +
+      '<h1 style="font-size:clamp(22px,4vw,32px);font-weight:800;line-height:1.2">Juridische <span style="color:var(--blue)">Hulp</span></h1>' +
+      '<p style="font-size:14px;color:var(--tx2);max-width:600px;margin:10px auto 0">Stap voor stap je recht halen. Geen juridisch advies — wel de concrete stappen die je kunt nemen.</p>' +
+    '</div>' +
+
+    // WAARSCHUWING
+    '<div class="card" style="padding:16px;margin-bottom:20px;border-left:3px solid var(--yellow);background:var(--yellow-soft,rgba(250,204,21,.08))">' +
+      '<div style="font-size:13px;color:var(--tx);line-height:1.7">' +
+        '<strong style="color:var(--yellow)"><span class="mi mi-sm">warning</span> Disclaimer:</strong> Deze pagina bevat <strong>geen juridisch advies</strong>. Het is een overzicht van bestaande rechten en procedures, samengesteld op basis van openbare bronnen. Raadpleeg altijd een advocaat voor je specifieke situatie. Bel het <strong>Juridisch Loket</strong> (0900-8020) voor gratis eerste advies.' +
+      '</div>' +
+    '</div>' +
+
+    // OVERZICHT STAPPEN
+    '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-bottom:24px">';
+
+  stappen.forEach(function(s){
+    html += '<div class="card" style="text-align:center;padding:12px;cursor:pointer;transition:transform .15s" onclick="document.getElementById(\'stap' + s.nr + '\').scrollIntoView({behavior:\'smooth\',block:\'start\'})">' +
+      '<span class="mi" style="font-size:24px;color:' + s.kleur + ';display:block;margin-bottom:4px">' + s.icon + '</span>' +
+      '<div style="font-size:11px;font-weight:700;color:' + s.kleur + '">STAP ' + s.nr + '</div>' +
+      '<div style="font-size:12px;color:var(--tx2);margin-top:2px">' + s.titel.split(' ').slice(0,3).join(' ') + '</div>' +
+    '</div>';
+  });
+
+  html += '</div>';
+
+  // STAPPEN DETAIL
+  stappen.forEach(function(s){
+    html += '<div id="stap' + s.nr + '" style="scroll-margin-top:80px">' +
+      '<div style="margin:20px 0 10px;display:flex;align-items:center;gap:10px">' +
+        '<div style="width:32px;height:32px;border-radius:50%;background:' + s.kleur + ';color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;flex-shrink:0">' + s.nr + '</div>' +
+        '<div style="height:2px;flex:1;background:linear-gradient(90deg,' + s.kleur + ',transparent)"></div>' +
+      '</div>' +
+
+      '<div class="card" style="padding:24px;margin-bottom:16px;border-left:4px solid ' + s.kleur + '">' +
+        '<h2 style="font-size:19px;margin-bottom:4px"><span class="mi mi-sm" style="color:' + s.kleur + '">' + s.icon + '</span> ' + s.titel + '</h2>' +
+        '<p style="font-size:13px;color:var(--tx2);margin-bottom:12px">' + s.subtitel + '</p>' +
+        '<p style="font-size:14px;line-height:1.8;color:var(--tx);margin-bottom:14px">' + s.uitleg + '</p>' +
+
+        '<div style="background:var(--bg2);border-radius:var(--rs);padding:14px;margin-bottom:12px">' +
+          '<div style="font-size:11px;font-weight:700;color:' + s.kleur + ';text-transform:uppercase;margin-bottom:6px"><span class="mi mi-sm">description</span> Juridische grondslag</div>' +
+          '<div style="font-size:13px;color:var(--tx);font-weight:600">' + s.grondslag + '</div>' +
+        '</div>' +
+
+        '<div style="background:var(--bg2);border-radius:var(--rs);padding:14px;margin-bottom:12px">' +
+          '<div style="font-size:11px;font-weight:700;color:' + s.kleur + ';text-transform:uppercase;margin-bottom:8px"><span class="mi mi-sm">help</span> Wanneer gebruik je dit?</div>' +
+          '<div style="display:grid;gap:6px">';
+    s.wanneer.forEach(function(w){
+      html += '<div style="display:flex;gap:8px;align-items:flex-start;font-size:13px;color:var(--tx);line-height:1.6">' +
+        '<span class="mi mi-sm" style="color:' + s.kleur + ';flex-shrink:0;margin-top:1px">check</span>' + w +
+      '</div>';
+    });
+    html += '</div></div>' +
+
+        '<div style="background:var(--bg2);border-radius:var(--rs);padding:14px;margin-bottom:12px">' +
+          '<div style="font-size:11px;font-weight:700;color:' + s.kleur + ';text-transform:uppercase;margin-bottom:8px"><span class="mi mi-sm">format_list_numbered</span> Hoe doe je het?</div>' +
+          '<div style="display:grid;gap:8px">';
+    s.hoe.forEach(function(h, i){
+      html += '<div style="display:flex;gap:10px;align-items:flex-start;font-size:13px;color:var(--tx);line-height:1.6">' +
+        '<div style="width:22px;height:22px;border-radius:50%;background:' + s.kleur + ';color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">' + (i+1) + '</div>' +
+        '<div>' + h + '</div>' +
+      '</div>';
+    });
+    html += '</div></div>' +
+
+        '<div style="background:rgba(59,130,246,.06);border:1px solid rgba(59,130,246,.15);border-radius:var(--rs);padding:14px">' +
+          '<div style="font-size:13px;color:var(--tx);line-height:1.7">' +
+            '<strong style="color:var(--blue)"><span class="mi mi-sm">star</span> Tip:</strong> ' + s.tip +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  });
+
+  // BESLISBOOM
+  html +=
+    '<div style="margin:28px 0 10px;display:flex;align-items:center;gap:10px">' +
+      '<div style="height:2px;flex:1;background:linear-gradient(90deg,transparent,var(--blue))"></div>' +
+      '<span style="font-size:12px;font-weight:700;color:var(--blue);text-transform:uppercase;letter-spacing:1px;white-space:nowrap">Welke stap past bij jou?</span>' +
+      '<div style="height:2px;flex:1;background:linear-gradient(90deg,var(--blue),transparent)"></div>' +
+    '</div>' +
+
+    '<div class="card" style="padding:24px;margin-bottom:16px">' +
+      '<div id="beslisboom">' +
+        '<p style="font-size:15px;font-weight:700;color:var(--tx);margin-bottom:14px"><span class="mi mi-sm" style="color:var(--blue)">help</span> Wat is jouw situatie?</p>' +
+        '<div style="display:grid;gap:8px">' +
+          '<button class="btn btn-ghost" onclick="toonAdvies(\'wachten\')" style="text-align:left;justify-content:flex-start"><span class="mi mi-sm" style="color:var(--blue)">schedule</span> Ik wacht al maanden op een beslissing</button>' +
+          '<button class="btn btn-ghost" onclick="toonAdvies(\'afgewezen\')" style="text-align:left;justify-content:flex-start"><span class="mi mi-sm" style="color:var(--accent)">block</span> Mijn aanvraag is afgewezen of het bedrag is te laag</button>' +
+          '<button class="btn btn-ghost" onclick="toonAdvies(\'bsn\')" style="text-align:left;justify-content:flex-start"><span class="mi mi-sm" style="color:var(--yellow)">credit_card</span> Mijn BSN is besmet en ik word nog steeds benadeeld</button>' +
+          '<button class="btn btn-ghost" onclick="toonAdvies(\'alles\')" style="text-align:left;justify-content:flex-start"><span class="mi mi-sm" style="color:var(--green)">done_all</span> Ik heb alles geprobeerd en niets werkt</button>' +
+        '</div>' +
+      '</div>' +
+      '<div id="adviesResultaat" style="display:none"></div>' +
+    '</div>' +
+
+    // NUTTIGE LINKS
+    '<div class="card" style="padding:24px;margin-bottom:16px">' +
+      '<h2 style="font-size:17px;margin-bottom:12px"><span class="mi mi-sm" style="color:var(--blue)">link</span> Nuttige links</h2>' +
+      '<div style="display:grid;gap:8px">' +
+        '<a href="https://www.juridischloket.nl" target="_blank" rel="noopener" style="display:flex;gap:10px;align-items:center;padding:12px;background:var(--bg2);border-radius:var(--rs);text-decoration:none;color:var(--tx)">' +
+          '<span class="mi" style="color:var(--blue)">call</span>' +
+          '<div><strong style="font-size:14px">Het Juridisch Loket</strong><br><span style="font-size:12px;color:var(--tx2)">Gratis juridisch advies — 0900-8020</span></div>' +
+        '</a>' +
+        '<a href="https://www.rvr.org" target="_blank" rel="noopener" style="display:flex;gap:10px;align-items:center;padding:12px;background:var(--bg2);border-radius:var(--rs);text-decoration:none;color:var(--tx)">' +
+          '<span class="mi" style="color:var(--green)">account_balance</span>' +
+          '<div><strong style="font-size:14px">Raad voor Rechtsbijstand</strong><br><span style="font-size:12px;color:var(--tx2)">Toevoeging aanvragen (advocaat op kosten van de staat)</span></div>' +
+        '</a>' +
+        '<a href="https://autoriteitpersoonsgegevens.nl/klacht-melden" target="_blank" rel="noopener" style="display:flex;gap:10px;align-items:center;padding:12px;background:var(--bg2);border-radius:var(--rs);text-decoration:none;color:var(--tx)">' +
+          '<span class="mi" style="color:var(--accent)">shield</span>' +
+          '<div><strong style="font-size:14px">Autoriteit Persoonsgegevens</strong><br><span style="font-size:12px;color:var(--tx2)">Privacy-klacht indienen</span></div>' +
+        '</a>' +
+        '<a href="https://www.echr.coe.int/apply-to-the-court" target="_blank" rel="noopener" style="display:flex;gap:10px;align-items:center;padding:12px;background:var(--bg2);border-radius:var(--rs);text-decoration:none;color:var(--tx)">' +
+          '<span class="mi" style="color:var(--yellow)">flag</span>' +
+          '<div><strong style="font-size:14px">EHRM — Klacht indienen</strong><br><span style="font-size:12px;color:var(--tx2)">Europees Hof voor de Rechten van de Mens, Straatsburg</span></div>' +
+        '</a>' +
+        '<a href="https://www.advocatenorde.nl/zoek-een-advocaat" target="_blank" rel="noopener" style="display:flex;gap:10px;align-items:center;padding:12px;background:var(--bg2);border-radius:var(--rs);text-decoration:none;color:var(--tx)">' +
+          '<span class="mi" style="color:var(--blue)">person_search</span>' +
+          '<div><strong style="font-size:14px">Zoek een advocaat</strong><br><span style="font-size:12px;color:var(--tx2)">Nederlandse Orde van Advocaten — zoek op specialisatie</span></div>' +
+        '</a>' +
+      '</div>' +
+    '</div>' +
+
+    // CTA
+    '<div style="text-align:center;padding:20px 0">' +
+      '<h3 style="font-size:17px;margin-bottom:6px">Ken je rechten. Gebruik ze.</h3>' +
+      '<p style="font-size:13px;color:var(--tx2);margin-bottom:14px">De overheid rekent erop dat je opgeeft. <strong style="color:var(--blue)">Bewijs het tegendeel.</strong></p>' +
+      '<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">' +
+        '<button class="btn btn-red btn-lg" onclick="go(\'/melden\')"><span class="mi">add_circle</span> Doe een melding</button>' +
+        '<button class="btn btn-ghost" onclick="go(\'/oplossing\')"><span class="mi mi-sm">verified</span> De oplossing</button>' +
+      '</div>' +
+    '</div>' +
+    bronnenFooter() +
+  '</div>';
+
+  return html;
+}
+
+// Beslisboom logica voor juridische hulp
+function toonAdvies(situatie){
+  var advies = '';
+  var d = document.getElementById('adviesResultaat');
+  var b = document.getElementById('beslisboom');
+
+  if(situatie === 'wachten'){
+    advies =
+      '<div style="border-left:3px solid var(--blue);padding-left:14px;margin-bottom:14px">' +
+        '<div style="font-size:15px;font-weight:700;color:var(--blue);margin-bottom:8px"><span class="mi mi-sm">schedule</span> Je wacht te lang op een beslissing</div>' +
+        '<div style="font-size:14px;color:var(--tx);line-height:1.8">' +
+          '<strong>Direct doen:</strong><br>' +
+          '1. <strong>Stuur een ingebrekestelling</strong> (stap 1) — dit is gratis en activeert de dwangsom van €23/dag<br>' +
+          '2. <strong>Vraag je dossier op</strong> (stap 2) — zodat je weet wat er speelt<br>' +
+          '3. Na 2 weken zonder reactie: <strong>beroep bij de rechtbank</strong> wegens niet-tijdig beslissen (art. 8:1 jo. 6:2 Awb)<br><br>' +
+          '<strong style="color:var(--blue)">Belangrijk:</strong> De ingebrekestelling kost niets en je hebt geen advocaat nodig. Begin hier.' +
+        '</div>' +
+      '</div>';
+  } else if(situatie === 'afgewezen'){
+    advies =
+      '<div style="border-left:3px solid var(--accent);padding-left:14px;margin-bottom:14px">' +
+        '<div style="font-size:15px;font-weight:700;color:var(--accent);margin-bottom:8px"><span class="mi mi-sm">block</span> Afgewezen of te laag bedrag</div>' +
+        '<div style="font-size:14px;color:var(--tx);line-height:1.8">' +
+          '<strong>Direct doen:</strong><br>' +
+          '1. <strong>Maak bezwaar binnen 6 weken</strong> (stap 4) — deze termijn is FATAAL, mis hem niet!<br>' +
+          '2. <strong>Vraag gesubsidieerde rechtsbijstand aan</strong> (stap 6) — een advocaat op toevoeging kost max €143<br>' +
+          '3. <strong>Bereken wat je volgens de LOVS-norm zou moeten krijgen</strong> (stap 5) — €105/dag × aantal dagen benadeeld<br><br>' +
+          '<strong style="color:var(--accent)">Belangrijk:</strong> Stuur desnoods VANDAAG een pro-forma bezwaar ("Ik maak bezwaar, gronden volgen later") om de termijn veilig te stellen.' +
+        '</div>' +
+      '</div>';
+  } else if(situatie === 'bsn'){
+    advies =
+      '<div style="border-left:3px solid var(--yellow);padding-left:14px;margin-bottom:14px">' +
+        '<div style="font-size:15px;font-weight:700;color:var(--yellow);margin-bottom:8px"><span class="mi mi-sm">credit_card</span> Besmet BSN</div>' +
+        '<div style="font-size:14px;color:var(--tx);line-height:1.8">' +
+          '<strong>Direct doen:</strong><br>' +
+          '1. <strong>Dien een klacht in bij de AP</strong> (stap 3) — je BSN wordt onrechtmatig verwerkt<br>' +
+          '2. <strong>Vraag je FSV-gegevens op</strong> (stap 2) — AVG art. 15 inzageverzoek<br>' +
+          '3. <strong>Verzoek rectificatie</strong> via art. 16 AVG — eis dat het fraudelabel wordt verwijderd<br>' +
+          '4. Als Nederland weigert: <strong>klacht bij de EDPB</strong> (Europese toezichthouder) of <strong>EHRM</strong> (stap 7)<br><br>' +
+          '<strong style="color:var(--yellow)">Belangrijk:</strong> Documenteer alles. Elke afwijzing van een hypotheek, verzekering of dienst die gerelateerd is aan je BSN is bewijs voor je zaak.' +
+        '</div>' +
+      '</div>';
+  } else if(situatie === 'alles'){
+    advies =
+      '<div style="border-left:3px solid var(--green);padding-left:14px;margin-bottom:14px">' +
+        '<div style="font-size:15px;font-weight:700;color:var(--green);margin-bottom:8px"><span class="mi mi-sm">done_all</span> Alle nationale wegen uitgeput</div>' +
+        '<div style="font-size:14px;color:var(--tx);line-height:1.8">' +
+          '<strong>De Europese route:</strong><br>' +
+          '1. <strong>EHRM-klacht indienen</strong> (stap 7) — art. 8 EVRM (privéleven), art. 13 EVRM (effectief rechtsmiddel), art. 1 Protocol 1 (eigendom)<br>' +
+          '2. <strong>Argument "geen effectief rechtsmiddel":</strong> De hersteloperatie werkt al 5+ jaar niet. Dit IS het bewijs dat art. 13 EVRM geschonden is<br>' +
+          '3. <strong>Overweeg een art. 82 AVG-claim</strong> bij de civiele rechter — dit is een apart Europees recht<br><br>' +
+          '<strong style="color:var(--green)">Belangrijk:</strong> Het EHRM-klachtformulier is beschikbaar op echr.coe.int. Je kunt het zelf invullen, maar een advocaat met EHRM-ervaring verhoogt je kans enorm. Zoek een specialist via de <a href="#" onclick="go(\'/oplossing\');return false" style="color:var(--green)">pagina Oplossing</a>.' +
+        '</div>' +
+      '</div>';
+  }
+
+  advies += '<button class="btn btn-ghost btn-sm" onclick="document.getElementById(\'adviesResultaat\').style.display=\'none\';document.getElementById(\'beslisboom\').style.display=\'block\'"><span class="mi mi-sm">arrow_back</span> Opnieuw kiezen</button>';
+
+  d.innerHTML = advies;
+  d.style.display = 'block';
+  b.style.display = 'none';
 }
 
 function pgClaimSearch(){
