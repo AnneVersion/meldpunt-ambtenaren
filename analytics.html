@@ -182,7 +182,7 @@ canvas { width: 100%; height: 200px; display: block; }
 
 <script>
 // ============ CONFIG ============
-var MP_BASE = '/api';               // Meldpunt backend
+var MP_BASE = 'http://localhost:5001/api';  // Meldpunt backend
 var GI_BASE = 'http://localhost:5000/api';  // GeoInzicht analytics API
 
 var _days = 30;
@@ -210,8 +210,9 @@ function doLogin() {
 document.getElementById('loginPass').addEventListener('keydown', function(e) { if (e.key === 'Enter') doLogin(); });
 
 // Check session on load
-fetch(MP_BASE + '/admin/me', { credentials: 'include' })
-  .then(function(r) { if (r.ok) showDashboard(); })
+fetch(MP_BASE + '/admin/check', { credentials: 'include' })
+  .then(function(r) { return r.json(); })
+  .then(function(d) { if (d.loggedIn) showDashboard(); })
   .catch(function() {});
 
 function showDashboard() {
@@ -378,6 +379,36 @@ function renderGI(d) {
     });
     h += '</tbody></table>';
   }
+
+  // Top OS
+  if (d.top_os && d.top_os.length) {
+    h += '<h4 style="font-size:13px;color:var(--tx2);margin:16px 0 8px">Besturingssystemen</h4>';
+    h += '<table class="mini-table"><thead><tr><th>OS</th><th style="text-align:right">Sessies</th></tr></thead><tbody>';
+    d.top_os.forEach(function(o) {
+      h += '<tr><td>' + esc(o.os) + '</td><td style="text-align:right">' + o.count + '</td></tr>';
+    });
+    h += '</tbody></table>';
+  }
+
+  // Performance metrics
+  if (d.perf_avg && d.perf_avg.page_load_ms) {
+    h += '<h4 style="font-size:13px;color:var(--tx2);margin:16px 0 8px">Performance (gemiddeld)</h4>';
+    h += '<div class="stats-row">';
+    h += statCard((d.perf_avg.page_load_ms/1000).toFixed(1) + 's', 'Page load', '');
+    h += statCard(d.perf_avg.ttfb_ms + 'ms', 'TTFB', '');
+    h += statCard(d.perf_avg.resources_count || 0, 'Resources', '');
+    h += statCard((d.perf_avg.transfer_size_kb/1024).toFixed(1) + 'MB', 'Transfer', '');
+    h += '</div>';
+  }
+
+  // Kenmerken (dark mode, touch, ad blocker)
+  h += '<h4 style="font-size:13px;color:var(--tx2);margin:16px 0 8px">Kenmerken</h4>';
+  h += '<div style="display:flex;gap:12px;flex-wrap:wrap;font-size:13px">';
+  if (d.dark_mode_pct !== undefined) h += '<span style="padding:4px 10px;background:var(--purple-soft);border-radius:6px">Dark mode: ' + d.dark_mode_pct + '%</span>';
+  if (d.touch_pct !== undefined) h += '<span style="padding:4px 10px;background:var(--blue-soft);border-radius:6px">Touch: ' + d.touch_pct + '%</span>';
+  if (d.ad_blocker_pct !== undefined) h += '<span style="padding:4px 10px;background:var(--yellow-soft);border-radius:6px">Ad blocker: ' + d.ad_blocker_pct + '%</span>';
+  if (d.total_uploads !== undefined) h += '<span style="padding:4px 10px;background:var(--green-soft);border-radius:6px">Uploads: ' + d.total_uploads + '</span>';
+  h += '</div>';
 
   document.getElementById('giContent').innerHTML = h;
   // Draw chart
