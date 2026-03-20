@@ -3,6 +3,8 @@
 ## Project
 PWA voor incidentmeldingen en dossier-management met Supabase backend.
 Locatie: `E:\scripts\webscraper\CBSbuurt\meldpunt-ambtenaren\`
+GitHub: AnneVersion/meldpunt-ambtenaren
+GitHub Pages: anneversion.github.io/meldpunt-ambtenaren
 
 ## Starten
 ```bash
@@ -28,11 +30,12 @@ Werk op `develop`. Alleen mergen naar `main` als het stabiel is.
 - `backend/app.py` - Flask backend API
 - `supabase-setup.sql` - Database schema
 
-## Waar gebleven (maart 2026)
-- PWA met Supabase backend, dossier-management, document upload + anonimisering
+## Features (maart 2026)
+- PWA met Supabase backend
+- Dossier-management met document upload + anonimisering
 - EHRM wizard voor internationale klachtprocedures
 - Max sanctie badges in formulier en detail pagina's
-- Analytics dashboard uitgebreid
+- Analytics dashboard
 
 ## Let op
 - `data/`, `sync/`, `worker/` staan in .gitignore
